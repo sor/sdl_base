@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/clion-debug/_deps/benchmark-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/clion-debug/_deps/fmt-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/clion-debug/_deps/nfd-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/clion-debug/_deps/sdl2-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/clion-optimized/_deps/benchmark-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/clion-optimized/_deps/fmt-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/clion-optimized/_deps/nfd-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/clion-optimized/_deps/sdl2-src" vcs="Git" />
+  </component>
+</project>
