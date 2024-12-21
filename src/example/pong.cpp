@@ -7,7 +7,7 @@
 //#include "sor/sdl_shapeops.hpp"
 
 
-// Global/GameState wäre hier vielleicht auch angebracht, WorldState erst ab "wall"
+// Global/GameState/AppState wäre hier vielleicht auch angebracht, WorldState/LevelState erst ab "wall"
 struct WorldState
 {
 	SDL_Window   * window;
@@ -17,7 +17,7 @@ struct WorldState
 	SDL_FRect  wall     = { 200, 200, 200, 200 };
 
 	SDL_FRect  ball     = { 20, 20, 20, 20 };
-	SDL_FPoint vel_ball = { 4.4, 2.1 };
+	SDL_FPoint vel_ball = { 144.0, 99.0 };
 	SDL_Point  mouse_pos;
 	//SDL_FPoint vel_ball = { 0.4, 0.1 };
 
@@ -142,6 +142,12 @@ void renderGraphics( const WorldState & ws )
 extern "C"
 int main( int argc, char * argv [] )
 {
+	print( "\n"
+		"---=================================---\n"
+		"   | Use CTRL + Q to quit the game |\n"
+		"---=================================---\n"
+		);
+
 	WorldState worldState;
 
 	initWorldState( worldState );

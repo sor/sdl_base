@@ -5,7 +5,7 @@ namespace JanSordid::SDL_Example
 	constexpr bool doBenchmark = true;
 
 	MyGame::MyGame()
-		: Base( "Example SDL Game", 3.0f, Point { 640, 360 }, !doBenchmark )
+		: Base( "Example SDL Game", -1.0f, Point { 640, 360 }, !doBenchmark )
 	//	: Base( "Example SDL Game", 1.0f, Point { 1280, 960 }, !doBenchmark )
 	{
 		AddStates<

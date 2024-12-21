@@ -13,36 +13,36 @@ namespace NotJanSordid::SDL_MiniExample
 	// Also possible to do this, but then everything SDL needs prefix SDL::
 	//namespace SDL = JanSordid::SDL;
 
-	class MiniGame;
-
-	class MiniState : public GameState<MiniGame>
-	{
-	public:
-		/// Ctors & Dtor
-		using GameState::GameState;
-
-		Texture * _blendedText   = nullptr;
-		Point     _p             = { 32, 50 };
-		int       _colorIndex    = 9;
-		bool      _isDarkOutline = true;
-
-		/// Getters & Setters: non-virtual first, followed by (pure) virtual/override
-		[[nodiscard]] Color clearColor() const noexcept override { return { (u8)rand(), (u8)rand(), (u8)rand(), 255 }; }
-
-		/// Methods: non-virtual first, followed by (pure) virtual/override
-		bool HandleEvent( const Event & event                                   ) override { return false; }
-		void Update( u64 framesSinceStart, u64 msSinceStart, float deltaT       ) override {}
-		void Render( u64 framesSinceStart, u64 msSinceStart, float deltaTNeeded ) override {}
-		ImGuiOnly(
-			void RenderUI( u64 framesSinceStart, u64 msSinceStart, float deltaTNeeded ) override;)
-
-		//bool isFPSLimited() const noexcept override { return false; }
-	};
-
 	class MiniGame : public Game<> //Game<IGameState,u8>
 	{
 	public:
 		/// Ctors & Dtor
 		MiniGame();
+	};
+
+	class MiniState : public GameState<MiniGame>
+	{
+	public:
+		/// Ctors & Dtor
+		using GameState::GameState; // "Copy" the ctor from GameState
+
+		f32 _colorRolling = 0.0f;
+
+		/// Getters & Setters: non-virtual first, followed by (pure) virtual/override
+		[[nodiscard]] Color clearColor() const noexcept override {
+			return {
+				(u8) (128.0f + sin( _colorRolling * 0.002f ) * 128.0f),
+				(u8) (128.0f + sin( _colorRolling * 0.003f ) * 128.0f),
+				(u8) (128.0f + sin( _colorRolling * 0.005f ) * 128.0f),
+				255
+			};
+		}
+
+		/// Methods: non-virtual first, followed by (pure) virtual/override
+		bool HandleEvent( const Event & event                                   ) override { return false; }
+		void Update( u64 framesSinceStart, u64 msSinceStart, float deltaT       ) override { _colorRolling = (f32)msSinceStart; }
+		void Render( u64 framesSinceStart, u64 msSinceStart, float deltaTNeeded ) override {}
+
+		//bool isFPSLimited() const noexcept override { return false; }
 	};
 }

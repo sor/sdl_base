@@ -32,6 +32,12 @@ namespace JanSordid::SDL_Example
 
 	void SortState::Destroy()
 	{
+		if( image )
+		{
+			SDL_DestroyTexture( image );
+			image = nullptr;
+		}
+
 		Base::Destroy();
 	}
 
@@ -58,7 +64,7 @@ namespace JanSordid::SDL_Example
 		}
 	}
 
-	void SortState::Render( const u64 frame, const u64 totalMSec, const f32 deltaT )
+	void SortState::Render( const u64 frame, const u64 totalMSec, const f32 deltaTNeeded )
 	{
 		const u8 alpha = isTransparent ? 127 : 255;
 		SDL_SetTextureAlphaMod( image, alpha );
