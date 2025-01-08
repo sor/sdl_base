@@ -1,10 +1,12 @@
 #pragma once
 
+#include <SDL_rect.h>
+
 namespace JanSordid::SDL
 {
 	constexpr const SDL_Rect * EntireRect = nullptr;
 
-	// Define Y_IS_UP if you want to use Y as up (instead of down),
+	// Define Y_IS_UP if you want to use Y as up (instead of down, which is the default),
 	// but beware you need to do more than just this to make it work
 	namespace PointLiterals
 	{

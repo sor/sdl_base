@@ -1,7 +1,7 @@
 #include "example_game.hpp"
-#include "hsnr64/palette.hpp"
 
 #include <hsnr64/offset.hpp>
+#include <hsnr64/palette.hpp>
 //#include <tilefont.h>
 
 namespace JanSordid::SDL_Example
@@ -248,7 +248,7 @@ namespace JanSordid::SDL_Example
 		ImGui::SameLine();
 		ImGui::Checkbox( "Dark Outline", &_isDarkOutline );
 
-		if( ImGui::Button( "Redraw" ) )                            // Buttons return true when clicked (most widgets return true when edited/activated)
+		if( ImGui::Button( "Redraw" ) ) // Buttons return true when clicked (most widgets return true when edited/activated)
 			_blendedText = nullptr;
 
 		if( ImGui::SliderInt( "color index", &_colorIndex, 0, 63 ) ) {}

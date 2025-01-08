@@ -1,7 +1,7 @@
 #include "mini.hpp"
 
-#include "hsnr64/offset.hpp"
-#include "hsnr64/palette.hpp"
+#include <hsnr64/offset.hpp>
+#include <hsnr64/palette.hpp>
 
 extern "C"
 int main( int argc, char * argv [] )

@@ -30,8 +30,8 @@ void initWorldState( WorldState & ws )
 	IMG_Init( IMG_INIT_PNG );
 
 	// 640x360  16:9    >80%
-	// 640x400  16:10   ~5%
-	// 640x480   4:3    <5%
+	// 640x400  16:10   ~5%  or 576x360
+	// 640x480   4:3    <5%  or 480x360
 	constexpr int windowScale = 2;
 	ws.window   = SDL_CreateWindow( "Pong Game", 100, 200, 640 * windowScale, 360 * windowScale, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
 	ws.renderer = SDL_CreateRenderer( ws.window, -1, SDL_RENDERER_PRESENTVSYNC );

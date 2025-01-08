@@ -98,8 +98,8 @@
 // Monkey-patching NFD
 namespace NFD
 {
-	constexpr const nfdnfilteritem_t * EmptyFilter      = nullptr;
-	constexpr const nfdnchar_t       * EmptyDefaultPath = nullptr;
+	constexpr const nfdfilteritem_t * EmptyFilter      = nullptr;
+	constexpr const nfdchar_t       * EmptyDefaultPath = nullptr;
 
 	using Result = nfdresult_t;
 }

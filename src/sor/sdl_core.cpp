@@ -2,6 +2,7 @@
 
 // This one has a toxic include on SDL_syswm,
 // which pollutes global namespace with a lot of senseless X11 typedefs
+// therefore only include in this .cpp file
 #include <nfd_sdl2.h>
 
 namespace NFD

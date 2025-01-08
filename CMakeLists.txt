@@ -89,35 +89,6 @@ if( USE_ImGUI )
     add_compile_options( "-DIMGUI"          )
 endif()
 
-#[[
-add_executable( fetch_sdl
-        src/example/main.cpp
-
-        src/sor/core.cpp
-        src/sor/sdl_core.cpp
-)
-target_include_directories( fetch_sdl PUBLIC src/ )
-target_link_libraries(      fetch_sdl PUBLIC
-
-        $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
-
-        $<IF:$<BOOL:${USE_FMT_HeaderOnly}>, fmt::fmt-header-only, fmt::fmt>
-        $<TARGET_NAME_IF_EXISTS:nfd::nfd>
-        $<TARGET_NAME_IF_EXISTS:benchmark::benchmark>
-        $<TARGET_NAME_IF_EXISTS:benchmark::benchmark_main>
-
-        $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
-
-        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,               SDL2::SDL2,             SDL2::SDL2-static>
-        $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,       SDL2_ttf::SDL2_ttf,     SDL2_ttf::SDL2_ttf-static>
-        $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,   SDL2_mixer::SDL2_mixer, SDL2_mixer::SDL2_mixer-static>
-        $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,   SDL2_image::SDL2_image, SDL2_image::SDL2_image-static>
-        $<IF:$<TARGET_EXISTS:SDL2_net::SDL2_net>,       SDL2_net::SDL2_net,     SDL2_net::SDL2_net-static>
-
-        $<TARGET_NAME_IF_EXISTS:imgui::imgui>
-)
-]]
-
 add_executable( sor-pong
         src/example/pong.cpp
 
@@ -127,22 +98,12 @@ add_executable( sor-pong
 target_include_directories( sor-pong PUBLIC src/ )
 target_link_libraries(      sor-pong PUBLIC
 
-        $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
-
         $<IF:$<BOOL:${USE_FMT_HeaderOnly}>, fmt::fmt-header-only, fmt::fmt>
-        $<TARGET_NAME_IF_EXISTS:nfd::nfd>
-        $<TARGET_NAME_IF_EXISTS:benchmark::benchmark>
-        $<TARGET_NAME_IF_EXISTS:benchmark::benchmark_main>
 
         $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
 
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,               SDL2::SDL2,             SDL2::SDL2-static>
-        $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,       SDL2_ttf::SDL2_ttf,     SDL2_ttf::SDL2_ttf-static>
-        $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,   SDL2_mixer::SDL2_mixer, SDL2_mixer::SDL2_mixer-static>
         $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,   SDL2_image::SDL2_image, SDL2_image::SDL2_image-static>
-        $<IF:$<TARGET_EXISTS:SDL2_net::SDL2_net>,       SDL2_net::SDL2_net,     SDL2_net::SDL2_net-static>
-
-        $<TARGET_NAME_IF_EXISTS:imgui::imgui>
 )
 
 add_executable( sor-mini
@@ -159,8 +120,6 @@ target_link_libraries(      sor-mini PUBLIC
 
         $<IF:$<BOOL:${USE_FMT_HeaderOnly}>, fmt::fmt-header-only, fmt::fmt>
         $<TARGET_NAME_IF_EXISTS:nfd::nfd>
-        $<TARGET_NAME_IF_EXISTS:benchmark::benchmark>
-        $<TARGET_NAME_IF_EXISTS:benchmark::benchmark_main>
 
         $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
 
@@ -193,8 +152,9 @@ target_link_libraries(      sor-example PUBLIC
 
         $<IF:$<BOOL:${USE_FMT_HeaderOnly}>, fmt::fmt-header-only, fmt::fmt>
         $<TARGET_NAME_IF_EXISTS:nfd::nfd>
-        $<TARGET_NAME_IF_EXISTS:benchmark::benchmark>
-        $<TARGET_NAME_IF_EXISTS:benchmark::benchmark_main>
+
+        #$<TARGET_NAME_IF_EXISTS:benchmark::benchmark>
+        #$<TARGET_NAME_IF_EXISTS:benchmark::benchmark_main>
 
         $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
 

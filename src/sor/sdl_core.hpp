@@ -7,7 +7,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
-#include <SDL_render.h>
 #include <SDL_ttf.h>
 
 // Usually ImGui is only included during development,
