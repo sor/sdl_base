@@ -46,9 +46,8 @@ namespace JanSordid::SDL
 		{
 			SDL_DisplayMode dm;
 			SDL_GetDesktopDisplayMode( 0, &dm );
-			int xFac = dm.w / logicalSize.x;
-			int yFac = dm.h / logicalSize.y;
-			scalingFactor = (float) std::max( 1, std::min( xFac, yFac ) - 1 );
+			const FPoint factor = toF( Point{ dm.w, dm.h } ) / toF( logicalSize );
+			scalingFactor = std::max( 1.0f, std::floor( std::min( factor.x, factor.y ) - 0.2f ) );
 		}
 
 		Point requestedSize = toI( toF( logicalSize ) * scalingFactor );
