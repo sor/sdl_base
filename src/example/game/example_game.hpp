@@ -72,7 +72,7 @@ namespace JanSordid::SDL_Example
 		u8    _textmode        = 0;
 
 		// Testvars controlled by ImGui
-		Point _p             = { 32, 50 };
+		Point _p             = { 20, 30 };
 		int   _colorIndex    = 9;
 		bool  _isDarkOutline = true;
 

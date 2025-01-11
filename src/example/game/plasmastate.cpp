@@ -9,7 +9,7 @@ namespace JanSordid::SDL_Example
 	{
 		Base::Init();
 
-		font = TTF_OpenFont( BasePath "asset/font/MonkeyIsland-1991-refined.ttf", 24 );
+		font = TTF_OpenFont( BasePath "asset/font/MonkeyIsland-1991-refined.ttf", _game.scalingFactor() * 16 );
 		TTF_SetFontHinting( font, TTF_HINTING_NONE );
 
 		Point windowSize;
@@ -112,19 +112,21 @@ namespace JanSordid::SDL_Example
 		Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
+		const int offsetFromLeft = (int)(30 * _game.scalingFactor());
+
 		// Prepare the text as Texture
 		if( blendedText == nullptr )
 		{
 			constexpr const char * text =
 				"Use mouse-wheel or [DOWN] and [UP] arrow keys\n"
-				"                to change the brightness\n"
+				"   to change the brightness and colorization\n"
 				"                  of the plasma effect!";
 
 			if( blendedText != nullptr )
 				SDL_DestroyTexture( blendedText );
 
 			constexpr const Color white = HSNR64::Palette( HSNR64::NamedColorIndex::White );
-			Surface * surf = TTF_RenderUTF8_Blended_Wrapped( font, text, white, windowSize.x - 30 );
+			Surface * surf = TTF_RenderUTF8_Blended_Wrapped( font, text, white, windowSize.x - 2 * offsetFromLeft );
 			blendedText = SDL_CreateTextureFromSurface( renderer(), surf );
 			SDL_FreeSurface( surf );
 
@@ -133,17 +135,21 @@ namespace JanSordid::SDL_Example
 			SDL_QueryTexture( blendedText, &fmt, &access, &blendedTextSize.x, &blendedTextSize.y );
 		}
 
-		// Draw the text on top
+		// Draw the text on top of the plasma effect
 		{
 			const Point p {
-				windowSize.x / 5,
-				windowSize.y - 150
+				offsetFromLeft,
+				windowSize.y - (int)(100 * _game.scalingFactor())
 			};
 
+			const int shadowOffsetFactor = (int)(1.0f*_game.scalingFactor());
+			//const int shadowOffsetFactor = (int)(2.0f*_game.scalingFactor()); // chonky shadow
+
+			// Draw the shadow
 			SDL_SetTextureColorMod( blendedText, 0, 0, 0 );
 			for( const Point & offset : HSNR64::ShadowOffset::Rhombus )
 			{
-				const Rect dst_rect = Rect{ p.x, p.y, blendedTextSize.x, blendedTextSize.y } + (offset * 2);
+				const Rect dst_rect = Rect{ p.x, p.y, blendedTextSize.x, blendedTextSize.y } + (offset * shadowOffsetFactor);
 				SDL_RenderCopy( renderer(), blendedText, EntireRect, &dst_rect );
 			}
 

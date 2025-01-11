@@ -12,7 +12,7 @@ namespace JanSordid::SDL_Example
 
 		if( !_font )
 		{
-			_font = TTF_OpenFont( BasePath "asset/font/RobotoSlab-Bold.ttf", 8.0f * _game.scalingFactor() );
+			_font = TTF_OpenFont( BasePath "asset/font/RobotoSlab-Bold.ttf", (int)(10.0f * _game.scalingFactor()) );
 			TTF_SetFontHinting( _font, TTF_HINTING_LIGHT );
 			if( !_font )
 				print( stderr, "TTF_OpenFont failed: {}\n", TTF_GetError() );
@@ -164,7 +164,7 @@ namespace JanSordid::SDL_Example
 				"\n  - Press [F1] to (un)pause music."
 				"\n  - Press [F2] to (un)mute music."
 				"\nSource: https://www.youtube.com/watch?v=aFITtvK64B4"
-				"\n\nPress any key to continue!"
+				//"\n\nPress any key to continue!"
 				"\n\n!\"#$%&'()*+,-./0123456789:;<=>? c*8 uzu"
 				"\n@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
 				"\n`abcdefghijklmnopqrstuvwxyz{|}~"
@@ -188,7 +188,7 @@ namespace JanSordid::SDL_Example
 					if( _blendedText != nullptr )
 						SDL_DestroyTexture( _blendedText );
 
-					Surface * surf = TTF_RenderUTF8_Blended_Wrapped( _font, text, white, windowSize.x - _p.x );
+					Surface * surf = TTF_RenderUTF8_Blended_Wrapped( _font, text, white, windowSize.x - 2 * _p.x );
 					_blendedText = SDL_CreateTextureFromSurface( renderer(), surf );
 					SDL_FreeSurface( surf );
 
