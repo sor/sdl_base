@@ -1,19 +1,5 @@
 #pragma once
 
-#ifdef _GLIBC_USE_DEPRECATED
-#undef _GLIBC_USE_DEPRECATED
-#endif
-
-#ifdef _GLIBCXX_USE_DEPRECATED
-#undef _GLIBCXX_USE_DEPRECATED
-#endif
-
-#define _GLIBC_USE_DEPRECATED 0
-#define _GLIBCXX_USE_DEPRECATED 0
-#define _LIBCPP_ENABLE_DEPRECATION_WARNINGS 2
-#define NOMINMAX 1
-#define WIN32_LEAN_AND_MEAN 1
-
 //#define NFD_NATIVE 1
 
 // Activate this line to be able to put the executable in the root folder

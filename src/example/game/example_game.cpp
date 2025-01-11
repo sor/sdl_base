@@ -81,8 +81,6 @@ namespace JanSordid::SDL_Example
 	}
 }
 
-
-extern "C"
 int main( int argc, char * argv [] )
 {
 	using namespace JanSordid;

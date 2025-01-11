@@ -28,27 +28,12 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
-#include( AddDependency )
-
 #set( BENCHMARK_ENABLE_TESTING   OFF )
 #set( SDL_3DNOW                  OFF )
 #set( SDL_MMX                    OFF )
 #set( SDL_OPENGLES               OFF )
 #set( SDL2MIXER_MOD              OFF )
 #set( SDL2MIXER_WAVPACK          OFF )
-
-#AddDependency( fmt          https://github.com/fmtlib/fmt.git                   11.0.2 )
-#AddDependency( nfd          https://github.com/btzy/nativefiledialog-extended   v1.2.1 )
-#AddDependency( benchmark    https://github.com/google/benchmark                 v1.9.0 )
-
-#AddDependency( SDL2         https://github.com/libsdl-org/SDL.git               release-2.30.8 )
-#AddDependency( SDL2_image   https://github.com/libsdl-org/SDL_image.git         release-2.8.2 )
-#AddDependency( SDL2_mixer   https://github.com/libsdl-org/SDL_mixer.git         release-2.8.0 )
-#AddDependency( SDL2_net     https://github.com/libsdl-org/SDL_net.git           release-2.2.0 )
-#AddDependency( SDL2_ttf     https://github.com/libsdl-org/SDL_ttf.git           release-2.22.0 )
-
-#AddDependency( imgui        https://github.com/ocornut/imgui.git                v1.91.3 )
-#FetchContent_GetProperties(imgui)
 
 find_package( SDL2       CONFIG REQUIRED )
 find_package( SDL2_ttf   CONFIG REQUIRED )
@@ -81,12 +66,28 @@ add_compile_definitions(
 if( USE_DeployBinary )
     add_compile_options( "-DDEPLOY_BINARY"  )
 endif()
+
 if( USE_NFD_Native )
     add_compile_options( "-DNFD_NATIVE"     )
 endif()
 
 if( USE_ImGUI )
     add_compile_options( "-DIMGUI"          )
+endif()
+
+if( WIN32 ) # Not only MSVC
+    add_definitions(
+        -DNOMINMAX
+        -DWIN32_LEAN_AND_MEAN
+        -D_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1
+    )
+endif()
+
+if( GCC OR CLANG )
+    add_definitions(
+        -D_GLIBCXX_USE_DEPRECATED=0
+        -D_LIBCPP_ENABLE_DEPRECATION_WARNINGS=1
+    )
 endif()
 
 add_executable( sor-pong

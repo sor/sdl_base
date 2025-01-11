@@ -3,7 +3,6 @@
 #include <hsnr64/offset.hpp>
 #include <hsnr64/palette.hpp>
 
-extern "C"
 int main( int argc, char * argv [] )
 {
 	std::ios_base::sync_with_stdio( false );

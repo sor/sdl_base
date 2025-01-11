@@ -139,7 +139,6 @@ void renderGraphics( const WorldState & ws )
 	SDL_RenderPresent( ws.renderer );
 }
 
-extern "C"
 int main( int argc, char * argv [] )
 {
 	print( "\n"
@@ -208,7 +207,6 @@ int main( int argc, char * argv [] )
 
 
 
-extern "C"
 int mainx( int argc, char * argv [] )
 {
 	SDL_Init( SDL_INIT_EVERYTHING );
