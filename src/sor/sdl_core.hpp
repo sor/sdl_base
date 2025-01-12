@@ -35,7 +35,11 @@
 // Monkey-patching NFD
 namespace NFD
 {
-	bool GetNativeWindowFromSDLWindow( SDL_Window * sdlWindow, nfdwindowhandle_t * nativeWindow );
+	// Usually passed by value (contrary to SDL_Window)
+	using Window = nfdwindowhandle_t;
+
+	// SDL_Window as pointer because it's the case for all other functions as well, else by reference would be preferred
+	Window GetNativeWindowFromSDLWindow( SDL_Window * sdlWindow );
 }
 
 namespace JanSordid::SDL

@@ -59,34 +59,34 @@ endif()
 #        "$<$<CONFIG:RELEASE>:-DFINAL>" )
 
 add_compile_definitions(
-        "$<$<CONFIG:DEBUG>:_DEBUG>"    # not DEBUG because of a stupid old define
-        "$<$<CONFIG:RELWITHDEBINFO>:OPTIMIZED>"
-        "$<$<CONFIG:RELEASE>:FINAL>" )
+        $<$<CONFIG:DEBUG>:_DEBUG>               # not DEBUG because of a stupid old define
+        $<$<CONFIG:RELWITHDEBINFO>:OPTIMIZED>
+        $<$<CONFIG:RELEASE>:FINAL> )
 
 if( USE_DeployBinary )
-    add_compile_options( "-DDEPLOY_BINARY"  )
+    add_compile_definitions( DEPLOY_BINARY  )
 endif()
 
 if( USE_NFD_Native )
-    add_compile_options( "-DNFD_NATIVE"     )
+    add_compile_definitions( NFD_NATIVE     )
 endif()
 
 if( USE_ImGUI )
-    add_compile_options( "-DIMGUI"          )
+    add_compile_definitions( IMGUI          )
 endif()
 
 if( WIN32 ) # Not only MSVC
-    add_definitions(
-        -DNOMINMAX
-        -DWIN32_LEAN_AND_MEAN
-        -D_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1
+    add_compile_definitions(
+            NOMINMAX
+            WIN32_LEAN_AND_MEAN
+            _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1
     )
 endif()
 
 if( GCC OR CLANG )
-    add_definitions(
-        -D_GLIBCXX_USE_DEPRECATED=0
-        -D_LIBCPP_ENABLE_DEPRECATION_WARNINGS=1
+    add_compile_definitions(
+            _GLIBCXX_USE_DEPRECATED=0
+            _LIBCPP_ENABLE_DEPRECATION_WARNINGS=1
     )
 endif()
 

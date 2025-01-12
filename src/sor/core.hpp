@@ -94,6 +94,7 @@ namespace NFD
 {
 	constexpr const nfdfilteritem_t * EmptyFilter      = nullptr;
 	constexpr const nfdchar_t       * EmptyDefaultPath = nullptr;
+	constexpr const nfdchar_t       * EmptyDefaultName = nullptr;
 
 	using Result = nfdresult_t;
 }

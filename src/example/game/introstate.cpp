@@ -300,16 +300,14 @@ namespace JanSordid::SDL_Example
 			if( !needsLinebreak( i ) )
 				ImGui::SameLine();
 		}
-		ImGui::NewLine(); // undo last SameLine
+		ImGui::NewLine(); // Undo last SameLine
 		ImGui::PopStyleColor();
 		ImGui::PopStyleVar();
 		ImGui::PopID();
 
 		if( ImGui::Button( "Open" ) )
 		{
-			nfdwindowhandle_t nw;
-			NFD::GetNativeWindowFromSDLWindow( window(), &nw );
-
+			NFD::Window     nw = nativeWindow();
 			NFD::UniquePath path;
 			const NFD::Result result = NFD::OpenDialog( path, NFD::EmptyFilter, 0, NFD::EmptyDefaultPath, nw );    // Freezes execution of the Game
 
@@ -319,8 +317,9 @@ namespace JanSordid::SDL_Example
 		ImGui::SameLine();
 		if( ImGui::Button( "OpenMultiple" ) )
 		{
+			NFD::Window        nw = nativeWindow();
 			NFD::UniquePathSet paths;
-			const NFD::Result result = NFD::OpenDialogMultiple( paths, NFD::EmptyFilter, 0, NFD::EmptyDefaultPath );     // Freezes execution of the Game
+			const NFD::Result  result = NFD::OpenDialogMultiple( paths, NFD::EmptyFilter, 0, NFD::EmptyDefaultPath, nw );     // Freezes execution of the Game
 
 			// TODO
 			//if( result == NFD_OKAY )
@@ -329,8 +328,9 @@ namespace JanSordid::SDL_Example
 		ImGui::SameLine();
 		if( ImGui::Button( "Save" ) )
 		{
+			NFD::Window     nw = nativeWindow();
 			NFD::UniquePath path;
-			const NFD::Result result = NFD::SaveDialog( path, NFD::EmptyFilter, 0, NFD::EmptyDefaultPath );     // Freezes execution of the Game
+			const NFD::Result result = NFD::SaveDialog( path, NFD::EmptyFilter, 0, NFD::EmptyDefaultPath, NFD::EmptyDefaultName, nw ); // Freezes execution of the Game
 			//	const NFD::Result result = NFD::SaveDialog();   // The same as above
 
 			if( result == NFD::Result::NFD_OKAY )
@@ -339,8 +339,9 @@ namespace JanSordid::SDL_Example
 		ImGui::SameLine();
 		if( ImGui::Button( "PickFolder" ) )
 		{
+			NFD::Window     nw = nativeWindow();
 			NFD::UniquePath path;
-			const NFD::Result result = NFD::PickFolder( path, NFD::EmptyDefaultPath );     // Freezes execution of the Game
+			const NFD::Result result = NFD::PickFolder( path, NFD::EmptyDefaultPath, nw );     // Freezes execution of the Game
 
 			if( result == NFD_OKAY )
 				print( "Success! Path is {0}\n", path.get() );

@@ -5,13 +5,16 @@
 // therefore only include in this .cpp file
 #include <nfd_sdl2.h>
 
+// Monkey-patching NFD
 namespace NFD
 {
-	bool GetNativeWindowFromSDLWindow(
-		SDL_Window        * sdlWindow,
-		nfdwindowhandle_t * nativeWindow )
+	// SDL_Window as pointer because it's the case for all other functions as well, else by reference would be preferred
+	// Return by value intentional
+	Window GetNativeWindowFromSDLWindow( SDL_Window * sdlWindow )
 	{
-		return NFD_GetNativeWindowFromSDLWindow(sdlWindow, nativeWindow);
+		Window nativeWindow;
+		NFD_GetNativeWindowFromSDLWindow( sdlWindow, &nativeWindow ); // Intentionally discard return value
+		return nativeWindow;
 	}
 }
 

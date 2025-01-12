@@ -76,8 +76,9 @@ namespace JanSordid::SDL
 		        ~GameState()               noexcept override = default;
 
 		/// Getters & Setters: non-virtual first, followed by (pure) virtual/override
-		[[nodiscard]] Window   * window()   const noexcept { return _game.window();   }
-		[[nodiscard]] Renderer * renderer() const noexcept { return _game.renderer(); }
+		[[nodiscard]] Window      * window()       const noexcept { return _game.window();       }
+		[[nodiscard]] Renderer    * renderer()     const noexcept { return _game.renderer();     }
+		[[nodiscard]] NFD::Window   nativeWindow() const noexcept { return _game.nativeWindow(); }
 	};
 
 	// abstract, pseudo interface (contains fields)
@@ -125,12 +126,13 @@ namespace JanSordid::SDL
 		IGame && operator=(       IGame && ) = delete;
 
 		/// Getters & Setters: non-virtual first, followed by (pure) virtual/override
-		[[nodiscard]] constexpr bool       isRunning()         const noexcept { return _isRunning;  }
-		[[nodiscard]]           Window   * window()            const noexcept { return _window.get();   } // even though this is a pointer, it is usually not null
-		[[nodiscard]]           Renderer * renderer()          const noexcept { return _renderer.get(); } // even though this is a pointer, it is usually not null
-		[[nodiscard]]           f32        scalingFactor()     const          { return _scalingFactor; }
-		[[nodiscard]] constexpr bool       isStateChanging()   const noexcept { return _stateNextOp != NextStateOp::None; }
-		[[nodiscard]]           u8         currentStateIndex() const          { assert( !_stateStack.empty() ); return _stateStack.back(); }
+		[[nodiscard]] constexpr bool          isRunning()         const noexcept { return _isRunning;  }
+		[[nodiscard]]           Window      * window()            const noexcept { return _window.get();   } // even though this is a pointer, it is usually not null
+		[[nodiscard]]           Renderer    * renderer()          const noexcept { return _renderer.get(); } // even though this is a pointer, it is usually not null
+		[[nodiscard]]           NFD::Window   nativeWindow()      const noexcept { return NFD::GetNativeWindowFromSDLWindow( window() ); }
+		[[nodiscard]]           f32           scalingFactor()     const          { return _scalingFactor; }
+		[[nodiscard]] constexpr bool          isStateChanging()   const noexcept { return _stateNextOp != NextStateOp::None; }
+		[[nodiscard]]           u8            currentStateIndex() const          { assert( !_stateStack.empty() ); return _stateStack.back(); }
 
 		[[nodiscard]] virtual constexpr       IGameState &  currentState()                  = 0;
 		[[nodiscard]] virtual constexpr const IGameState &  currentState()   const          = 0;

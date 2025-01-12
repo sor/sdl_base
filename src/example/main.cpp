@@ -11,8 +11,7 @@ int main()
 	Owned<Window>   w = SDL_CreateWindow( "", 0, 0, 400, 400, 0 );
 	Owned<Renderer> r = SDL_CreateRenderer( w, -1, 0 );
 
-	nfdwindowhandle_t nw;
-	NFD::GetNativeWindowFromSDLWindow( w, &nw );
+	NFD::Window nw = NFD::GetNativeWindowFromSDLWindow( w );
 
 	NFD::UniquePath upath;
 	if( NFD::OpenDialog( upath, nullptr, 0, nullptr, nw ) == NFD_OKAY )
