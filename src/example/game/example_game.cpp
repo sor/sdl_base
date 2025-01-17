@@ -1,5 +1,7 @@
 #include "example_game.hpp"
 
+#include "simpleeditor.hpp"
+
 namespace JanSordid::SDL_Example
 {
 	constexpr bool doBenchmark = false;
@@ -13,7 +15,8 @@ namespace JanSordid::SDL_Example
 			PlasmaState,
 			SortState,
 			CameraState,
-			ShooterState>( *this );
+			ShooterState,
+			EditorState>( *this );
 
 		// Set initial State
 		PushState( MyGS::Intro );
@@ -63,7 +66,8 @@ namespace JanSordid::SDL_Example
 				}
 				else if( what_key.scancode == SDL_SCANCODE_6 )
 				{
-					return false;
+					ReplaceState( MyGS::Editor );
+					return true;
 				}
 				else if( what_key.scancode == SDL_SCANCODE_7 )
 				{
