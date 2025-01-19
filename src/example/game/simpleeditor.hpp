@@ -8,10 +8,7 @@ namespace JanSordid::SDL_Example
 	{
 		using Base = MyGameState;
 
-		constexpr const static int   TileSize  = 32;        // Needs to be manually configured (or the TileCount)
-		constexpr const static Point TileCount = { 9, 11 }; // TODO: This could be automatically determined
-
-		constexpr const static Color BaseColors[] = {
+		constexpr const static Array<Color,8> BaseColors = {
 			Color( 0,   0,   0,   255 ),
 			Color( 255, 0,   0,   255 ),
 			Color( 0,   255, 0,   255 ),
@@ -22,14 +19,14 @@ namespace JanSordid::SDL_Example
 			Color( 255, 255, 255, 255 ),
 		};
 
-		Owned<Font>    font;
-		Owned<Texture> tileSet;
+		Owned<Font>    _font;
+		Owned<Texture> _tileSet;
 
-		using WorldState = std::array<std::array<int, 40>, 20>; // These sizes here also need to be manually configured
+		using WorldState = Array<Array<int, 40>, 20>; // TODO: These sizes here also need to be manually configured, expose dynamic sizing via ImGUI
 
-		const bool doGenerateEmptyMap = true; // Set this to false if you already load a map
-		WorldState worldState1;
-		WorldState worldState2;
+		const bool _doGenerateEmptyMap = true; // Set this to false if you already load a map
+		WorldState _worldState1;
+		WorldState _worldState2;
 
 		/**
 		 * This is how it looks if you already preload the map:
@@ -37,7 +34,6 @@ namespace JanSordid::SDL_Example
 			const bool doGenerateEmptyMap = false;
 			WorldState worldState1 =
 			{{
-				 { 55,55,55,... },
 				 { 55,64,64,... },
 				 ...
 				 { 55,55,55,... }
@@ -46,15 +42,22 @@ namespace JanSordid::SDL_Example
 		**/
 
 		WorldState
-			* currState = &worldState1,
-			* nextState = &worldState2;
+			* _currState = &_worldState1,
+			* _nextState = &_worldState2;
 
-		Point camera;
-		Point tileSetSize;
-		Point pickedIdx  = Point{ 0, 0 };
-		bool  isPainting = false;
-		bool  isPanning  = false;
-		bool  showGrid   = false;
+		Point _tileSetSize;
+		Point _tileSize;
+		Point _tileCount;
+		Point _camera;
+		Point _pickedIdx    = Point{ 0, 0 };
+		i32   _mapScale     = 2;
+		i32   _paletteScale = 2; // Is set to _game.scalingFactor() in Init()
+		bool  _isPainting   = false;
+		bool  _isPanning    = false;
+		bool  _showGrid     = false;
+
+		constexpr const static u64 UpdateDeltaTimeMS = 100;
+		u64   _nextUpdateTimeMS = 0;
 
 	public:
 		// ctor
