@@ -287,7 +287,7 @@ namespace JanSordid::SDL_Example
 				Owned<Texture> t2   = SDL_CreateTextureFromSurface( renderer(), surf );
 				SDL_SetTextureColorMod( t2, 0, 0, 0 );
 				//SDL::C::SDL_SetTextureBlendMode(t2, SDL::C::SDL_BLENDMODE_BLEND);
-				const Point p = { 360, 20 };
+				const Point p = { _tileSetSize.x * _paletteScale + 30, 20 };
 				for( const Point & pd : HSNR64::ShadowOffset::Cross )
 				{
 					const Rect dstRect = toRect( p + pd, Point{ surf->w, surf->h } );
