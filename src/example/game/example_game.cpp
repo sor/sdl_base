@@ -1,5 +1,6 @@
 #include "example_game.hpp"
 
+#include "simpleeditor.hpp"
 #include "roflstate.hpp"
 
 namespace JanSordid::SDL_Example
@@ -16,6 +17,7 @@ namespace JanSordid::SDL_Example
 			SortState,
 			CameraState,
 			ShooterState,
+			EditorState,
 			RoflState
 			>( *this );
 
@@ -67,7 +69,8 @@ namespace JanSordid::SDL_Example
 				}
 				else if( what_key.scancode == SDL_SCANCODE_6 )
 				{
-					// room for Editor
+					ReplaceState( MyGS::Editor );
+					return true;
 				}
 				else if( what_key.scancode == SDL_SCANCODE_7 )
 				{

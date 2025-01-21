@@ -92,10 +92,10 @@ if( GCC OR CLANG )
 endif()
 
 add_executable( sor-pong
-        src/example/pong.cpp
-
         src/sor/core.cpp
         src/sor/sdl_core.cpp
+
+        src/example/pong.cpp
 )
 target_include_directories( sor-pong PUBLIC src/ )
 target_link_libraries(      sor-pong PUBLIC
@@ -109,11 +109,11 @@ target_link_libraries(      sor-pong PUBLIC
 )
 
 add_executable( sor-mini
-        src/example/mini.cpp
-
         src/sor/core.cpp
         src/sor/sdl_core.cpp
         src/sor/sdl_game.cpp
+
+        src/example/mini.cpp
 )
 target_include_directories( sor-mini PUBLIC src/ )
 target_link_libraries(      sor-mini PUBLIC
@@ -135,6 +135,10 @@ target_link_libraries(      sor-mini PUBLIC
 )
 
 add_executable( sor-example
+        src/sor/core.cpp
+        src/sor/sdl_core.cpp
+        src/sor/sdl_game.cpp
+
         src/example/game/example_game.cpp
 
         src/example/game/introstate.cpp
@@ -142,6 +146,7 @@ add_executable( sor-example
         src/example/game/sortstate.cpp
         src/example/game/camerastate.cpp
         src/example/game/shooterstate.cpp
+        src/example/game/simpleeditor.cpp
         src/example/game/roflstate.cpp
 
         src/sor/core.cpp

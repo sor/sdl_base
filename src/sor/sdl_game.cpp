@@ -150,6 +150,7 @@ namespace JanSordid::SDL
 				// Returns a bool to tell if the Event was expected and handled, if false, then this return could bubble up to a stacked GameState (future feature)
 				currentState().HandleEvent( event );
 			}
+			// TODO: same as `if !game.HE then curr.HE` ?
 		}
 	}
 

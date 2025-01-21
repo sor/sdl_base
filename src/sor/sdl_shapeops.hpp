@@ -117,4 +117,6 @@ namespace JanSordid::SDL
 	constexpr FRect toWH( const FPoint n, const float r = 0 ) { return FRect { r,   r,   n.x, n.y }; }
 	constexpr  Rect toXYWH( const  Point n ) { return  Rect { n.x, n.y, n.x, n.y }; }
 	constexpr FRect toXYWH( const FPoint n ) { return FRect { n.x, n.y, n.x, n.y }; }
+	constexpr  Rect toRect(  const Point  xy, const Point  wh ) { return  Rect { xy.x, xy.y, wh.x, wh.y }; }
+	constexpr FRect toFRect( const FPoint xy, const FPoint wh ) { return FRect { xy.x, xy.y, wh.x, wh.y }; }
 }

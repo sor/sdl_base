@@ -20,6 +20,7 @@ namespace JanSordid::SDL_Example
 	class SortState;
 	class CameraState;
 	class ShooterState;
+	class EditorState;
 	class RoflState;
 
 	// MyGameState-Index
@@ -31,6 +32,7 @@ namespace JanSordid::SDL_Example
 		Ball,
 		Parallax,
 		Shooter,
+		Editor,
 		Rofl,
 		// "Invalid" is a special value, do NOT reproduce in your own game
 		// its only purpose is to show how hard it would be to crash the game
