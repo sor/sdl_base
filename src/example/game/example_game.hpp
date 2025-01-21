@@ -20,6 +20,7 @@ namespace JanSordid::SDL_Example
 	class SortState;
 	class CameraState;
 	class ShooterState;
+	class RoflState;
 
 	// MyGameState-Index
 	// Why not in the classes themselves? For reusability!
@@ -30,6 +31,7 @@ namespace JanSordid::SDL_Example
 		Ball,
 		Parallax,
 		Shooter,
+		Rofl,
 		// "Invalid" is a special value, do NOT reproduce in your own game
 		// its only purpose is to show how hard it would be to crash the game
 		Invalid,
@@ -233,7 +235,7 @@ namespace JanSordid::SDL_Example
 		int     satCount  = 5;
 
 		FPoint spawnProjectileAt;           // Valid if x and y is >= 0
-		u32    spawnProjectileSoundCD = 0;  //
+		u64    spawnProjectileSoundCD = 0;  //
 
 		static constexpr const int satRadius = 25;
 

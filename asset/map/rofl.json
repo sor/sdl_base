@@ -1,0 +1,28 @@
+{
+	"map": {
+		"data": [
+			"uUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUr",
+			"L        |      GGG                    R",
+			"L  f0    |     AA        aa AA         R",
+			"L        |    AAAA                     R",
+			"L        |     GG a               6    R",
+			"L             AA                       R",
+			"L------- 1    aa      5      Aa        R",
+			"L             aA            AA         R",
+			"La     t     AA            GG         aR",
+			"LA           Aa           aAA        aAR",
+			"La       2  AA            AA  7       aR",
+			"LAa        AAa           aA           AR",
+			"La         GG            AA     T     aR",
+			"L         AA            Aa             R",
+			"L        aA      4      aa    8 -------R",
+			"L                       AA             R",
+			"L    3               a GG     |        R",
+			"L                     AAAA    |        R",
+			"L         AA aa        AA     |    9F  R",
+			"L                    GGG      |        R",
+			"lDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd"
+		],
+		"name": "Summoners Backyard"
+	}
+}

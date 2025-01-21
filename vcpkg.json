@@ -36,5 +36,8 @@
     "name" : "imgui",
     "version>=" : "1.91.0",
     "features" : [ "sdl2-binding", "sdl2-renderer-binding", "freetype", "docking-experimental" ]
+  }, {
+    "name" : "nlohmann-json",
+    "version>=" : "3.11.3#1"
   } ]
 }

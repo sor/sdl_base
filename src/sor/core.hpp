@@ -29,6 +29,8 @@
 	#include <fmt/core.h>   // https://fmt.dev/latest/index.html
 #endif
 
+#include <nlohmann/json.hpp>
+
 #include <nfd.hpp>
 
 #ifdef DEPLOY_BINARY
@@ -88,6 +90,7 @@
 	#define throw    /* HACK: Come up with a solution for throw */
 #endif
 
+using JSON = nlohmann::json;
 
 // Monkey-patching NFD
 namespace NFD

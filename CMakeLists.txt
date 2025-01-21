@@ -35,16 +35,17 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 #set( SDL2MIXER_MOD              OFF )
 #set( SDL2MIXER_WAVPACK          OFF )
 
-find_package( SDL2       CONFIG REQUIRED )
-find_package( SDL2_ttf   CONFIG REQUIRED )
-find_package( SDL2_mixer CONFIG REQUIRED )
-find_package( SDL2_image CONFIG REQUIRED )
-find_package( SDL2_net   CONFIG REQUIRED )
-find_package( imgui      CONFIG REQUIRED )
-find_package( fmt        CONFIG REQUIRED )
-find_package( nfd        CONFIG REQUIRED )
-find_package( benchmark  CONFIG REQUIRED )
-find_package( Eigen3     CONFIG REQUIRED )
+find_package( SDL2          CONFIG REQUIRED )
+find_package( SDL2_ttf      CONFIG REQUIRED )
+find_package( SDL2_mixer    CONFIG REQUIRED )
+find_package( SDL2_image    CONFIG REQUIRED )
+find_package( SDL2_net      CONFIG REQUIRED )
+find_package( imgui         CONFIG REQUIRED )
+find_package( fmt           CONFIG REQUIRED )
+find_package( nfd           CONFIG REQUIRED )
+find_package( benchmark     CONFIG REQUIRED )
+find_package( Eigen3        CONFIG REQUIRED )
+find_package( nlohmann_json CONFIG REQUIRED )
 
 # Why does MSVC exist, but not CLANG or GCC?
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
@@ -141,6 +142,7 @@ add_executable( sor-example
         src/example/game/sortstate.cpp
         src/example/game/camerastate.cpp
         src/example/game/shooterstate.cpp
+        src/example/game/roflstate.cpp
 
         src/sor/core.cpp
         src/sor/sdl_core.cpp
@@ -166,4 +168,7 @@ target_link_libraries(      sor-example PUBLIC
         $<IF:$<TARGET_EXISTS:SDL2_net::SDL2_net>,       SDL2_net::SDL2_net,     SDL2_net::SDL2_net-static>
 
         $<TARGET_NAME_IF_EXISTS:imgui::imgui>
+
+    PRIVATE
+        $<TARGET_NAME_IF_EXISTS:nlohmann_json::nlohmann_json>
 )

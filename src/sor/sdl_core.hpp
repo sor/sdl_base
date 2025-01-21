@@ -29,6 +29,7 @@
 // Additional convenience defines
 #define BasePathFont    BasePath "asset/font/"
 #define BasePathGraphic BasePath "asset/graphic/"
+#define BasePathMap     BasePath "asset/map/"
 #define BasePathMusic   BasePath "asset/music/"
 #define BasePathSound   BasePath "asset/sound/"
 
