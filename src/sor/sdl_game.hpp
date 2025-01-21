@@ -182,7 +182,7 @@ namespace JanSordid::SDL
 	protected:
 		TimePoint           _lastPerfInfoTime  = Clock::now();
 		Duration            _accumulatedNeeded = Duration::zero();
-		u32                 _lastPerfInfoFrame = 0;
+		u64                 _lastPerfInfoFrame = 0;
 		PerformanceDrawMode _perfDrawMode      = PerformanceDrawMode::None;
 
 		[[nodiscard]]

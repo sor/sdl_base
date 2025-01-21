@@ -63,7 +63,7 @@ namespace JanSordid::SDL_Example
 		return false;
 	}
 
-	static inline float plasma( float x, float y, float time )
+	static inline float plasma( const f32 x, const f32 y, const f32 time )
 	{
 		const float cx = x * 0.1f + 0.5f * sin( time / 5.0f );
 		const float cy = y * 0.1f + 0.5f * cos( time / 3.0f );
@@ -90,10 +90,10 @@ namespace JanSordid::SDL_Example
 		{
 			for( int x = 0; x < w; ++x )
 			{
-				const float v = plasma( (x - w / 2) * xy_scale, (y - h / 2) * xy_scale, xy_frame );
+				const f32 v      = plasma( (x - w / 2) * xy_scale, (y - h / 2) * xy_scale, xy_frame );
 				const int offset = x * 4 + y * pitch;
-				px[offset + 0] = std::max<int>( 0, std::min<int>( 255, 4 * brightness * (.5f + .5f * sin( M_PI * v )) + brightness - 64 ) );
-				px[offset + 1] = std::max<int>( 0, std::min<int>( 255, 4 * brightness * (.5f + .5f * cos( M_PI * v )) + brightness - 64 ) );
+				px[offset + 0] = std::max<int>( 0, std::min<int>( 255, 4 * brightness * (.5f + .5f * sin( Numbers::pi_v<f32> * v )) + brightness - 64 ) );
+				px[offset + 1] = std::max<int>( 0, std::min<int>( 255, 4 * brightness * (.5f + .5f * cos( Numbers::pi_v<f32> * v )) + brightness - 64 ) );
 				px[offset + 2] = std::max<int>( 0, std::min<int>( 255, 4 * brightness - 255 ) );
 				px[offset + 3] = 255;
 			}

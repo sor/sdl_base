@@ -212,7 +212,7 @@ namespace JanSordid::SDL_Example
 
 	protected:
 		f32 progress      = 0;
-		u32 shootCooldown = 0;
+		u64 shootCooldown = 0;
 
 		Chunk   * sound         = nullptr;
 		Texture * projectile[4] = { nullptr };

@@ -360,7 +360,7 @@ namespace JanSordid::SDL
 
 	float IGame::AverageMSecPerFrame() const
 	{
-		const u32 passedFrames = _framesSinceStart - _lastPerfInfoFrame + 1;
+		const u64 passedFrames = _framesSinceStart - _lastPerfInfoFrame + 1;
 		return std::chrono::duration<float>( _accumulatedNeeded / passedFrames ).count() * 1000.0f;
 	}
 

@@ -74,7 +74,7 @@ void mutateWorldState( WorldState & ws )
 	//ws.ball.y += ws.vel_ball.y;
 
 	using namespace JanSordid::SDL;
-	constexpr float dt = 0.01666;
+	constexpr float dt = 0.01666f;
 	ws.ball += ws.vel_ball * dt;
 
 	if( ws.ball.x < 0 )
@@ -99,7 +99,7 @@ void mutateWorldState( WorldState & ws )
 		ws.vel_ball.y = -ws.vel_ball.y;
 	}
 
-	ws.ball.x += 0.1 * ws.moveToRight;
+	ws.ball.x += 0.1f * ws.moveToRight;
 }
 
 void renderGraphics( const WorldState & ws )
