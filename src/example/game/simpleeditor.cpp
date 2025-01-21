@@ -152,7 +152,7 @@ namespace JanSordid::SDL_Example
 				}
 				else if( _isPanning )
 				{
-					_camera += Point( me.xrel, me.yrel );
+					_camera += Point{ me.xrel, me.yrel };
 				}
 				break;
 			}
