@@ -134,10 +134,10 @@ namespace JanSordid::SDL_Example
 
 		//SDL_SetTextureBlendMode( _tileset, SDL_BLENDMODE_BLEND );
 		//SDL_SetRenderDrawBlendMode( renderer(), SDL_BLENDMODE_BLEND);
-		constexpr int srcSize  = 16;
-		const int     dstSize  = 16 * _game.scalingFactor();
+		constexpr int srcSize = 16;
+		const int     dstSize = 16 * _game.scalingFactor();
 		const FPoint  halfDst = FPoint{ (f32)dstSize, (f32)dstSize } / 2;
-		Point         dst      = { 0, 0 };
+		Point         dst     = { 0, 0 };
 		for( const auto & row : _level ) {
 			for( const auto & cell : row ) {
 				const TileInfo & info    = tileInfos[cell];
