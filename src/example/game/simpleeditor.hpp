@@ -9,14 +9,14 @@ namespace JanSordid::SDL_Example
 		using Base = MyGameState;
 
 		constexpr const static Array<Color,8> BaseColors = {
-			Color( 0,   0,   0,   255 ),
-			Color( 255, 0,   0,   255 ),
-			Color( 0,   255, 0,   255 ),
-			Color( 255, 255, 0,   255 ),
-			Color( 0,   0,   255, 255 ),
-			Color( 255, 0,   255, 255 ),
-			Color( 0,   255, 255, 255 ),
-			Color( 255, 255, 255, 255 ),
+			Color{ 0,   0,   0,   255 },
+			Color{ 255, 0,   0,   255 },
+			Color{ 0,   255, 0,   255 },
+			Color{ 255, 255, 0,   255 },
+			Color{ 0,   0,   255, 255 },
+			Color{ 255, 0,   255, 255 },
+			Color{ 0,   255, 255, 255 },
+			Color{ 255, 255, 255, 255 },
 		};
 
 		Owned<Font>    _font;

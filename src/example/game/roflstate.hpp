@@ -6,7 +6,10 @@ namespace JanSordid::SDL_Example
 {
 	struct Entity
 	{
-		Point position;
+		FPoint position;
+		i8     nextPath;
+		i8     faction;
+		i8     health;
 	};
 
 	class RoflState final : public MyGameState
@@ -57,8 +60,15 @@ namespace JanSordid::SDL_Example
 			{ 'G',  { { 1,  26 }, { 129, 183, 26,  255 }, false, true, 0, -1 } },
 		};
 
-		Owned<Texture>             _tileset;
-		Array<Array<Point, 10>, 2> _paths;     // forward for faction 0, backward for faction 1
+		static constexpr const Array<Color, 2> factionColors = {{
+			{ 255, 136, 0,   255 },
+			{ 137, 207, 240, 255 },
+		}};
+
+		Owned<Texture>              _tileset;
+		Array<Array<FPoint, 10>, 2> _paths;     // forward for faction 0, backward for faction 1
+		Array<DynArray<Entity>, 2>  _minions;
+		u64                         _respawnCD = 0;
 		// Minions follow path from 0 to 9 or the opposite way around
 		DynArray<String> _level = {
 			"uUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUr",
@@ -92,8 +102,8 @@ namespace JanSordid::SDL_Example
 		void Destroy() override;
 
 		bool HandleEvent( const Event & event ) override;
-		void Update( u64 frame, u64 totalMSec, f32 deltaT ) override;
-		void Render( u64 frame, u64 totalMSec, f32 deltaT ) override;
+		void Update( u64 framesSinceStart, u64 msSinceStart, f32 deltaT ) override;
+		void Render( u64 framesSinceStart, u64 msSinceStart, f32 deltaTNeeded ) override;
 
 		Color clearColor() const noexcept override { return Color{ 0, 32, 0, 255 }; }
 	};

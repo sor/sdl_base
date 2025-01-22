@@ -110,6 +110,9 @@ namespace JanSordid::SDL
 	constexpr  Rect  toI( const FRect  n ) { return  Rect  { (int)   n.x, (int)   n.y, (int)   n.w, (int)   n.h }; }
 	constexpr FRect  toF( const  Rect  n ) { return FRect  { (float) n.x, (float) n.y, (float) n.w, (float) n.h }; }
 
+	constexpr f32    calcLength( const FPoint n ) { return sqrt( n.x * n.x + n.y * n.y ); }
+	constexpr FPoint normalize(  const FPoint n ) { return n / calcLength( n ); }
+
 	// Spreading out data
 	constexpr  Rect toXY( const  Point n, const int   r = 0 ) { return  Rect { n.x, n.y, r,   r   }; }
 	constexpr FRect toXY( const FPoint n, const float r = 0 ) { return FRect { n.x, n.y, r,   r   }; }
