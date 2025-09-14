@@ -98,17 +98,17 @@ namespace JanSordid::SDL_Example
 					if( mousePos.x < _tileSetSize.x * _paletteScale
 					 && mousePos.y < _tileSetSize.y * _paletteScale )
 					{
+`						// Pick
 						const Point p = mousePos / (_tileSize * _paletteScale);
-						// pick
 						_pickedIdx = p;
 					}
 					else
 					{
+						// Paint
 						const Point p = (mousePos - _camera) / (_tileSize * _mapScale);
-						// paint
 						//level[p.x][p.y] = pickedIdx;
-						if( p.y >= 0 && p.y < (*_currState).size()
-						 && p.x >= 0 && p.x < (*_currState)[0].size() )
+						if( 0 <= p.y && (uint)p.y < (*_currState).size()
+						 && 0 <= p.x && (uint)p.x < (*_currState)[0].size() )
 						{
 							(*_currState)[p.y][p.x] = _pickedIdx.x + _pickedIdx.y * _tileCount.x;
 						}
@@ -144,8 +144,8 @@ namespace JanSordid::SDL_Example
 					const Point mousePos = { me.x, me.y };
 					const Point p = (mousePos - _camera) / _tileSize / _mapScale;
 					//level[p.x][p.y] = pickedIdx;
-					if( p.y >= 0 && p.y < (*_currState).size()
-					 && p.x >= 0 && p.x < (*_currState)[0].size() )
+					if( 0 <= p.y && (uint)p.y < (*_currState).size()
+					 && 0 <= p.x && (uint)p.x < (*_currState)[0].size() )
 					{
 						(*_currState)[p.y][p.x] = _pickedIdx.x + _pickedIdx.y * _tileCount.x;
 					}
@@ -176,7 +176,7 @@ namespace JanSordid::SDL_Example
 				const int index = curr[y][x];
 				Point tileIndex = { index % _tileCount.x, index / _tileCount.x };
 
-				if( tileIndex.y >= 1 && tileIndex.y <= 5 || tileIndex.y == 8 || tileIndex.y == 10 )
+				if( (tileIndex.y >= 1 && tileIndex.y <= 5) || tileIndex.y == 8 || tileIndex.y == 10 )
 				{
 					tileIndex.x = (tileIndex.x + 1) % 8;
 				}
@@ -204,13 +204,13 @@ namespace JanSordid::SDL_Example
 
 
 		/// Draw level
-		for( int y = 0; y < curr.size(); ++y )
+		for( uint y = 0; y < curr.size(); ++y )
 		{
-			for( int x = 0; x < curr[y].size(); ++x )
+			for( uint x = 0; x < curr[y].size(); ++x )
 			{
 				const int   index     = curr[y][x];
 				const Point tileIndex = { index % _tileCount.x, index / _tileCount.x };
-				const Point pos       = Point{ x, y } * mapTileSize + _camera;
+				const Point pos       = Point{ (int)x, (int)y } * mapTileSize + _camera;
 				const Rect  srcRect   = toRect( tileIndex * _tileSize, _tileSize );
 				const Rect  dstRect   = toRect( pos, mapTileSize );
 				SDL_RenderCopy( renderer(), _tileSet, &srcRect, &dstRect );
@@ -229,11 +229,11 @@ namespace JanSordid::SDL_Example
 			SDL_SetRenderDrawColor( renderer(), 0, 0, 0, 63 ); // grid color
 			SDL_SetRenderDrawBlendMode( renderer(), SDL_BLENDMODE_BLEND );
 
-			for( int y = 0; y < curr.size(); ++y )
+			for( uint y = 0; y < curr.size(); ++y )
 			{
-				for( int x = 0; x < curr[y].size(); ++x )
+				for( uint x = 0; x < curr[y].size(); ++x )
 				{
-					const Point gridPos  = Point{ x, y } * mapTileSize + _camera;
+					const Point gridPos  = Point{ (int)x, (int)y } * mapTileSize + _camera;
 					const Rect  gridRect = toRect( gridPos, mapTileSize );
 					SDL_RenderDrawRect( renderer(), &gridRect );
 				}

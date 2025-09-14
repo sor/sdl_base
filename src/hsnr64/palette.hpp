@@ -12,7 +12,7 @@ namespace JanSordid::HSNR64
 {
 	using namespace JanSordid::SDL;
 
-	enum class NamedColorIndex : u8 {
+	enum class NamedColor : u8 {
 		Transparent = 0,// In reality this is pink or cyan, but when used as index, the framework will treat it as transparent
 		Black = 1,      // Not totally black
 		Grey10,         // Charcoal,
@@ -39,6 +39,8 @@ namespace JanSordid::HSNR64
 		ForestGreen,
 		DarkForest,
 		Teal = 37,
+
+		// TODO: Continue this named color list when feeling creative
 	};
 
 	// Color[64]
@@ -111,7 +113,7 @@ namespace JanSordid::HSNR64
 		Color{  253,  214,  177, SDL_ALPHA_OPAQUE },
 	};
 
-	constexpr const Color & Palette( NamedColorIndex index )
+	constexpr const Color & Palette( NamedColor index )
 	{
 		Assert((u8)index < 64);
 		return palette[(u8)index];

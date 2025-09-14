@@ -9,28 +9,28 @@ namespace JanSordid::SDL_Example
 	{
 		Base::Init();
 
-		font = TTF_OpenFont( BasePath "asset/font/MonkeyIsland-1991-refined.ttf", _game.scalingFactor() * 16 );
-		TTF_SetFontHinting( font, TTF_HINTING_NONE );
+		_font = TTF_OpenFont( BasePath "asset/font/MonkeyIsland-1991-refined.ttf", _game.scalingFactor() * 16 );
+		TTF_SetFontHinting( _font, TTF_HINTING_NONE );
 
 		Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
 		const Point resolution = windowSize / Scale;
-		plasmaSrf = SDL_CreateRGBSurfaceWithFormat( 0, resolution.x, resolution.y, 32, SDL_PIXELFORMAT_RGBA32 );
+		_plasmaSrf = SDL_CreateRGBSurfaceWithFormat( 0, resolution.x, resolution.y, 32, SDL_PIXELFORMAT_RGBA32 );
 
 		// Set to smoothed rendering for the plasma texture
 		SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "best" );
-		plasmaTex = SDL_CreateTexture( renderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, resolution.x, resolution.y );
+		_plasmaTex = SDL_CreateTexture( renderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, resolution.x, resolution.y );
 		// Reset to "pixelated" for further textures
 		SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "nearest" );
 	}
 
 	void PlasmaState::Destroy()
 	{
-		SDL_FreeSurface( plasmaSrf );
-		SDL_DestroyTexture( plasmaTex );
-		plasmaSrf = nullptr;
-		plasmaTex = nullptr;
+		SDL_FreeSurface( _plasmaSrf );
+		SDL_DestroyTexture( _plasmaTex );
+		_plasmaSrf = nullptr;
+		_plasmaTex = nullptr;
 
 		Base::Destroy();
 	}
@@ -40,7 +40,7 @@ namespace JanSordid::SDL_Example
 		switch( event.type )
 		{
 			case SDL_MOUSEWHEEL:
-				brightness += event.wheel.y * 3;
+				_brightness += event.wheel.y * 3;
 				return true;
 		}
 
@@ -53,11 +53,11 @@ namespace JanSordid::SDL_Example
 		const u8 * key_array = SDL_GetKeyboardState( nullptr );
 		if( key_array[SDL_SCANCODE_DOWN] )
 		{
-			brightness -= 1;
+			_brightness -= 1;
 		}
 		if( key_array[SDL_SCANCODE_UP] ) // Not an else-if, as both buttons can be held at the same time
 		{
-			brightness += 1;
+			_brightness += 1;
 		}
 
 		return false;
@@ -76,14 +76,14 @@ namespace JanSordid::SDL_Example
 		return v;
 	}
 
-	void PlasmaState::Update( const u64 frame, const u64 totalMSec, const f32 deltaT )
+	void PlasmaState::Update( const u64 framesSinceStart, const u64 msSinceStart, const f32 deltaT )
 	{
-		u8 *        px       = (u8 *)plasmaSrf->pixels;
-		const int   pitch    = plasmaSrf->pitch;
-		const int   h        = plasmaSrf->h;
-		const int   w        = plasmaSrf->w;
+		u8 *        px       = (u8 *)_plasmaSrf->pixels;
+		const int   pitch    = _plasmaSrf->pitch;
+		const int   h        = _plasmaSrf->h;
+		const int   w        = _plasmaSrf->w;
 		const float xy_scale = Scale * 0.015f;
-		const float xy_frame = (float)frame * 0.05f;
+		const float xy_frame = (float)framesSinceStart * 0.05f;
 #pragma omp parallel
 #pragma omp for
 		for( int y = 0; y < h; ++y )
@@ -92,21 +92,21 @@ namespace JanSordid::SDL_Example
 			{
 				const f32 v      = plasma( (x - w / 2) * xy_scale, (y - h / 2) * xy_scale, xy_frame );
 				const int offset = x * 4 + y * pitch;
-				px[offset + 0] = std::max<int>( 0, std::min<int>( 255, 4 * brightness * (.5f + .5f * sin( Numbers::pi_v<f32> * v )) + brightness - 64 ) );
-				px[offset + 1] = std::max<int>( 0, std::min<int>( 255, 4 * brightness * (.5f + .5f * cos( Numbers::pi_v<f32> * v )) + brightness - 64 ) );
-				px[offset + 2] = std::max<int>( 0, std::min<int>( 255, 4 * brightness - 255 ) );
+				px[offset + 0] = std::max<int>( 0, std::min<int>( 255, 4 * _brightness * (.5f + .5f * sin( Numbers::pi_v<f32> * v )) + _brightness - 64 ) );
+				px[offset + 1] = std::max<int>( 0, std::min<int>( 255, 4 * _brightness * (.5f + .5f * cos( Numbers::pi_v<f32> * v )) + _brightness - 64 ) );
+				px[offset + 2] = std::max<int>( 0, std::min<int>( 255, 4 * _brightness - 255 ) );
 				px[offset + 3] = 255;
 			}
 		}
 	}
 
-	void PlasmaState::Render( const u64 frame, const u64 totalMSec, const f32 deltaT )
+	void PlasmaState::Render( const u64 framesSinceStart, const u64 msSinceStart, const f32 deltaTNeeded )
 	{
 		// Draw the plasma
 		{
-			SDL_UpdateTexture( plasmaTex, EntireRect, plasmaSrf->pixels, plasmaSrf->pitch );
-			const Rect dst_rect { 0, 0, plasmaSrf->w * Scale, plasmaSrf->h * Scale };
-			SDL_RenderCopy( renderer(), plasmaTex, EntireRect, &dst_rect );
+			SDL_UpdateTexture( _plasmaTex, EntireRect, _plasmaSrf->pixels, _plasmaSrf->pitch );
+			const Rect dst_rect {0, 0, _plasmaSrf->w * Scale, _plasmaSrf->h * Scale };
+			SDL_RenderCopy( renderer(), _plasmaTex, EntireRect, &dst_rect );
 		}
 
 		Point windowSize;
@@ -115,29 +115,27 @@ namespace JanSordid::SDL_Example
 		const int offsetFromLeft = (int)(30 * _game.scalingFactor());
 
 		// Prepare the text as Texture
-		if( blendedText == nullptr )
+		if( _blendedText == nullptr )
 		{
 			constexpr const char * text =
 				"Use mouse-wheel or [DOWN] and [UP] arrow keys\n"
 				"   to change the brightness and colorization\n"
 				"                  of the plasma effect!";
 
-			if( blendedText != nullptr )
-				SDL_DestroyTexture( blendedText );
+			if( _blendedText != nullptr )
+				SDL_DestroyTexture( _blendedText );
 
-			constexpr const Color white = HSNR64::Palette( HSNR64::NamedColorIndex::White );
-			Surface * surf = TTF_RenderUTF8_Blended_Wrapped( font, text, white, windowSize.x - 2 * offsetFromLeft );
-			blendedText = SDL_CreateTextureFromSurface( renderer(), surf );
-			SDL_FreeSurface( surf );
+			Owned<Surface> surf = TTF_RenderUTF8_Blended_Wrapped( _font, text, White, windowSize.x - 2 * offsetFromLeft );
+			_blendedText = SDL_CreateTextureFromSurface( renderer(), surf );
 
-			u32 fmt;
+			u32 format;
 			int access;
-			SDL_QueryTexture( blendedText, &fmt, &access, &blendedTextSize.x, &blendedTextSize.y );
+			SDL_QueryTexture( _blendedText, &format, &access, &_blendedTextSize.x, &_blendedTextSize.y );
 		}
 
 		// Draw the text on top of the plasma effect
 		{
-			const Point p {
+			const Point p = {
 				offsetFromLeft,
 				windowSize.y - (int)(100 * _game.scalingFactor())
 			};
@@ -146,16 +144,16 @@ namespace JanSordid::SDL_Example
 			//const int shadowOffsetFactor = (int)(2.0f*_game.scalingFactor()); // chonky shadow
 
 			// Draw the shadow
-			SDL_SetTextureColorMod( blendedText, 0, 0, 0 );
+			SDL_SetTextureColorMod( _blendedText, 0, 0, 0 );
 			for( const Point & offset : HSNR64::ShadowOffset::Rhombus )
 			{
-				const Rect dst_rect = Rect{ p.x, p.y, blendedTextSize.x, blendedTextSize.y } + (offset * shadowOffsetFactor);
-				SDL_RenderCopy( renderer(), blendedText, EntireRect, &dst_rect );
+				const Rect dstRect = Rect{ p.x, p.y, _blendedTextSize.x, _blendedTextSize.y } + (offset * shadowOffsetFactor);
+				SDL_RenderCopy( renderer(), _blendedText, EntireRect, &dstRect );
 			}
 
-			SDL_SetTextureColorMod( blendedText, 255, 255, 255 );
-			const Rect dst_rect = p + Rect{ 0, 0, blendedTextSize.x, blendedTextSize.y };
-			SDL_RenderCopy( renderer(), blendedText, EntireRect, &dst_rect );
+			SDL_SetTextureColorMod( _blendedText, 255, 255, 255 );
+			const Rect dstRect = p + Rect{ 0, 0, _blendedTextSize.x, _blendedTextSize.y };
+			SDL_RenderCopy( renderer(), _blendedText, EntireRect, &dstRect );
 		}
 	}
 }

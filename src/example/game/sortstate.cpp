@@ -6,9 +6,9 @@ namespace JanSordid::SDL_Example
 	{
 		Base::Init();
 
-		if( !image )
+		if( !_image )
 		{
-			image = IMG_LoadTexture( renderer(), BasePath "asset/graphic/ball.png" );
+			_image = IMG_LoadTexture( renderer(), BasePath "asset/graphic/ball.png" );
 		}
 
 		Point windowSize;
@@ -17,8 +17,8 @@ namespace JanSordid::SDL_Example
 		float iter = 0;
 		const float y_center = (float) windowSize.y / 2.0f;
 
-		balls.resize( 1000 );
-		for( Ball & ball : balls )
+		_balls.resize( 1000 );
+		for( Ball & ball : _balls )
 		{
 			ball = Ball {
 				.x = iter * 40.f,
@@ -32,10 +32,10 @@ namespace JanSordid::SDL_Example
 
 	void SortState::Destroy()
 	{
-		if( image )
+		if( _image )
 		{
-			SDL_DestroyTexture( image );
-			image = nullptr;
+			SDL_DestroyTexture( _image );
+			_image = nullptr;
 		}
 
 		Base::Destroy();
@@ -44,18 +44,18 @@ namespace JanSordid::SDL_Example
 	bool SortState::HandleEvent( const Event & event )
 	{
 		if( event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_F1 && event.key.repeat == 0 )
-			isOrdered = !isOrdered;
+			_isOrdered = !_isOrdered;
 		if( event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_F2 && event.key.repeat == 0 )
-			isDarkened = !isDarkened;
+			_isDarkened = !_isDarkened;
 		if( event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_F3 && event.key.repeat == 0 )
-			isTransparent = !isTransparent;
+			_isTransparent = !_isTransparent;
 
 		return true; // Not really correct
 	}
 
-	void SortState::Update( const u64 frame, const u64 totalMSec, const f32 deltaT )
+	void SortState::Update( const u64 framesSinceStart, const u64 msSinceStart, const f32 deltaT )
 	{
-		for( Ball & ball : balls )
+		for( Ball & ball : _balls )
 		{
 			ball.x -= deltaT * 40.f;
 			ball.z = abs(sin( ball.w ));          // bounce from 0 to 1 (twice each revolution)
@@ -64,27 +64,27 @@ namespace JanSordid::SDL_Example
 		}
 	}
 
-	void SortState::Render( const u64 frame, const u64 totalMSec, const f32 deltaTNeeded )
+	void SortState::Render( const u64 framesSinceStart, const u64 msSinceStart, const f32 deltaTNeeded )
 	{
-		const u8 alpha = isTransparent ? 127 : 255;
-		SDL_SetTextureAlphaMod( image, alpha );
-		SDL_SetTextureColorMod( image, 255, 255, 255 );
+		const u8 alpha = _isTransparent ? 127 : 255;
+		SDL_SetTextureAlphaMod( _image, alpha );
+		SDL_SetTextureColorMod( _image, 255, 255, 255 );
 
 		auto orderByZ = []( Ball & lhs, Ball & rhs )
 		{
 			return lhs.z < rhs.z;
 		};
 
-		if( isOrdered )
-			std::sort( balls.begin(), balls.end(), orderByZ );
+		if( _isOrdered )
+			std::sort( _balls.begin(), _balls.end(), orderByZ );
 
-		for( const Ball & ball : balls )
+		for( const Ball & ball : _balls )
 		{
 			const u8 size = (u8)(ball.z * 80.f + 48.f);
-			if( isDarkened )
-				SDL_SetTextureColorMod( image, size * 2 - 20, size * 2 - 20, size * 2 - 20 );
+			if( _isDarkened )
+				SDL_SetTextureColorMod( _image, size * 2 - 20, size * 2 - 20, size * 2 - 20 );
 			const Rect dst_rect { (int)ball.x - (size / 2), (int)ball.y - (size), size, size };
-			SDL_RenderCopy( renderer(), image, EntireRect, &dst_rect );
+			SDL_RenderCopy( renderer(), _image, EntireRect, &dst_rect );
 		}
 	}
 }

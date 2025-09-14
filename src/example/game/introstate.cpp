@@ -2,6 +2,7 @@
 
 #include <hsnr64/offset.hpp>
 #include <hsnr64/palette.hpp>
+
 //#include <tilefont.h>
 
 namespace JanSordid::SDL_Example
@@ -125,17 +126,18 @@ namespace JanSordid::SDL_Example
 				//game.SetNextState( 1 );
 				break;
 
-			default: break;
+			default:
+				break;
 		}
 
 		return false;
 	}
 
-	void IntroState::Update( const u64 frame, const u64 totalMSec, const f32 deltaT )
+	void IntroState::Update( const u64 framesSinceStart, const u64 msSinceStart, const f32 deltaT )
 	{
 	}
 
-	void IntroState::Render( const u64 frame, const u64 totalMSec, const f32 deltaTNeeded )
+	void IntroState::Render( const u64 framesSinceStart, const u64 msSinceStart, const f32 deltaTNeeded )
 	{
 		Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
@@ -174,8 +176,8 @@ namespace JanSordid::SDL_Example
 				"\ninjektion! enjoy major Heij project Stobject farbe kd aes real tw";
 
 			const Color outlineColor = _isDarkOutline
-				? Color {   0,   0,   0, SDL_ALPHA_OPAQUE }
-				: Color { 255, 255, 255, SDL_ALPHA_OPAQUE };
+				? Black
+				: White;
 
 			// Draw the text on top
 			// _textmode == 0 is True Type (currently cached)
@@ -188,9 +190,8 @@ namespace JanSordid::SDL_Example
 					if( _blendedText != nullptr )
 						SDL_DestroyTexture( _blendedText );
 
-					Surface * surf = TTF_RenderUTF8_Blended_Wrapped( _font, text, white, windowSize.x - 2 * _p.x );
+					Owned<Surface> surf = TTF_RenderUTF8_Blended_Wrapped( _font, text, White, windowSize.x - 2 * _textStartPoint.x );
 					_blendedText = SDL_CreateTextureFromSurface( renderer(), surf );
-					SDL_FreeSurface( surf );
 
 					u32 fmt;
 					int access;
@@ -201,17 +202,18 @@ namespace JanSordid::SDL_Example
 
 				for( const Point & offset : HSNR64::ShadowOffset::Rhombus )
 				{
-					const Rect dst_rect = Rect {_p.x, _p.y, _blendedTextSize.x, _blendedTextSize.y } + offset;
+					const Rect dst_rect = Rect{ _textStartPoint.x, _textStartPoint.y, _blendedTextSize.x, _blendedTextSize.y } + offset;
 					SDL_RenderCopy( renderer(), _blendedText, EntireRect, &dst_rect );
 				}
 
 				const Color & color = HSNR64::Palette( _colorIndex );
 				SDL_SetTextureColorMod( _blendedText, color.r, color.g, color.b );
-				const Rect dst_rect = { _p.x, _p.y, _blendedTextSize.x, _blendedTextSize.y };
+				const Rect dst_rect = { _textStartPoint.x, _textStartPoint.y, _blendedTextSize.x, _blendedTextSize.y };
 				SDL_RenderCopy( renderer(), _blendedText, EntireRect, &dst_rect );
 			}
 			else
 			{
+				// TODO: Prepare to check this in, there is still unmigrated stuff in sdl_basegame :(
 				/*
 				TileFont::TF_Init( renderer() );
 
@@ -241,7 +243,7 @@ namespace JanSordid::SDL_Example
 		if( frame == 0 ) // Do not focus this new window
 			ImGui::SetWindowFocus( nullptr );
 
-		if( ImGui::SliderInt( "int", &_p.x, 0, windowSize.x/2 ) && autoUpdate )
+		if( ImGui::SliderInt( "int", &_textStartPoint.x, 0, windowSize.x / 2 ) && autoUpdate )
 			_blendedText = nullptr;
 
 		ImGui::Checkbox( "Auto-Redraw", &autoUpdate );
@@ -279,7 +281,7 @@ namespace JanSordid::SDL_Example
 			? withNumber
 			: withoutNumber;
 
-		auto needsLinebreak =[]( int i )
+		auto needsLinebreak = []( int i )
 		{
 			return i == 10 || i == 25 || i == 40 || i == 52;
 		};
@@ -305,45 +307,56 @@ namespace JanSordid::SDL_Example
 		ImGui::PopStyleVar();
 		ImGui::PopID();
 
-		if( ImGui::Button( "Open" ) )
+		if( ImGui::Button( "Open" ) ) [[unlikely]]
 		{
-			NFD::Window     nw = nativeWindow();
-			NFD::UniquePath path;
-			const NFD::Result result = NFD::OpenDialog( path, NFD::EmptyFilter, 0, NFD::EmptyDefaultPath, nw );    // Freezes execution of the Game
+			NFD::Window       nw = nativeWindow();
+			NFD::UniquePath   path;
+			const NFD::Result result = NFD::OpenDialog( path, NFD::EmptyFilter, 0, NFD::EmptyPath, nw );    // Freezes execution of the Game
 
 			if( result == NFD::Result::NFD_OKAY )
 				print( "Success! Path is {0}\n", path.get() );
 		}
+
 		ImGui::SameLine();
-		if( ImGui::Button( "OpenMultiple" ) )
+		if( ImGui::Button( "OpenMultiple" ) ) [[unlikely]]
 		{
 			NFD::Window        nw = nativeWindow();
 			NFD::UniquePathSet paths;
-			const NFD::Result  result = NFD::OpenDialogMultiple( paths, NFD::EmptyFilter, 0, NFD::EmptyDefaultPath, nw );     // Freezes execution of the Game
+			const NFD::Result  result = NFD::OpenDialogMultiple( paths, NFD::EmptyFilter, 0, NFD::EmptyPath, nw );     // Freezes execution of the Game
 
-			// TODO
-			//if( result == NFD_OKAY )
-			//	print( "Success! Path is {0}\n", fmt::join( paths.get(), ", " ) );
+			if( result == NFD::Result::NFD_OKAY ) {
+				nfdpathsetsize_t count;
+				if( NFD::PathSet::Count( paths, count ) == NFD::Result::NFD_OKAY ) {
+					for( uint i = 0; i < count ; ++i ) {
+						NFD::UniquePathSetPath path;
+						if( NFD::PathSet::GetPath( paths, i, path ) == NFD::Result::NFD_OKAY ) {
+							print( "Success! Paths are {0}\n", path.get() );
+						}
+					}
+				}
+			}
 		}
+
 		ImGui::SameLine();
-		if( ImGui::Button( "Save" ) )
+		if( ImGui::Button( "Save" ) ) [[unlikely]]
 		{
-			NFD::Window     nw = nativeWindow();
-			NFD::UniquePath path;
-			const NFD::Result result = NFD::SaveDialog( path, NFD::EmptyFilter, 0, NFD::EmptyDefaultPath, NFD::EmptyDefaultName, nw ); // Freezes execution of the Game
+			NFD::Window       nw = nativeWindow();
+			NFD::UniquePath   path;
+			const NFD::Result result = NFD::SaveDialog( path, NFD::EmptyFilter, 0, NFD::EmptyPath, NFD::EmptyName, nw ); // Freezes execution of the Game
 			//	const NFD::Result result = NFD::SaveDialog();   // The same as above
 
 			if( result == NFD::Result::NFD_OKAY )
 				print( "Success! Path is {0}\n", path.get() );
 		}
-		ImGui::SameLine();
-		if( ImGui::Button( "PickFolder" ) )
-		{
-			NFD::Window     nw = nativeWindow();
-			NFD::UniquePath path;
-			const NFD::Result result = NFD::PickFolder( path, NFD::EmptyDefaultPath, nw );     // Freezes execution of the Game
 
-			if( result == NFD_OKAY )
+		ImGui::SameLine();
+		if( ImGui::Button( "PickFolder" ) ) [[unlikely]]
+		{
+			NFD::Window       nw = nativeWindow();
+			NFD::UniquePath   path;
+			const NFD::Result result = NFD::PickFolder( path, NFD::EmptyPath, nw );     // Freezes execution of the Game
+
+			if( result == NFD::Result::NFD_OKAY )
 				print( "Success! Path is {0}\n", path.get() );
 		}
 

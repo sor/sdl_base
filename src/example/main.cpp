@@ -1,5 +1,9 @@
 #include "global.hpp"
 
+#include "sor/adapt_sdl_nfd.hpp"
+
+// HACK: Not part of any target
+
 int main()
 {
 	using namespace JanSordid::SDL;

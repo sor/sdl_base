@@ -1,14 +1,11 @@
 #pragma once
 
-//#define NFD_NATIVE 1
-
-// Activate this line to be able to put the executable in the root folder
-//#define DEPLOY
-
 #include <cmath>
 #include <cstdarg>
 #include <cstddef>
 #include <cassert>
+
+#include <version>
 
 #include <algorithm>
 #include <chrono>
@@ -22,16 +19,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#if defined( __cpp_lib_format ) && defined( __cpp_lib_print )
-	#include <format>
-	#include <print>
-#else
-	#include <fmt/core.h>   // https://fmt.dev/latest/index.html
-#endif
+#include "adapt_std.hpp"
 
-#include <nlohmann/json.hpp>
-
-#include <nfd.hpp>
 
 #ifdef DEPLOY_BINARY
 	#define BasePath ""
@@ -39,9 +28,30 @@
 	#define BasePath "../../../"
 #endif
 
+#define BasePathAsset BasePath "asset/"
+
+/*
+ * Ask how could the macro be extended to add the msg if none given
+ * by stringifying the cond, or having the ability to receive a handwritten msg
+template<typename T>
+constexpr void MyAssert( T condition, const char * msg) {
+    if (std::is_constant_evaluated()) {
+        if( !condition )
+            throw msg;
+    } else {
+        assert( condition && msg );
+    }
+}
+*/
+
+#define assertCE(expr)                                                         \
+	(std::is_constant_evaluated() && !static_cast<bool>(expr)                  \
+		? throw std::logic_error( "Assertion failed in constant expression!" ) \
+		: assert(expr))
+
 #if defined( _DEBUG )
-	#define Assert(            ... ) assert( __VA_ARGS__ )
-	#define AssertInOptimized( ... ) assert( __VA_ARGS__ )
+	#define Assert(            ... ) assertCE( __VA_ARGS__ )
+	#define AssertInOptimized( ... ) assertCE( __VA_ARGS__ )
 	#define DebugOnly(         ... ) __VA_ARGS__
 	#define OptimizedOnly(     ... )
 	#define FinalOnly(         ... )
@@ -50,8 +60,8 @@
 	#define IfFinal     if constexpr( false )
 	#define IfNotFinal  if constexpr( true  )
 #elif defined( OPTIMIZED )
-	#define Assert(            ... )
-	#define AssertInOptimized( ... ) assert( __VA_ARGS__ )
+	#define Assert(            ... ) do{ (void)sizeof((__VA_ARGS__)); } while( 0 )
+	#define AssertInOptimized( ... ) assertCE( __VA_ARGS__ )
 	#define DebugOnly(         ... )
 	#define OptimizedOnly(     ... ) __VA_ARGS__
 	#define FinalOnly(         ... )
@@ -60,8 +70,8 @@
 	#define IfFinal     if constexpr( false )
 	#define IfNotFinal  if constexpr( true  )
 #elif defined( FINAL )
-	#define Assert(            ... )
-	#define AssertInOptimized( ... )
+	#define Assert(            ... ) do{ (void)sizeof((__VA_ARGS__)); } while( 0 )
+	#define AssertInOptimized( ... ) do{ (void)sizeof((__VA_ARGS__)); } while( 0 )
 	#define DebugOnly(         ... )
 	// Final also counts as an Optimized build, therefore the OptimizedOnly define is active
 	#define OptimizedOnly(     ... ) __VA_ARGS__
@@ -74,33 +84,6 @@
 	#error Unknown build configuration
 #endif
 
-
-/// Polyfills for disabled functionality
-
-#if ! __cpp_rtti
-	// If -fno-rtti, try replacing dynamic_cast with static_cast
-	// If this works, then the original code should probably be changed
-	#define dynamic_cast static_cast
-#endif
-
-#if ! __cpp_exceptions
-	// If -fno-exceptions, transform error handling code to work without it.
-	#define try      if constexpr( true )
-	#define catch(X) if constexpr( false )
-	#define throw    /* HACK: Come up with a solution for throw */
-#endif
-
-using JSON = nlohmann::json;
-
-// Monkey-patching NFD
-namespace NFD
-{
-	constexpr const nfdfilteritem_t * EmptyFilter      = nullptr;
-	constexpr const nfdchar_t       * EmptyDefaultPath = nullptr;
-	constexpr const nfdchar_t       * EmptyDefaultName = nullptr;
-
-	using Result = nfdresult_t;
-}
 
 namespace JanSordid::Core
 {
@@ -147,24 +130,16 @@ namespace JanSordid::Core
 	using std::make_shared;
 
 	// Templates
-	template<typename T, std::size_t Size>                       using Array     = std::array<T, Size>;
-	template<typename T>                                         using DynArray  = std::vector<T>;
-	template<typename T>                                         using Vector    = std::vector<T>;
-	template<typename T>                                         using HashSet   = std::unordered_set<T>;
-	template<typename TKey, typename TValue>                     using HashMap   = std::unordered_map<TKey,TValue>;
+	template<typename T, usize Size>            using Array     = std::array<T, Size>;
+	template<typename T>                        using DynArray  = std::vector<T>;
+	template<typename T>                        using Vector    = std::vector<T>;
+	template<typename T>                        using HashSet   = std::unordered_set<T>;
+	template<typename TKey, typename TValue>    using HashMap   = std::unordered_map<TKey,TValue>;
 
-	template<typename T>                                         using RawPtr    = T*;
-
-	template<typename T, typename TDel = std::default_delete<T>> using UniquePtr = std::unique_ptr<T,TDel>;
-	template<typename T>                                         using SharedPtr = std::shared_ptr<T>;
-	template<typename T>                                         using WeakPtr   = std::weak_ptr<T>;
-
-	// String formatting
-#if defined( __cpp_lib_format ) && defined( __cpp_lib_print )
-	using std::print, std::println, std::format, std::format_string;
-#else
-	using fmt::print, fmt::println, fmt::format, fmt::format_string;
-#endif
+	template<typename T>                                           using RawPtr    = T*;
+	template<typename T, typename TDel = std::default_delete<T>>   using UniquePtr = std::unique_ptr<T,TDel>;
+	template<typename T>                                           using SharedPtr = std::shared_ptr<T>;
+	template<typename T>                                           using WeakPtr   = std::weak_ptr<T>;
 
 	namespace ChronoLiterals { using namespace std::chrono_literals; }
 	namespace Numbers        { using namespace std::numbers;         }
@@ -172,7 +147,7 @@ namespace JanSordid::Core
 	template <typename... T>
 	inline void print_once( format_string<T...> fmt, T && ... args )
 	{
-		static std::unordered_set<String> all;
+		static HashSet<String> all;
 		const String msg = format( fmt, forward<T>( args )... );
 		if( all.find( msg ) == all.end() )
 		{
@@ -181,5 +156,3 @@ namespace JanSordid::Core
 		}
 	}
 }
-
-#include <nfd.hpp>

@@ -3,6 +3,9 @@
 #include "sdl_core.hpp"
 #include "sdl_smartptr.hpp"
 
+#include "adapt_sdl_nfd.hpp"
+#include "adapt_sdl_imgui.hpp"
+
 namespace JanSordid::SDL
 {
 	class IGameState;
