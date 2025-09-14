@@ -70,6 +70,6 @@ namespace JanSordid::SDL_Example
 		void Update( u64 framesSinceStart, u64 msSinceStart, f32 deltaT ) override;
 		void Render( u64 framesSinceStart, u64 msSinceStart, f32 deltaTNeeded ) override;
 
-``		constexpr Color clearColor() const noexcept override { return HSNR64::Palette( HSNR64::NamedColor::Grey40 ); }
+		constexpr Color clearColor() const noexcept override { return HSNR64::Palette( HSNR64::NamedColor::Grey40 ); }
 	};
 }

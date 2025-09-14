@@ -98,7 +98,7 @@ namespace JanSordid::SDL_Example
 					if( mousePos.x < _tileSetSize.x * _paletteScale
 					 && mousePos.y < _tileSetSize.y * _paletteScale )
 					{
-`						// Pick
+						// Pick
 						const Point p = mousePos / (_tileSize * _paletteScale);
 						_pickedIdx = p;
 					}
