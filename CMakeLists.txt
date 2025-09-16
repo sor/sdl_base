@@ -39,17 +39,17 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 #set( SDL2MIXER_MOD              OFF )
 #set( SDL2MIXER_WAVPACK          OFF )
 
-find_package( SDL2          CONFIG REQUIRED )
-find_package( SDL2_ttf      CONFIG REQUIRED )
-find_package( SDL2_mixer    CONFIG REQUIRED )
-find_package( SDL2_image    CONFIG REQUIRED )
-find_package( SDL2_net      CONFIG REQUIRED )
+find_package( SDL3          CONFIG REQUIRED )
+find_package( SDL3_image    CONFIG REQUIRED )
+find_package( SDL3_ttf      CONFIG REQUIRED )
+find_package( SDL3_mixer    CONFIG REQUIRED )
+#find_package( SDL2_net      CONFIG REQUIRED ) # There is no SDL3_net yet...
 find_package( fmt           CONFIG REQUIRED )
 find_package( nfd           CONFIG REQUIRED )
 find_package( benchmark     CONFIG REQUIRED )
 find_package( Eigen3        CONFIG REQUIRED )
 find_package( nlohmann_json CONFIG REQUIRED )
-if( USE_ImGUI )
+if( USE_ImGui )
     find_package( imgui     CONFIG REQUIRED )
 endif()
 if( USE_OpenMP )
@@ -186,15 +186,34 @@ target_link_libraries(      sor-pong PUBLIC
 
         $<IF:$<BOOL:${USE_FMT_HeaderOnly}>, fmt::fmt-header-only, fmt::fmt>
 
-        $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+        $<TARGET_NAME_IF_EXISTS:SDL3::SDL3main>
 
-        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,               SDL2::SDL2,             SDL2::SDL2-static>
-        $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,   SDL2_image::SDL2_image, SDL2_image::SDL2_image-static>
+        $<IF:$<TARGET_EXISTS:SDL3::SDL3>,               SDL3::SDL3,             SDL3::SDL3-static>
+        $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image>,   SDL3_image::SDL3_image, SDL3_image::SDL3_image-static>
 )
+
+
+add_executable( sor-smartptr
+        src/sor/core.cpp
+        src/sor/sdl_core.cpp
+
+        src/example/smartptrtest.cpp
+)
+target_include_directories( sor-smartptr PUBLIC src/ )
+target_link_libraries(      sor-smartptr PUBLIC
+
+        $<IF:$<BOOL:${USE_FMT_HeaderOnly}>, fmt::fmt-header-only, fmt::fmt>
+        $<TARGET_NAME_IF_EXISTS:nfd::nfd>
+
+        $<TARGET_NAME_IF_EXISTS:SDL3::SDL3main>
+
+        $<IF:$<TARGET_EXISTS:SDL3::SDL3>,               SDL3::SDL3,             SDL3::SDL3-static>
+        $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image>,   SDL3_image::SDL3_image, SDL3_image::SDL3_image-static>
+)
+
 
 add_executable( sor-mini
         src/sor/core.cpp
-        src/sor/adapt_sdl_nfd.cpp
         src/sor/sdl_core.cpp
         src/sor/sdl_game.cpp
 
@@ -208,20 +227,19 @@ target_link_libraries(      sor-mini PUBLIC
         $<IF:$<BOOL:${USE_FMT_HeaderOnly}>, fmt::fmt-header-only, fmt::fmt>
         $<TARGET_NAME_IF_EXISTS:nfd::nfd>
 
-        $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+        $<TARGET_NAME_IF_EXISTS:SDL3::SDL3main>
 
-        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,               SDL2::SDL2,             SDL2::SDL2-static>
-        $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,       SDL2_ttf::SDL2_ttf,     SDL2_ttf::SDL2_ttf-static>
-        $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,   SDL2_mixer::SDL2_mixer, SDL2_mixer::SDL2_mixer-static>
-        $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,   SDL2_image::SDL2_image, SDL2_image::SDL2_image-static>
-        $<IF:$<TARGET_EXISTS:SDL2_net::SDL2_net>,       SDL2_net::SDL2_net,     SDL2_net::SDL2_net-static>
+        $<IF:$<TARGET_EXISTS:SDL3::SDL3>,               SDL3::SDL3,             SDL3::SDL3-static>
+        $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image>,   SDL3_image::SDL3_image, SDL3_image::SDL3_image-static>
+        $<IF:$<TARGET_EXISTS:SDL3_ttf::SDL3_ttf>,       SDL3_ttf::SDL3_ttf,     SDL3_ttf::SDL3_ttf-static>
+        $<IF:$<TARGET_EXISTS:SDL3_mixer::SDL3_mixer>,   SDL3_mixer::SDL3_mixer, SDL3_mixer::SDL3_mixer-static>
+        #$<IF:$<TARGET_EXISTS:SDL2_net::SDL2_net>,       SDL2_net::SDL2_net,     SDL2_net::SDL2_net-static>
 
         $<TARGET_NAME_IF_EXISTS:imgui::imgui>
 )
 
 add_executable( sor-example
         src/sor/core.cpp
-        src/sor/adapt_sdl_nfd.cpp
         src/sor/sdl_core.cpp
         src/sor/sdl_game.cpp
 
@@ -236,8 +254,7 @@ add_executable( sor-example
         src/example/game/roflstate.cpp
 )
 target_include_directories( sor-example PUBLIC src/ )
-target_link_libraries(      sor-example
-    PUBLIC
+target_link_libraries(      sor-example PUBLIC
 
         $<IF:$<BOOL:${USE_FMT_HeaderOnly}>, fmt::fmt-header-only, fmt::fmt>
 
@@ -247,13 +264,13 @@ target_link_libraries(      sor-example
         #$<TARGET_NAME_IF_EXISTS:benchmark::benchmark>
         #$<TARGET_NAME_IF_EXISTS:benchmark::benchmark_main>
 
-        $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+        $<TARGET_NAME_IF_EXISTS:SDL3::SDL3main>
 
-        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,               SDL2::SDL2,             SDL2::SDL2-static>
-        $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,       SDL2_ttf::SDL2_ttf,     SDL2_ttf::SDL2_ttf-static>
-        $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,   SDL2_mixer::SDL2_mixer, SDL2_mixer::SDL2_mixer-static>
-        $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,   SDL2_image::SDL2_image, SDL2_image::SDL2_image-static>
-        $<IF:$<TARGET_EXISTS:SDL2_net::SDL2_net>,       SDL2_net::SDL2_net,     SDL2_net::SDL2_net-static>
+        $<IF:$<TARGET_EXISTS:SDL3::SDL3>,               SDL3::SDL3,             SDL3::SDL3-static>
+        $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image>,   SDL3_image::SDL3_image, SDL3_image::SDL3_image-static>
+        $<IF:$<TARGET_EXISTS:SDL3_ttf::SDL3_ttf>,       SDL3_ttf::SDL3_ttf,     SDL3_ttf::SDL3_ttf-static>
+        $<IF:$<TARGET_EXISTS:SDL3_mixer::SDL3_mixer>,   SDL3_mixer::SDL3_mixer, SDL3_mixer::SDL3_mixer-static>
+        #$<IF:$<TARGET_EXISTS:SDL2_net::SDL2_net>,       SDL2_net::SDL2_net,     SDL2_net::SDL2_net-static>
 
         $<TARGET_NAME_IF_EXISTS:imgui::imgui>
 

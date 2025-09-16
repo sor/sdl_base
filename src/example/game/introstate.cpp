@@ -16,28 +16,28 @@ namespace JanSordid::SDL_Example
 			_font = TTF_OpenFont( BasePath "asset/font/RobotoSlab-Bold.ttf", (int)(10.0f * _game.scalingFactor()) );
 			TTF_SetFontHinting( _font, TTF_HINTING_LIGHT );
 			if( !_font )
-				print( stderr, "TTF_OpenFont failed: {}\n", TTF_GetError() );
+				print( stderr, "TTF_OpenFont failed: {}\n", SDL_GetError() );
 		}
 
 		if( !_image )
 		{
 			_image = IMG_LoadTexture( renderer(), BasePath "asset/graphic/background.png" );
 			if( !_image )
-				print( stderr, "IMG_LoadTexture failed: {}\n", IMG_GetError() );
+				print( stderr, "IMG_LoadTexture failed: {}\n", SDL_GetError() );
 		}
 
 		if( !_music )
 		{
 			_music = Mix_LoadMUS( BasePath "asset/music/severance.ogg" );
 			if( !_music )
-				print( stderr, "Mix_LoadMUS failed: {}\n", Mix_GetError() );
+				print( stderr, "Mix_LoadMUS failed: {}\n", SDL_GetError() );
 		}
 
 		if( !_sound )
 		{
 			_sound = Mix_LoadWAV( BasePath "asset/sound/pew.wav" );
 			if( !_sound )
-				print( stderr, "Mix_LoadWAV failed: {}\n", Mix_GetError() );
+				print( stderr, "Mix_LoadWAV failed: {}\n", SDL_GetError() );
 		}
 	}
 
@@ -77,38 +77,38 @@ namespace JanSordid::SDL_Example
 	{
 		switch( event.type )
 		{
-			case SDL_KEYDOWN:
+			case SDL_EVENT_KEY_DOWN:
 			{
-				const Keysym & what_key = event.key.keysym;
+				const auto & key = event.key;
 
-				if( what_key.scancode == SDL_SCANCODE_F1 && event.key.repeat == 0 )
+				if( key.scancode == SDL_SCANCODE_F1 && event.key.repeat == 0 )
 				{
 					if( Mix_PausedMusic() )
 						Mix_ResumeMusic();
 					else
 						Mix_PauseMusic();
 				}
-				else if( what_key.scancode == SDL_SCANCODE_F2 && event.key.repeat == 0 )
+				else if( key.scancode == SDL_SCANCODE_F2 && event.key.repeat == 0 )
 				{
 					if( Mix_VolumeMusic( -1 ) == MIX_MAX_VOLUME )
 						Mix_VolumeMusic( 0 );
 					else
 						Mix_VolumeMusic( MIX_MAX_VOLUME );
 				}
-				else if( what_key.scancode == SDL_SCANCODE_F3 && event.key.repeat == 0 )
+				else if( key.scancode == SDL_SCANCODE_F3 && event.key.repeat == 0 )
 				{
 					Mix_PlayChannel( -1, _sound, 0 );
 				}
-				else if( what_key.scancode == SDL_SCANCODE_F4 && event.key.repeat == 0 )
+				else if( key.scancode == SDL_SCANCODE_F4 && event.key.repeat == 0 )
 				{
 					_textmode = (_textmode + 1) % 2;
 				}
-				else if( what_key.scancode == SDL_SCANCODE_F9 )
+				else if( key.scancode == SDL_SCANCODE_F9 )
 				{
 					// crash/shutdown, since State #6 does not exist
 					_game.ReplaceState( MyGS::Invalid );
 				}
-				else if( what_key.scancode == SDL_SCANCODE_ESCAPE )
+				else if( key.scancode == SDL_SCANCODE_ESCAPE )
 				{
 					_game.ReplaceState( MyGS::Intro );
 				}
@@ -122,7 +122,7 @@ namespace JanSordid::SDL_Example
 				break;
 			}
 
-			case SDL_MOUSEBUTTONDOWN:
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 				//game.SetNextState( 1 );
 				break;
 
@@ -143,8 +143,8 @@ namespace JanSordid::SDL_Example
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
 		{
-			const Rect dst_rect = { 0, 0, windowSize.x, windowSize.y };
-			SDL_RenderCopy( renderer(), _image, EntireRect, &dst_rect /* same result as EntireRect */ );
+			const FRect dst_rect = { 0, 0, (f32)windowSize.x, (f32)windowSize.y };
+			SDL_RenderTexture( renderer(), _image, EntireFRect, &dst_rect /* same result as EntireRect */ );
 		}
 
 		// Poor persons benchmark
@@ -190,26 +190,25 @@ namespace JanSordid::SDL_Example
 					if( _blendedText != nullptr )
 						SDL_DestroyTexture( _blendedText );
 
-					Owned<Surface> surf = TTF_RenderUTF8_Blended_Wrapped( _font, text, White, windowSize.x - 2 * _textStartPoint.x );
+					Owned<Surface> surf = TTF_RenderText_Blended_Wrapped( _font, text, 0, White, windowSize.x - 2 * _textStartPoint.x );
 					_blendedText = SDL_CreateTextureFromSurface( renderer(), surf );
 
-					u32 fmt;
-					int access;
-					SDL_QueryTexture( _blendedText, &fmt, &access, &_blendedTextSize.x, &_blendedTextSize.y );
+					SDL_GetTextureSize( _blendedText, &_blendedTextSize.x, &_blendedTextSize.y );
+
 				}
 
 				SDL_SetTextureColorMod( _blendedText, outlineColor.r, outlineColor.g, outlineColor.b );
 
 				for( const Point & offset : HSNR64::ShadowOffset::Rhombus )
 				{
-					const Rect dst_rect = Rect{ _textStartPoint.x, _textStartPoint.y, _blendedTextSize.x, _blendedTextSize.y } + offset;
-					SDL_RenderCopy( renderer(), _blendedText, EntireRect, &dst_rect );
+					const FRect dst_rect = FRect{ _textStartPoint.x, _textStartPoint.y, _blendedTextSize.x, _blendedTextSize.y } + toF( offset );
+					SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dst_rect );
 				}
 
 				const Color & color = HSNR64::Palette( _colorIndex );
 				SDL_SetTextureColorMod( _blendedText, color.r, color.g, color.b );
-				const Rect dst_rect = { _textStartPoint.x, _textStartPoint.y, _blendedTextSize.x, _blendedTextSize.y };
-				SDL_RenderCopy( renderer(), _blendedText, EntireRect, &dst_rect );
+				const FRect dst_rect = { _textStartPoint.x, _textStartPoint.y, _blendedTextSize.x, _blendedTextSize.y };
+				SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dst_rect );
 			}
 			else
 			{
@@ -243,7 +242,7 @@ namespace JanSordid::SDL_Example
 		if( frame == 0 ) // Do not focus this new window
 			ImGui::SetWindowFocus( nullptr );
 
-		if( ImGui::SliderInt( "int", &_textStartPoint.x, 0, windowSize.x / 2 ) && autoUpdate )
+		if( ImGui::SliderFloat( "int", &_textStartPoint.x, 0, windowSize.x / 2 ) && autoUpdate )
 			_blendedText = nullptr;
 
 		ImGui::Checkbox( "Auto-Redraw", &autoUpdate );
@@ -309,9 +308,8 @@ namespace JanSordid::SDL_Example
 
 		if( ImGui::Button( "Open" ) ) [[unlikely]]
 		{
-			NFD::Window       nw = nativeWindow();
 			NFD::UniquePath   path;
-			const NFD::Result result = NFD::OpenDialog( path, NFD::EmptyFilter, 0, NFD::EmptyPath, nw );    // Freezes execution of the Game
+			const NFD::Result result = NFD::OpenDialog( path, NFD::EmptyFilter, 0, NFD::EmptyPath );    // Freezes execution of the Game
 
 			if( result == NFD::Result::NFD_OKAY )
 				print( "Success! Path is {0}\n", path.get() );
@@ -320,9 +318,8 @@ namespace JanSordid::SDL_Example
 		ImGui::SameLine();
 		if( ImGui::Button( "OpenMultiple" ) ) [[unlikely]]
 		{
-			NFD::Window        nw = nativeWindow();
 			NFD::UniquePathSet paths;
-			const NFD::Result  result = NFD::OpenDialogMultiple( paths, NFD::EmptyFilter, 0, NFD::EmptyPath, nw );     // Freezes execution of the Game
+			const NFD::Result  result = NFD::OpenDialogMultiple( paths, NFD::EmptyFilter, 0, NFD::EmptyPath );     // Freezes execution of the Game
 
 			if( result == NFD::Result::NFD_OKAY ) {
 				nfdpathsetsize_t count;
@@ -340,9 +337,8 @@ namespace JanSordid::SDL_Example
 		ImGui::SameLine();
 		if( ImGui::Button( "Save" ) ) [[unlikely]]
 		{
-			NFD::Window       nw = nativeWindow();
 			NFD::UniquePath   path;
-			const NFD::Result result = NFD::SaveDialog( path, NFD::EmptyFilter, 0, NFD::EmptyPath, NFD::EmptyName, nw ); // Freezes execution of the Game
+			const NFD::Result result = NFD::SaveDialog( path, NFD::EmptyFilter, 0, NFD::EmptyPath, NFD::EmptyName ); // Freezes execution of the Game
 			//	const NFD::Result result = NFD::SaveDialog();   // The same as above
 
 			if( result == NFD::Result::NFD_OKAY )
@@ -352,9 +348,8 @@ namespace JanSordid::SDL_Example
 		ImGui::SameLine();
 		if( ImGui::Button( "PickFolder" ) ) [[unlikely]]
 		{
-			NFD::Window       nw = nativeWindow();
 			NFD::UniquePath   path;
-			const NFD::Result result = NFD::PickFolder( path, NFD::EmptyPath, nw );     // Freezes execution of the Game
+			const NFD::Result result = NFD::PickFolder( path, NFD::EmptyPath );     // Freezes execution of the Game
 
 			if( result == NFD::Result::NFD_OKAY )
 				print( "Success! Path is {0}\n", path.get() );

@@ -1,7 +1,7 @@
 {
   "default-registry": {
     "kind": "git",
-    "baseline": "6784dd45fa9a97ce6232f57d755e029b4db3eb81",
+    "baseline": "51f0bc2c8209b3f724bae745cfcc162e9760b08c",
     "repository": "https://github.com/microsoft/vcpkg"
   },
   "registries": [
@@ -9,6 +9,13 @@
       "kind": "artifact",
       "location": "https://github.com/microsoft/vcpkg-ce-catalog/archive/refs/heads/main.zip",
       "name": "microsoft"
+    },
+    {
+      "kind": "git",
+      "repository": "https://github.com/sor/vcpkg",
+      "reference": "sdl3-mixer",
+      "baseline": "1cdfaa8ace7094bbcbe4df0c36852ab7db1e9d85",
+      "packages": [ "sdl3-mixer" ]
     }
   ]
 }

@@ -9,9 +9,7 @@
 #include "sor/sdl_core.hpp"
 #include "sor/sdl_shapeops.hpp"
 #include "sor/sdl_math.hpp"
-//#include "sor/sdl_game.hpp"
 
 #include "sor/adapt_sdl_imgui.hpp"
-#include "sor/adapt_sdl_nfd.hpp"
 
 using namespace JanSordid::Core;

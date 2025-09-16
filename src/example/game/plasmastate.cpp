@@ -16,18 +16,16 @@ namespace JanSordid::SDL_Example
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
 		const Point resolution = windowSize / Scale;
-		_plasmaSrf = SDL_CreateRGBSurfaceWithFormat( 0, resolution.x, resolution.y, 32, SDL_PIXELFORMAT_RGBA32 );
+		_plasmaSrf = SDL_CreateSurface( resolution.x, resolution.y, SDL_PIXELFORMAT_RGBA32 );
 
-		// Set to smoothed rendering for the plasma texture
-		SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "best" );
 		_plasmaTex = SDL_CreateTexture( renderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, resolution.x, resolution.y );
-		// Reset to "pixelated" for further textures
-		SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "nearest" );
+		// Set to smoothed rendering for the plasma texture
+		SDL_SetTextureScaleMode( _plasmaTex, SDL_SCALEMODE_LINEAR );
 	}
 
 	void PlasmaState::Destroy()
 	{
-		SDL_FreeSurface( _plasmaSrf );
+		SDL_DestroySurface( _plasmaSrf );
 		SDL_DestroyTexture( _plasmaTex );
 		_plasmaSrf = nullptr;
 		_plasmaTex = nullptr;
@@ -39,7 +37,7 @@ namespace JanSordid::SDL_Example
 	{
 		switch( event.type )
 		{
-			case SDL_MOUSEWHEEL:
+			case SDL_EVENT_MOUSE_WHEEL:
 				_brightness += event.wheel.y * 3;
 				return true;
 		}
@@ -50,7 +48,7 @@ namespace JanSordid::SDL_Example
 	bool PlasmaState::Input()
 	{
 		// Is not supressed during ImGui input
-		const u8 * key_array = SDL_GetKeyboardState( nullptr );
+		const bool * key_array = SDL_GetKeyboardState( nullptr );
 		if( key_array[SDL_SCANCODE_DOWN] )
 		{
 			_brightness -= 1;
@@ -105,14 +103,14 @@ namespace JanSordid::SDL_Example
 		// Draw the plasma
 		{
 			SDL_UpdateTexture( _plasmaTex, EntireRect, _plasmaSrf->pixels, _plasmaSrf->pitch );
-			const Rect dst_rect {0, 0, _plasmaSrf->w * Scale, _plasmaSrf->h * Scale };
-			SDL_RenderCopy( renderer(), _plasmaTex, EntireRect, &dst_rect );
+			const FRect dst_rect { 0, 0, (f32)_plasmaSrf->w * Scale, (f32)_plasmaSrf->h * Scale };
+			SDL_RenderTexture( renderer(), _plasmaTex, EntireFRect, &dst_rect );
 		}
 
 		Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
-		const int offsetFromLeft = (int)(30 * _game.scalingFactor());
+		const f32 offsetFromLeft = (30 * _game.scalingFactor());
 
 		// Prepare the text as Texture
 		if( _blendedText == nullptr )
@@ -125,35 +123,33 @@ namespace JanSordid::SDL_Example
 			if( _blendedText != nullptr )
 				SDL_DestroyTexture( _blendedText );
 
-			Owned<Surface> surf = TTF_RenderUTF8_Blended_Wrapped( _font, text, White, windowSize.x - 2 * offsetFromLeft );
+			Owned<Surface> surf = TTF_RenderText_Blended_Wrapped( _font, text, 0, White, windowSize.x - 2 * offsetFromLeft );
 			_blendedText = SDL_CreateTextureFromSurface( renderer(), surf );
 
-			u32 format;
-			int access;
-			SDL_QueryTexture( _blendedText, &format, &access, &_blendedTextSize.x, &_blendedTextSize.y );
+			SDL_GetTextureSize( _blendedText, &_blendedTextSize.x, &_blendedTextSize.y );
 		}
 
 		// Draw the text on top of the plasma effect
 		{
-			const Point p = {
+			const FPoint p = {
 				offsetFromLeft,
-				windowSize.y - (int)(100 * _game.scalingFactor())
+				windowSize.y - (100 * _game.scalingFactor())
 			};
 
-			const int shadowOffsetFactor = (int)(1.0f*_game.scalingFactor());
+			const f32 shadowOffsetFactor = (1.0f*_game.scalingFactor());
 			//const int shadowOffsetFactor = (int)(2.0f*_game.scalingFactor()); // chonky shadow
 
 			// Draw the shadow
 			SDL_SetTextureColorMod( _blendedText, 0, 0, 0 );
 			for( const Point & offset : HSNR64::ShadowOffset::Rhombus )
 			{
-				const Rect dstRect = Rect{ p.x, p.y, _blendedTextSize.x, _blendedTextSize.y } + (offset * shadowOffsetFactor);
-				SDL_RenderCopy( renderer(), _blendedText, EntireRect, &dstRect );
+				const FRect dstRect = FRect{ p.x, p.y, _blendedTextSize.x, _blendedTextSize.y } + (offset * shadowOffsetFactor);
+				SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dstRect );
 			}
 
 			SDL_SetTextureColorMod( _blendedText, 255, 255, 255 );
-			const Rect dstRect = p + Rect{ 0, 0, _blendedTextSize.x, _blendedTextSize.y };
-			SDL_RenderCopy( renderer(), _blendedText, EntireRect, &dstRect );
+			const FRect dstRect = p + FRect{ 0, 0, _blendedTextSize.x, _blendedTextSize.y };
+			SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dstRect );
 		}
 	}
 }

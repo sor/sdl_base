@@ -45,16 +45,16 @@ namespace JanSordid::SDL_Example
 			* _currState = &_worldState1,
 			* _nextState = &_worldState2;
 
-		Point _tileSetSize;
-		Point _tileSize;
-		Point _tileCount;
-		Point _camera;
-		Point _pickedIdx    = Point{ 0, 0 };
-		i32   _mapScale     = 2;
-		i32   _paletteScale = 2; // Is set to _game.scalingFactor() in Init()
-		bool  _isPainting   = false;
-		bool  _isPanning    = false;
-		bool  _showGrid     = false;
+		Point  _tileSetSize;
+		Point  _tileSize;
+		Point  _tileCount;
+		FPoint _camera;
+		Point  _pickedIdx    = Point{ 0, 0 };
+		i32    _mapScale     = 2;
+		i32    _paletteScale = 2; // Is set to _game.scalingFactor() in Init()
+		bool   _isPainting   = false;
+		bool   _isPanning    = false;
+		bool   _showGrid     = false;
 
 		constexpr const static u64 UpdateDeltaTimeMS = 100;
 		u64   _nextUpdateTimeMS = 0;

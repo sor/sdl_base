@@ -14,15 +14,15 @@ namespace JanSordid::SDL_Example
 		Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
-		float iter = 0;
-		const float y_center = (float) windowSize.y / 2.0f;
+		f32 iter = 0;
+		const f32 y_center = (f32)windowSize.y / 2.0f;
 
 		_balls.resize( 1000 );
 		for( Ball & ball : _balls )
 		{
 			ball = Ball {
 				.x = iter * 40.f,
-				.y = y_center + sin( iter / 2.f ) * (y_center / 4.0f),
+				.y = y_center + (f32)sin( iter / 2.f ) * (y_center / 4.0f),
 				.z = 0,
 				.w = iter * 0.6f,
 			};
@@ -43,11 +43,11 @@ namespace JanSordid::SDL_Example
 
 	bool SortState::HandleEvent( const Event & event )
 	{
-		if( event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_F1 && event.key.repeat == 0 )
+		if( event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_F1 && event.key.repeat == 0 )
 			_isOrdered = !_isOrdered;
-		if( event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_F2 && event.key.repeat == 0 )
+		if( event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_F2 && event.key.repeat == 0 )
 			_isDarkened = !_isDarkened;
-		if( event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_F3 && event.key.repeat == 0 )
+		if( event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_F3 && event.key.repeat == 0 )
 			_isTransparent = !_isTransparent;
 
 		return true; // Not really correct
@@ -58,7 +58,7 @@ namespace JanSordid::SDL_Example
 		for( Ball & ball : _balls )
 		{
 			ball.x -= deltaT * 40.f;
-			ball.z = abs(sin( ball.w ));          // bounce from 0 to 1 (twice each revolution)
+			ball.z = abs( sin( ball.w ) );          // bounce from 0 to 1 (twice each revolution)
 		//	ball.z = 0.5f + 0.5f * sin( ball.w ); // bob from 0 to 1
 			ball.w += deltaT * 2.0f;
 		}
@@ -83,8 +83,8 @@ namespace JanSordid::SDL_Example
 			const u8 size = (u8)(ball.z * 80.f + 48.f);
 			if( _isDarkened )
 				SDL_SetTextureColorMod( _image, size * 2 - 20, size * 2 - 20, size * 2 - 20 );
-			const Rect dst_rect { (int)ball.x - (size / 2), (int)ball.y - (size), size, size };
-			SDL_RenderCopy( renderer(), _image, EntireRect, &dst_rect );
+			const FRect dst_rect { ball.x - (size / 2), ball.y - (size), (f32)size, (f32)size };
+			SDL_RenderTexture( renderer(), _image, EntireFRect, &dst_rect );
 		}
 	}
 }

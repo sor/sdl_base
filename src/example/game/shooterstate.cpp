@@ -19,7 +19,7 @@ namespace JanSordid::SDL_Example
 		{
 			_sound = Mix_LoadWAV( BasePathSound "pew.wav" );
 			if( !_sound )
-				print( stderr, "Mix_LoadWAV failed: {}\n", Mix_GetError() );
+				print( stderr, "Mix_LoadWAV failed: {}\n", SDL_GetError() );
 		}
 	}
 
@@ -32,25 +32,25 @@ namespace JanSordid::SDL_Example
 
 	bool ShooterState::HandleEvent( const Event & event )
 	{
-		if( event.type == SDL_KEYDOWN && event.key.repeat == 0 )
+		if( event.type == SDL_EVENT_KEY_DOWN && event.key.repeat == 0 )
 		{
-			if( event.key.keysym.scancode == SDL_SCANCODE_F1 ) _isBackgroundVisible[0] = !_isBackgroundVisible[0];
-			if( event.key.keysym.scancode == SDL_SCANCODE_F2 ) _isBackgroundVisible[1] = !_isBackgroundVisible[1];
-			if( event.key.keysym.scancode == SDL_SCANCODE_F3 ) _isBackgroundVisible[2] = !_isBackgroundVisible[2];
-			if( event.key.keysym.scancode == SDL_SCANCODE_F4 ) _isBackgroundVisible[3] = !_isBackgroundVisible[3];
+			if( event.key.scancode == SDL_SCANCODE_F1 ) _isBackgroundVisible[0] = !_isBackgroundVisible[0];
+			if( event.key.scancode == SDL_SCANCODE_F2 ) _isBackgroundVisible[1] = !_isBackgroundVisible[1];
+			if( event.key.scancode == SDL_SCANCODE_F3 ) _isBackgroundVisible[2] = !_isBackgroundVisible[2];
+			if( event.key.scancode == SDL_SCANCODE_F4 ) _isBackgroundVisible[3] = !_isBackgroundVisible[3];
 
 			// Toggle all
-			if( event.key.keysym.scancode == SDL_SCANCODE_F5 )
+			if( event.key.scancode == SDL_SCANCODE_F5 )
 				_isBackgroundVisible[0] = _isBackgroundVisible[1] = _isBackgroundVisible[2] = _isBackgroundVisible[3]
 					= !_isBackgroundVisible[0];
 
-			if( event.key.keysym.scancode == SDL_SCANCODE_F6 ) _isInverted = !_isInverted;
-			if( event.key.keysym.scancode == SDL_SCANCODE_F7 ) _isEased    = !_isEased;
-			if( event.key.keysym.scancode == SDL_SCANCODE_F8 ) _isFlux     = !_isFlux;
+			if( event.key.scancode == SDL_SCANCODE_F6 ) _isInverted = !_isInverted;
+			if( event.key.scancode == SDL_SCANCODE_F7 ) _isEased    = !_isEased;
+			if( event.key.scancode == SDL_SCANCODE_F8 ) _isFlux     = !_isFlux;
 
 			return true; // Not 100% correct
 		}
-		else if( event.type == SDL_MOUSEBUTTONDOWN )
+		else if( event.type == SDL_EVENT_MOUSE_BUTTON_DOWN )
 		{
 			const FPoint mousePos = FPoint{
 				(f32)event.button.x,
@@ -64,7 +64,7 @@ namespace JanSordid::SDL_Example
 
 			return true;
 		}
-		else if( event.type == SDL_MOUSEMOTION )
+		else if( event.type == SDL_EVENT_MOUSE_MOTION )
 		{
 			Point windowSize;
 			SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
@@ -87,7 +87,7 @@ namespace JanSordid::SDL_Example
 
 			return true;
 		}
-		else if( event.type == SDL_MOUSEBUTTONUP )
+		else if( event.type == SDL_EVENT_MOUSE_BUTTON_UP )
 		{
 			//mouseOffset = { 0, 0 };
 
@@ -232,9 +232,9 @@ namespace JanSordid::SDL_Example
 		CameraState::Update( framesSinceStart, msSinceStart, deltaT );
 	}
 
-	Vector<SDL_Point> PixelizeCircle( SDL_Point center, int radius )
+	Vector<SDL_FPoint> PixelizeCircle( SDL_FPoint center, int radius )
 	{
-		Vector<SDL_Point> points;
+		Vector<SDL_FPoint> points;
 		const int arrSize = RoundUpMultiple<8>( radius * 8 * 35 / 49 ); // 35 / 49 is a slightly biased approximation of 1/sqrt(2)
 		points.reserve( arrSize );
 
@@ -249,14 +249,14 @@ namespace JanSordid::SDL_Example
 		while( x >= y )
 		{
 			// Each of the following renders an octant of the circle
-			points.push_back( center + SDL_Point{ +x, -y } );
-			points.push_back( center + SDL_Point{ +x, +y } );
-			points.push_back( center + SDL_Point{ -x, -y } );
-			points.push_back( center + SDL_Point{ -x, +y } );
-			points.push_back( center + SDL_Point{ +y, -x } );
-			points.push_back( center + SDL_Point{ +y, +x } );
-			points.push_back( center + SDL_Point{ -y, -x } );
-			points.push_back( center + SDL_Point{ -y, +x } );
+			points.push_back( center + SDL_FPoint{ (f32)+x, (f32)-y } );
+			points.push_back( center + SDL_FPoint{ (f32)+x, (f32)+y } );
+			points.push_back( center + SDL_FPoint{ (f32)-x, (f32)-y } );
+			points.push_back( center + SDL_FPoint{ (f32)-x, (f32)+y } );
+			points.push_back( center + SDL_FPoint{ (f32)+y, (f32)-x } );
+			points.push_back( center + SDL_FPoint{ (f32)+y, (f32)+x } );
+			points.push_back( center + SDL_FPoint{ (f32)-y, (f32)-x } );
+			points.push_back( center + SDL_FPoint{ (f32)-y, (f32)+x } );
 
 			if( error <= 0 )
 			{
@@ -276,14 +276,14 @@ namespace JanSordid::SDL_Example
 		return points; // NRVO will make this good, fingers crossed
 	}
 
-	void DrawCircle( SDL_Renderer * renderer, const Vector<SDL_Point> & points )
+	void DrawCircle( SDL_Renderer * renderer, const Vector<SDL_FPoint> & points )
 	{
-		SDL_RenderDrawPoints( renderer, points.data(), points.size() );
+		SDL_RenderPoints( renderer, points.data(), points.size() );
 	}
 
-	void DrawCircle( SDL_Renderer * renderer, SDL_Point center, int radius )
+	void DrawCircle( SDL_Renderer * renderer, SDL_FPoint center, int radius )
 	{
-		const Vector<SDL_Point> points = PixelizeCircle( center, radius );
+		const Vector<SDL_FPoint> points = PixelizeCircle( center, radius );
 		DrawCircle( renderer, points );
 	}
 
@@ -300,9 +300,9 @@ namespace JanSordid::SDL_Example
 		}
 
 		{
-			constexpr const Point pivot   = { 10, 45 };
-			constexpr const Point texSize = { 10, 26 };
-			constexpr const Rect  src     = {
+			constexpr const FPoint pivot   = { 10, 45 };
+			constexpr const Point  texSize = { 10, 26 };
+			constexpr const Rect   src     = {
 				texSize.x,
 				texSize.y,
 				texSize.x,
@@ -316,19 +316,19 @@ namespace JanSordid::SDL_Example
 					continue;
 
 				const Point index      = IndexUnpackClamped<10, 6>( framesSinceStart + p.y );
-				const Rect  srcIndexed = src * index;
-				const Rect  pos        = {
-					(int)(p.x + fluxCam.x) - pivot.x / 2,
-					(int)(p.y + fluxCam.y) - pivot.y,
+				const FRect srcIndexed = toF( src * index );
+				const FRect pos        = {
+					(p.x + fluxCam.x) - pivot.x / 2,
+					(p.y + fluxCam.y) - pivot.y,
 					texSize.x * 2,
 					texSize.y * 2 };
-				SDL_RenderCopyEx( renderer(), _projectile[0], &srcIndexed, &pos, 90, &pivot, SDL_RendererFlip::SDL_FLIP_NONE );
+				SDL_RenderTextureRotated( renderer(), _projectile[0], &srcIndexed, &pos, 90, &pivot, SDL_FlipMode::SDL_FLIP_NONE );
 				//SDL_RenderCopy( renderer(), projectile[2], &src, &pos );
 			}
 		}
 
 		{
-			constexpr const Point pivot   = { 10, 9 };
+			constexpr const FPoint pivot   = { 10, 9 };
 			constexpr const Point texSize = { 65, 9 };
 			constexpr const Rect  src     = {
 				texSize.x,
@@ -343,13 +343,13 @@ namespace JanSordid::SDL_Example
 					continue;
 
 				const Point index      = IndexUnpackClamped<10, 6>( framesSinceStart + p.y );
-				const Rect  srcIndexed = src * index;
-				const Rect  pos        = {
-					(int)(p.x + fluxCam.x) - pivot.x / 2,
-					(int)(p.y + fluxCam.y) - pivot.y,
+				const FRect srcIndexed = toF( src * index );
+				const FRect pos        = {
+					(p.x + fluxCam.x) - pivot.x / 2,
+					(p.y + fluxCam.y) - pivot.y,
 					texSize.x * 2,
 					texSize.y * 2 };
-				SDL_RenderCopyEx( renderer(), _projectile[2], &srcIndexed, &pos, 180, &pivot, SDL_RendererFlip::SDL_FLIP_NONE );
+				SDL_RenderTextureRotated( renderer(), _projectile[2], &srcIndexed, &pos, 180, &pivot, SDL_FlipMode::SDL_FLIP_NONE );
 				//SDL_RenderCopy( renderer(), _projectile[2], &src, &pos );
 			}
 		}
@@ -360,7 +360,7 @@ namespace JanSordid::SDL_Example
 
 		//const Point fluxCamI = { (int)fluxCam.x, (int)fluxCam.y };
 		const FRect pos = _player + fluxCam;
-		SDL_RenderFillRectF( renderer(), &pos );
+		SDL_RenderFillRect( renderer(), &pos );
 
 		// Draw player satellites
 		SDL_SetRenderDrawBlendMode( renderer(), SDL_BLENDMODE_NONE );
@@ -369,7 +369,7 @@ namespace JanSordid::SDL_Example
 		for( uint i = 0; i < _satellites.size(); ++i )
 		{
 			const FPoint sat2Pos = _satellites[i] + fluxCam;
-			DrawCircle( renderer(), Point{ (int)(sat2Pos.x), (int)(sat2Pos.y) }, SatRadius );
+			DrawCircle( renderer(), sat2Pos, SatRadius );
 		}
 
 		// Draw enemies
@@ -380,7 +380,7 @@ namespace JanSordid::SDL_Example
 		{
 			//const Point fluxCamI = { (int)fluxCam.x, (int)fluxCam.y };
 			const FRect posOffsetted = e + fluxCam;
-			SDL_RenderFillRectF( renderer(), &posOffsetted );
+			SDL_RenderFillRect( renderer(), &posOffsetted );
 		}
 
 		for( int i = 3; i <= 3; ++i ) // Render the last 1 layers, rendered back to front
@@ -389,7 +389,7 @@ namespace JanSordid::SDL_Example
 
 	bool ShooterState::IsProjectileAlive( const Vector<FPoint>::iterator & it ) const
 	{
-		return isfinite( it->x );
+		return std::isfinite( it->x );
 	}
 
 	void ShooterState::SpawnEnemyProjectile( const FPoint pos )

@@ -1,13 +1,8 @@
 #pragma once
 
-#include "core.hpp"
+#include <memory>
 
-#include <SDL.h>
-#include <SDL_mixer.h>
-#include <SDL_render.h>
-#include <SDL_ttf.h>
-
-//#include "sdl_core.hpp"
+#include "sdl_core.hpp"
 
 // It is allowed to specialize std classes, but this might be UB?!
 namespace std
@@ -25,10 +20,11 @@ namespace std
 	IMPLEMENT_DEFAULT_DELETE( SDL_Window,      SDL_DestroyWindow   );
 	IMPLEMENT_DEFAULT_DELETE( SDL_Renderer,    SDL_DestroyRenderer );
 	IMPLEMENT_DEFAULT_DELETE( SDL_Texture,     SDL_DestroyTexture  );
-	IMPLEMENT_DEFAULT_DELETE( SDL_Surface,     SDL_FreeSurface     );
-	IMPLEMENT_DEFAULT_DELETE( SDL_PixelFormat, SDL_FreeFormat      );
-	IMPLEMENT_DEFAULT_DELETE( SDL_Palette ,    SDL_FreePalette     );
+	IMPLEMENT_DEFAULT_DELETE( SDL_Surface,     SDL_DestroySurface  );
+	IMPLEMENT_DEFAULT_DELETE( SDL_Palette ,    SDL_DestroyPalette  );
 	IMPLEMENT_DEFAULT_DELETE( TTF_Font,        TTF_CloseFont       );
+	IMPLEMENT_DEFAULT_DELETE( TTF_Text,        TTF_DestroyText     );
+	IMPLEMENT_DEFAULT_DELETE( TTF_TextEngine,  TTF_DestroyRendererTextEngine ); // Care: Might be a different kind of Engine
 	IMPLEMENT_DEFAULT_DELETE( Mix_Chunk,       Mix_FreeChunk       );
 	IMPLEMENT_DEFAULT_DELETE( Mix_Music,       Mix_FreeMusic       );
 

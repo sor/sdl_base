@@ -1,25 +1,22 @@
 {
-  "name": "sor-sdl2",
+  "name": "sor-sdl3",
   "version": "0.1.2",
   "dependencies": [
     {
-      "name": "sdl2",
-      "version>=": "2.30.8"
+      "name": "sdl3",
+      "version>=": "3.2.20"
     }, {
-      "name": "sdl2-image",
-      "version>=": "2.8.2#2",
-      "features": [ "libjpeg-turbo", "libwebp" ]
+      "name": "sdl3-image",
+      "version>=": "3.2.4",
+      "features": [ "jpeg", "webp", "png" ]
     }, {
-      "name": "sdl2-mixer",
-      "version>=": "2.8.0#3",
+      "name": "sdl3-mixer",
+      "version>=": "3.0.1-f486b4c",
       "features": [ "mpg123", "opusfile" ],
       "$features": [ "libflac" ]
     }, {
-      "name": "sdl2-net",
-      "version>=": "2.2.0#3"
-    }, {
-      "name": "sdl2-ttf",
-      "version>=": "2.22.0#1",
+      "name": "sdl3-ttf",
+      "version>=": "3.2.2",
       "$features": [ "harfbuzz" ]
     }, {
       "name": "fmt",
@@ -36,7 +33,7 @@
     }, {
       "name": "imgui",
       "version>=": "1.91.0",
-      "features": [ "sdl2-binding", "sdl2-renderer-binding", "freetype", "docking-experimental" ]
+      "features": [ "sdl3-binding", "sdl3-renderer-binding", "freetype", "docking-experimental" ]
     }, {
       "name": "nlohmann-json",
       "version>=": "3.11.3#1"

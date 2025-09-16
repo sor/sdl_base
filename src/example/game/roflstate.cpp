@@ -26,8 +26,9 @@ namespace JanSordid::SDL_Example
 		}
 
 		Owned<Surface> surf = IMG_Load( BasePathGraphic "hsnr64.png" );
-		SDL_SetColorKey( surf, SDL_TRUE, 0 );
+		SDL_SetSurfaceColorKey( surf, true, 0 );
 		_tileset = SDL_CreateTextureFromSurface( renderer(), surf );
+		SDL_SetTextureScaleMode( _tileset, SDL_ScaleMode::SDL_SCALEMODE_NEAREST );
 
 		const f32    dstSize = 16 * _game.scalingFactor(); // TODO: Remove that scaling for actual gameplay
 		const FPoint halfDst = FPoint{ dstSize, dstSize } / 2;
@@ -130,7 +131,7 @@ namespace JanSordid::SDL_Example
 
 	void RoflState::Render( u64 framesSinceStart, u64 msSinceStart, f32 deltaTNeeded )
 	{
-		const SDL_RendererFlip flipAnim = msSinceStart / 200 % 2 ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+		const SDL_FlipMode flipAnim = msSinceStart / 200 % 2 ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
 		//SDL_SetTextureBlendMode( _tileset, SDL_BLENDMODE_BLEND );
 		//SDL_SetRenderDrawBlendMode( renderer(), SDL_BLENDMODE_BLEND);
@@ -142,10 +143,10 @@ namespace JanSordid::SDL_Example
 			for( const auto & cell : row ) {
 				const TileInfo & info    = tileInfos[cell];
 				const Color    & color   = info.color;
-				const Rect       srcRect = toXY( info.index * srcSize, srcSize );
-				const Rect       dstRect = toXY( dst * dstSize, dstSize );
+				const FRect      srcRect = toF( toXY( info.index * srcSize, srcSize ) );
+				const FRect      dstRect = toF( toXY( dst * dstSize, dstSize ) );
 				SDL_SetTextureColorMod( _tileset, color.r, color.g, color.b );
-				SDL_RenderCopyEx(
+				SDL_RenderTextureRotated(
 					renderer(),
 					_tileset,
 					&srcRect,
@@ -160,7 +161,7 @@ namespace JanSordid::SDL_Example
 		}
 
 		SDL_SetRenderDrawColor( renderer(), 156, 107, 48, 255 );
-		SDL_RenderDrawLinesF( renderer(), _paths[0].data(), _paths[0].size() );
+		SDL_RenderLines( renderer(), _paths[0].data(), _paths[0].size() );
 
 		for( int faction = 0; faction <= 1; ++faction )
 		{
@@ -175,9 +176,9 @@ namespace JanSordid::SDL_Example
 					continue;
 				}
 
-				const Rect  srcRect = toXY( Point{ 18, 33 } * srcSize, srcSize );
+				const FRect srcRect = toXY( FPoint{ 18, 33 } * srcSize, srcSize );
 				const FRect dstRect = toXY( minion.position - halfDst, dstSize );
-				SDL_RenderCopyExF(
+				SDL_RenderTextureRotated(
 					renderer(),
 					_tileset,
 					&srcRect,

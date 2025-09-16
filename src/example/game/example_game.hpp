@@ -79,13 +79,13 @@ namespace JanSordid::SDL_Example
 		Owned<Chunk>   _sound;
 		Owned<Texture> _blendedText;
 
-		Point _blendedTextSize = { 0, 0 };
-		u8    _textmode        = 0;
+		FPoint _blendedTextSize = { 0, 0 };
+		u8     _textmode        = 0;
 
 		// Testvars controlled by ImGui
-		Point _textStartPoint = { 20, 30 };
-		i32   _colorIndex     = 9;
-		bool  _isDarkOutline  = true;
+		FPoint _textStartPoint = { 20, 30 };
+		i32    _colorIndex     = 9;
+		bool   _isDarkOutline  = true;
 
 	public:
 		/// Ctors & Dtor
@@ -119,8 +119,8 @@ namespace JanSordid::SDL_Example
 		Owned<Surface> _plasmaSrf;
 		Owned<Texture> _plasmaTex;
 
-		Point _blendedTextSize = { 0, 0 };
-		i32   _brightness      = 160;
+		FPoint _blendedTextSize = { 0, 0 };
+		i32    _brightness      = 160;
 
 	public:
 		// ctor
@@ -180,7 +180,7 @@ namespace JanSordid::SDL_Example
 		}};
 
 		Array<Owned<Texture>,4> _background;
-		Array<Point,4>          _backgroundSize; // Is initialized in Init()
+		Array<FPoint,4>         _backgroundSize; // Is initialized in Init()
 
 		FPoint _mouseOffset      = { 0, 0 };
 		FPoint _mouseOffsetEased = { 0, 0 };

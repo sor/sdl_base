@@ -1,6 +1,8 @@
 #include "sdl_game.hpp"
 #include "sdl_shapeops.hpp"
 
+#include "adapt_nfd.hpp"
+
 namespace JanSordid::SDL
 {
 	// Explicit template instantiation in .cpp file
@@ -9,55 +11,48 @@ namespace JanSordid::SDL
 
 	IGame::IGame( const char * windowTitle, float scalingFactor, const Point logicalSize, const bool vSync ) noexcept
 	{
-		if( SDL_Init( SDL_INIT_EVERYTHING ) )
+		if( !SDL_Init( SDL_INIT_EVERYTHING ) )
 		{
 			print( stderr, "SDL_Init failed: {}\n", SDL_GetError() );
 			exit( 1 );
 		}
 
-		if( TTF_Init() )
+		if( !TTF_Init() )
 		{
-			print( stderr, "TTF_Init failed: {}\n", TTF_GetError() );
+			print( stderr, "TTF_Init failed: {}\n", SDL_GetError() );
 			exit( 2 );
-		}
-
-		constexpr IMG_InitFlags imgFlags = (IMG_InitFlags) (IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_WEBP);
-		if( IMG_Init( imgFlags ) != imgFlags )
-		{
-			print( stderr, "IMG_Init failed: {}\n", IMG_GetError() );
-			exit( 3 );
 		}
 
 		constexpr MIX_InitFlags mixFlags = (MIX_InitFlags) (MIX_INIT_MP3 | MIX_INIT_OGG);
 		if( Mix_Init( mixFlags ) != mixFlags )
 		{
-			print( stderr, "Mix_Init failed: {}\n", Mix_GetError() );
+			print( stderr, "Mix_Init failed: {}\n", SDL_GetError() );
 			exit( 4 );
 		}
 
-		if( Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024 ) < 0 )
+		if( !Mix_OpenAudio( 0, nullptr ) )
 		{
-			print( stderr, "Mix_OpenAudio failed: {}\n", Mix_GetError() );
+			print( stderr, "Mix_OpenAudio failed: {}\n", SDL_GetError() );
 			exit( 5 );
 		}
 
 		// Recalculate scalingFactor dynamically
 		if( scalingFactor == -1.0f )
 		{
-			SDL_DisplayMode dm;
-			SDL_GetDesktopDisplayMode( 0, &dm );
-			const FPoint factor = toF( Point{ dm.w, dm.h } ) / toF( logicalSize );
+			const SDL_DisplayID     displayID   = SDL_GetPrimaryDisplay();
+			const SDL_DisplayMode * displayMode = SDL_GetDesktopDisplayMode( displayID );
+			const FPoint factor = toF( Point{displayMode->w, displayMode->h } ) / toF( logicalSize );
 			scalingFactor = std::max( 1.0f, std::floor( std::min( factor.x, factor.y ) - 0.2f ) );
+
+			print( "Scaling Factor was calculated to be: {}\n", scalingFactor );
 		}
 
 		Point requestedSize = toI( toF( logicalSize ) * scalingFactor );
 		_window = SDL_CreateWindow(
 			windowTitle,
-			SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED,
 			requestedSize.x,
 			requestedSize.y,
-			SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+			SDL_WINDOW_OPENGL );
 
 		if( _window == nullptr )
 		{
@@ -65,13 +60,14 @@ namespace JanSordid::SDL
 			exit( 6 );
 		}
 
-		_renderer = SDL_CreateRenderer(
-			_window,
-			-1,
-			SDL_RENDERER_ACCELERATED
-			| (vSync
-				? SDL_RENDERER_PRESENTVSYNC
-				: 0) );
+//		_renderer = SDL_CreateRenderer(
+//			_window,
+//			nullptr);
+
+		SDL_PropertiesID props = SDL_CreateProperties();
+		SDL_SetPointerProperty( props, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER,       _window );
+		SDL_SetNumberProperty(  props, SDL_PROP_RENDERER_CREATE_PRESENT_VSYNC_NUMBER, vSync ? SDL_RENDERER_VSYNC_ADAPTIVE : 0 );
+		_renderer = SDL_CreateRendererWithProperties( props );
 
 		if( _renderer == nullptr )
 		{
@@ -85,10 +81,12 @@ namespace JanSordid::SDL
 			const bool isIntegerScaling = (scalingFactor == nearbyintf( scalingFactor ));
 			if( isIntegerScaling )
 			{
-				SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "nearest" );
-				SDL_RenderSetIntegerScale( _renderer, SDL_TRUE );
+//				SDL_RenderSetIntegerScale( _renderer, true );
+//				SDL_SetRenderLogicalPresentation( _renderer, logicalSize.x, logicalSize.y, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE );
+
+				//SDL_SetRenderLogicalPresentation( _renderer, 640, 360, SDL_RendererLogicalPresentation::SDL_LOGICAL_PRESENTATION_INTEGER_SCALE );
 			}
-			// HACK: Does not work because ImGUI would not work then, it in fact turns this here off :(
+			// HACK: Does not work because ImGui would not work then, it in fact turns this here off :(
 			//SDL_SetHint( SDL_HINT_MOUSE_RELATIVE_SCALING, "1" );
 			//SDL_RenderSetLogicalSize( _renderer, logicalSize.x, logicalSize.y );
 		}
@@ -119,8 +117,6 @@ namespace JanSordid::SDL
 			SDL_DestroyWindow( _window );
 			_window = nullptr;
 		}
-
-		IMG_Quit();
 
 		while( TTF_WasInit() )
 			TTF_Quit();
@@ -169,10 +165,10 @@ namespace JanSordid::SDL
 	#if IMGUI
 		//FPoint oldScale;
 		//SDL_RenderGetScale(_renderer, &oldScale.x, &oldScale.y);
-		const ImGuiIO & io = ImGui::GetIO();
-		SDL_RenderSetScale( _renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y );
-		ImGui_ImplSDLRenderer2_NewFrame();
-		ImGui_ImplSDL2_NewFrame();
+		//const ImGuiIO & io = ImGui::GetIO();
+		//SDL_SetRenderScale( _renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y );
+		ImGui_ImplSDLRenderer3_NewFrame();
+		ImGui_ImplSDL3_NewFrame();
 		ImGui::NewFrame();
 		//SDL_RenderSetScale( _renderer, oldScale.x, oldScale.y );
 	#endif
@@ -191,7 +187,7 @@ namespace JanSordid::SDL
 		currentState().RenderUI( _framesSinceStart, _msSinceStart, deltaTNeeded );
 
 		ImGui::Render();
-		ImGui_ImplSDLRenderer2_RenderDrawData( ImGui::GetDrawData(), _renderer );
+		ImGui_ImplSDLRenderer3_RenderDrawData( ImGui::GetDrawData(), _renderer );
 	}
 
 	void IGame::CreateImGui( Renderer * renderer, Window * window )
@@ -212,8 +208,8 @@ namespace JanSordid::SDL
 		//ImGui::StyleColorsLight();
 
 		// Setup Platform/Renderer backends
-		ImGui_ImplSDL2_InitForSDLRenderer( window, renderer );
-		ImGui_ImplSDLRenderer2_Init( renderer );
+		ImGui_ImplSDL3_InitForSDLRenderer( window, renderer );
+		ImGui_ImplSDLRenderer3_Init( renderer );
 
 		io.Fonts->AddFontDefault();
 		/*
@@ -239,25 +235,24 @@ namespace JanSordid::SDL
 	{
 	#ifdef IMGUI
 		const ImGuiIO & io = ImGui::GetIO();
-		ImGui_ImplSDL2_ProcessEvent( &event );
+		ImGui_ImplSDL3_ProcessEvent( &event );
 	#endif
 
 		switch( event.type )
 		{
-			case SDL_QUIT:
+			case SDL_EVENT_QUIT:
 				_isRunning = false;
 				return true;
 				break;
 
-			case SDL_KEYDOWN:
+			case SDL_EVENT_KEY_DOWN:
 			{
 				const auto & key_event = event.key;
-				const Keysym what_key  = key_event.keysym;
 
-				if( (what_key.mod & KMOD_ALT) &&
-				    (what_key.scancode == SDL_SCANCODE_F4) )
+				if( (key_event.mod & SDL_KMOD_ALT) &&
+				    (key_event.scancode == SDL_SCANCODE_F4) )
 				{
-					Event next_event = { .type = SDL_QUIT };
+					Event next_event = { .type = SDL_EVENT_QUIT };
 					SDL_PushEvent( &next_event );
 					return true;
 				}
@@ -270,16 +265,16 @@ namespace JanSordid::SDL
 				break;
 			}
 
-			case SDL_KEYUP:
+			case SDL_EVENT_KEY_UP:
 	#ifdef IMGUI
 				if( io.WantCaptureKeyboard )
 					return true;
 	#endif
 				break;
 
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-			case SDL_MOUSEWHEEL:
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
+			case SDL_EVENT_MOUSE_BUTTON_UP:
+			case SDL_EVENT_MOUSE_WHEEL:
 	#ifdef IMGUI
 				if( io.WantCaptureMouse )
 					return true;
@@ -321,7 +316,7 @@ namespace JanSordid::SDL
 			SDL_assert( currentStateIndex() >= 0 );
 
 			// The difference to last frame is usually 16-17 at 60Hz, 10 at 100Hz, 8-9 at 120Hz, 6-*7* at 144Hz
-			_msSinceStart = SDL_GetTicks64();
+			_msSinceStart = SDL_GetTicks();
 
 			// Main loop trinity
 			{
@@ -345,6 +340,7 @@ namespace JanSordid::SDL
 				{
 					//print( "need to sleep {}\n", ms );
 				}
+				// TODO: Change towards SDL_DelayNS (or SDL_DelayPrecise only if precision is paramount)
 				SDL_Delay( ms );
 				deltaTDur = Clock::now() - start;
 			}

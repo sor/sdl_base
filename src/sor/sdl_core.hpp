@@ -2,13 +2,13 @@
 
 #include "core.hpp"
 #include "smartptr.hpp"
+
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include <SDL3_mixer/SDL_mixer.h>
+
 #include "sdl_smartptr.hpp"
-
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_mixer.h>
-#include <SDL_ttf.h>
-
 
 // Additional convenience defines
 #define BasePathFont    BasePathAsset "font/"
@@ -22,6 +22,16 @@ namespace JanSordid::SDL
 {
 	using namespace JanSordid::Core;
 
+	constexpr SDL_InitFlags SDL_INIT_EVERYTHING
+		= SDL_INIT_AUDIO
+		| SDL_INIT_VIDEO
+		| SDL_INIT_JOYSTICK
+		| SDL_INIT_HAPTIC
+		| SDL_INIT_GAMEPAD
+		| SDL_INIT_EVENTS
+		| SDL_INIT_SENSOR
+		| SDL_INIT_CAMERA;
+
 	/// Aliases of SDL_ for easy usage
 
 	// Types which need memory management
@@ -30,8 +40,10 @@ namespace JanSordid::SDL
 	using Renderer    = SDL_Renderer;
 	using Surface     = SDL_Surface;
 	using Font        = TTF_Font;
-//	using Text        = TTF_Text;		// SDL3
-//	using TextEngine  = TTF_TextEngine;
+	using Text        = TTF_Text;
+	using TextEngine  = TTF_TextEngine;
+
+	// This is still SDL2 style and will be changed once SDL3_mixer is officially released
 	using Chunk       = Mix_Chunk;
 	using Music       = Mix_Music;
 
@@ -44,7 +56,6 @@ namespace JanSordid::SDL
 	using Event       = SDL_Event;
 	using Point       = SDL_Point;
 	using FPoint      = SDL_FPoint;
-	using Keysym      = SDL_Keysym;
 	using Keymod      = SDL_Keymod;
 	using Rect        = SDL_Rect;
 	using FRect       = SDL_FRect;

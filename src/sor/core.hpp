@@ -111,6 +111,9 @@ namespace JanSordid::Core
 	using f32   = float;
 	using f64   = double;
 
+	constexpr f32  operator"" _f32 (long double n) { return (f32)n; }
+	constexpr f64  operator"" _f64 (long double n) { return (f64)n; }
+
 	// Classes / Structs
 	using String        = std::string;
 	using StringView    = std::string_view;
@@ -121,13 +124,13 @@ namespace JanSordid::Core
 
 	using File          = std::FILE;
 
+	// Math Functions
+	using std::min, std::max;
+	using std::abs, std::sin, std::cos;
+
 	// Functions
-	using std::min;
-	using std::max;
-	using std::forward;
-	using std::move;
-	using std::make_unique;
-	using std::make_shared;
+	using std::move, std::forward;
+	using std::make_unique, std::make_shared;
 
 	// Templates
 	template<typename T, usize Size>            using Array     = std::array<T, Size>;

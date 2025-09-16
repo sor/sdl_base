@@ -1,6 +1,6 @@
-#include <SDL.h>
-#include <SDL_render.h>
-#include <SDL_image.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_render.h>
+#include <SDL3_image/SDL_image.h>
 
 #include "global.hpp"
 
@@ -15,10 +15,9 @@ struct WorldState
 	SDL_Texture  * texture;
 
 	SDL_FRect  wall     = { 200, 200, 200, 200 };
-
 	SDL_FRect  ball     = { 20, 20, 20, 20 };
 	SDL_FPoint vel_ball = { 144.0, 99.0 };
-	SDL_Point  mouse_pos;
+	SDL_FPoint mouse_pos;
 	//SDL_FPoint vel_ball = { 0.4, 0.1 };
 
 	bool moveToRight;
@@ -26,30 +25,35 @@ struct WorldState
 
 void initWorldState( WorldState & ws )
 {
-	SDL_Init( SDL_INIT_EVERYTHING );
-	IMG_Init( IMG_INIT_PNG );
+	SDL_Init( SDL_INIT_EVENTS | SDL_INIT_VIDEO );
 
 	// 640x360  16:9    >80%
 	// 640x400  16:10   ~5%  or 576x360
 	// 640x480   4:3    <5%  or 480x360
 	constexpr int windowScale = 2;
-	ws.window   = SDL_CreateWindow( "Pong Game", 100, 200, 640 * windowScale, 360 * windowScale, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
-	ws.renderer = SDL_CreateRenderer( ws.window, -1, SDL_RENDERER_PRESENTVSYNC );
+	ws.window   = SDL_CreateWindow( "Pong Game", 640 * windowScale, 360 * windowScale, SDL_WINDOW_OPENGL );
+	ws.renderer = SDL_CreateRenderer( ws.window, nullptr );
 	ws.texture  = IMG_LoadTexture( ws.renderer, "../../../asset/graphic/space_merc.png" );
 
+	SDL_SetRenderVSync( ws.renderer, 1 );
+	//SDL_SetRenderVSync( ws.renderer, SDL_RENDERER_VSYNC_ADAPTIVE );
+	SDL_SetTextureScaleMode( ws.texture, SDL_SCALEMODE_NEAREST );
 
-	SDL_SetHint( SDL_HINT_MOUSE_RELATIVE_SCALING,   "1"        );
-	SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY,     "nearest"  );
+
+//	SDL_SetHint( SDL_HINT_MOUSE_RELATIVE_SCALING,   "1"        );
+//	SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY,     "nearest"  );
+
 //	SDL_SetHint( SDL_HINT_RENDER_LOGICAL_SIZE_MODE, "overscan" );
 
-	SDL_RenderSetIntegerScale( ws.renderer, SDL_TRUE );
-	SDL_RenderSetLogicalSize( ws.renderer, 640, 360 );
+//	SDL_RenderSetIntegerScale( ws.renderer, SDL_TRUE );
+//	SDL_RenderSetLogicalSize( ws.renderer, 640, 360 );
+	SDL_SetRenderLogicalPresentation( ws.renderer, 640, 360, SDL_RendererLogicalPresentation::SDL_LOGICAL_PRESENTATION_INTEGER_SCALE );
 }
 
 void readEvents( WorldState & ws )
 {
 	SDL_PumpEvents();
-	const Uint8 * keystate = SDL_GetKeyboardState( nullptr );
+	const bool * keystate = SDL_GetKeyboardState( nullptr );
 
 	if( keystate[SDL_SCANCODE_Q] && keystate[SDL_SCANCODE_LCTRL] )
 	{
@@ -61,9 +65,9 @@ void readEvents( WorldState & ws )
 	SDL_Event ev;
 	while( SDL_PollEvent(&ev) )
 	{
-		if( ev.type == SDL_MOUSEMOTION )
+		if( ev.type == SDL_EVENT_MOUSE_MOTION )
 		{
-			ws.mouse_pos = {ev.motion.x, ev.motion.y};
+			ws.mouse_pos = {ev.motion.x/2, ev.motion.y/2};
 		}
 	}
 }
@@ -111,30 +115,30 @@ void renderGraphics( const WorldState & ws )
 	//SDL_SetRenderDrawBlendMode(ws.renderer, SDL_BlendMode::SDL_BLENDMODE_BLEND );
 
 //	SDL_Rect src { (((int)ball.x)/4/16)*16, 0, 640, 500 };
-	SDL_Rect src { 0, 0, 640, 360 };
-	SDL_Rect dst { 0, 0, 640, 360 };
+	SDL_FRect src = { 0, 0, 640, 360 };
+	SDL_FRect dst = { 0, 0, 640, 360 };
 
 	//SDL_RenderSetLogicalSize( ws.renderer, 640*2, 360*2 );
 	// Do something hi-res
 	//SDL_RenderSetLogicalSize( ws.renderer, 640, 360 );
 
-	SDL_RenderCopy( ws.renderer, ws.texture, &src, &dst );
+	SDL_RenderTexture( ws.renderer, ws.texture, &src, &dst );
 
-	const bool isIntersecting = SDL_HasIntersectionF( &ws.ball, &ws.wall );
+	const bool isIntersecting = SDL_HasRectIntersectionFloat( &ws.ball, &ws.wall );
 	SDL_SetRenderDrawColor( ws.renderer, 255, 0, isIntersecting ? 255 : 0, 255 );
 	isIntersecting
-		? SDL_RenderDrawRectF( ws.renderer, &ws.wall )
-		: SDL_RenderFillRectF( ws.renderer, &ws.wall );
+		? SDL_RenderRect( ws.renderer, &ws.wall )
+		: SDL_RenderFillRect( ws.renderer, &ws.wall );
 
 	SDL_SetRenderDrawColor( ws.renderer, 255, 0, 0, 127 );
-	SDL_RenderFillRectF( ws.renderer, &ws.ball ); // This still does display pixel scaling, not clamped to scaled up logical scale
+	SDL_RenderFillRect( ws.renderer, &ws.ball ); // This still does display pixel scaling, not clamped to scaled up logical scale
 	//auto bal = JanSordid::SDL::toI( ws.ball );
 	//SDL_RenderFillRect( ws.renderer, &bal );
 
-	SDL_RenderDrawLine(ws.renderer, 0,0, ws.mouse_pos.x, ws.mouse_pos.y);
+	SDL_RenderLine(ws.renderer, 0,0, ws.mouse_pos.x, ws.mouse_pos.y);
 
 	SDL_SetRenderDrawColor( ws.renderer, 0, 255, 0, 127 );
-	SDL_RenderDrawLineF(ws.renderer, 0,0, ws.mouse_pos.x, ws.mouse_pos.y);
+	SDL_RenderLine(ws.renderer, 0,0, ws.mouse_pos.x, ws.mouse_pos.y);
 
 	SDL_RenderPresent( ws.renderer );
 }
@@ -193,20 +197,8 @@ int main( int argc, char * argv [] )
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+// This is still SDL2, wayne?
 int mainx( int argc, char * argv [] )
 {
 	SDL_Init( SDL_INIT_EVERYTHING );
@@ -344,3 +336,4 @@ int mainx( int argc, char * argv [] )
 		SDL_RenderPresent( renderer );
 	}
 }
+//*/

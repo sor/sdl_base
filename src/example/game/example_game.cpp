@@ -36,9 +36,9 @@ namespace JanSordid::SDL_Example
 
 		switch( event.type )
 		{
-			case SDL_KEYDOWN:
+			case SDL_EVENT_KEY_DOWN:
 			{
-				const Keysym & what_key = event.key.keysym;
+				const auto & what_key = event.key;
 
 				if( what_key.scancode == SDL_SCANCODE_1 )
 				{

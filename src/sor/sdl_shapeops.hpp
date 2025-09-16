@@ -1,10 +1,11 @@
 #pragma once
 
-#include <SDL_rect.h>
+#include <SDL3/SDL_rect.h>
 
 namespace JanSordid::SDL
 {
-	constexpr const SDL_Rect * EntireRect = nullptr;
+	constexpr const SDL_Rect  * EntireRect  = nullptr;
+	constexpr const SDL_FRect * EntireFRect = nullptr;
 
 	// Define Y_IS_UP if you want to use Y as up (instead of down, which is the default),
 	// but beware you need to do more than just this to make it work
@@ -42,6 +43,9 @@ namespace JanSordid::SDL
 	constexpr SDL_Point   operator/  (const SDL_Point lhs, const int rhs) { return { lhs.x / rhs, lhs.y / rhs }; }
 	constexpr SDL_Point&  operator*= (SDL_Point& lhs, const int rhs) { lhs = lhs * rhs; return lhs; }
 	constexpr SDL_Point&  operator/= (SDL_Point& lhs, const int rhs) { lhs = lhs / rhs; return lhs; }
+
+	constexpr SDL_FPoint   operator*  (const SDL_Point lhs, const float rhs) { return { lhs.x * rhs, lhs.y * rhs }; }
+	constexpr SDL_FPoint   operator/  (const SDL_Point lhs, const float rhs) { return { lhs.x / rhs, lhs.y / rhs }; }
 
 	/// Point <-> Rect
 	constexpr SDL_Rect    operator+  (const SDL_Point lhs, const SDL_Rect rhs) { return { lhs.x + rhs.x, lhs.y + rhs.y, rhs.w, rhs.h }; }

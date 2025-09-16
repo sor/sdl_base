@@ -15,10 +15,15 @@ namespace JanSordid::SDL_Example
 			_background[2] = IMG_LoadTexture( renderer(), BasePathGraphic "bg-layer-2.png" );
 			_background[3] = IMG_LoadTexture( renderer(), BasePathGraphic "bg-layer-1.png" );
 
-			SDL_QueryTexture( _background[0], nullptr, nullptr, &_backgroundSize[0].x, &_backgroundSize[0].y );
-			SDL_QueryTexture( _background[1], nullptr, nullptr, &_backgroundSize[1].x, &_backgroundSize[1].y );
-			SDL_QueryTexture( _background[2], nullptr, nullptr, &_backgroundSize[2].x, &_backgroundSize[2].y );
-			SDL_QueryTexture( _background[3], nullptr, nullptr, &_backgroundSize[3].x, &_backgroundSize[3].y );
+			SDL_GetTextureSize( _background[0], &_backgroundSize[0].x, &_backgroundSize[0].y );
+			SDL_GetTextureSize( _background[1], &_backgroundSize[1].x, &_backgroundSize[1].y );
+			SDL_GetTextureSize( _background[2], &_backgroundSize[2].x, &_backgroundSize[2].y );
+			SDL_GetTextureSize( _background[3], &_backgroundSize[3].x, &_backgroundSize[3].y );
+
+			SDL_SetTextureScaleMode( _background[0], SDL_SCALEMODE_NEAREST );
+			SDL_SetTextureScaleMode( _background[1], SDL_SCALEMODE_NEAREST );
+			SDL_SetTextureScaleMode( _background[2], SDL_SCALEMODE_NEAREST );
+			SDL_SetTextureScaleMode( _background[3], SDL_SCALEMODE_NEAREST );
 
 			SDL_SetTextureColorMod( _background[0], 163, 163, 163 );
 			SDL_SetTextureColorMod( _background[1], 191, 191, 191 );
@@ -27,8 +32,6 @@ namespace JanSordid::SDL_Example
 
 			SDL_SetTextureAlphaMod( _background[2], 210 );
 			SDL_SetTextureAlphaMod( _background[3], 127 );
-
-			SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "nearest" );
 		}
 
 		// Reinit on reenter
@@ -44,25 +47,25 @@ namespace JanSordid::SDL_Example
 
 	bool CameraState::HandleEvent( const Event & event )
 	{
-		if( event.type == SDL_KEYDOWN && event.key.repeat == 0 )
+		if( event.type == SDL_EVENT_KEY_DOWN && event.key.repeat == 0 )
 		{
-			if( event.key.keysym.scancode == SDL_SCANCODE_F1 ) _isBackgroundVisible[0] = !_isBackgroundVisible[0];
-			if( event.key.keysym.scancode == SDL_SCANCODE_F2 ) _isBackgroundVisible[1] = !_isBackgroundVisible[1];
-			if( event.key.keysym.scancode == SDL_SCANCODE_F3 ) _isBackgroundVisible[2] = !_isBackgroundVisible[2];
-			if( event.key.keysym.scancode == SDL_SCANCODE_F4 ) _isBackgroundVisible[3] = !_isBackgroundVisible[3];
+			if( event.key.scancode == SDL_SCANCODE_F1 ) _isBackgroundVisible[0] = !_isBackgroundVisible[0];
+			if( event.key.scancode == SDL_SCANCODE_F2 ) _isBackgroundVisible[1] = !_isBackgroundVisible[1];
+			if( event.key.scancode == SDL_SCANCODE_F3 ) _isBackgroundVisible[2] = !_isBackgroundVisible[2];
+			if( event.key.scancode == SDL_SCANCODE_F4 ) _isBackgroundVisible[3] = !_isBackgroundVisible[3];
 
 			// Toggle all
-			if( event.key.keysym.scancode == SDL_SCANCODE_F5 )
+			if( event.key.scancode == SDL_SCANCODE_F5 )
 				_isBackgroundVisible[0] = _isBackgroundVisible[1] = _isBackgroundVisible[2] = _isBackgroundVisible[3] = !_isBackgroundVisible[0];
 
-			if( event.key.keysym.scancode == SDL_SCANCODE_F6 ) _isInverted = !_isInverted;
-			if( event.key.keysym.scancode == SDL_SCANCODE_F7 ) _isEased    = !_isEased;
-			if( event.key.keysym.scancode == SDL_SCANCODE_F8 ) _isFlux     = !_isFlux;
+			if( event.key.scancode == SDL_SCANCODE_F6 ) _isInverted = !_isInverted;
+			if( event.key.scancode == SDL_SCANCODE_F7 ) _isEased    = !_isEased;
+			if( event.key.scancode == SDL_SCANCODE_F8 ) _isFlux     = !_isFlux;
 
 			return true; // Not 100% correct
 		}
-		else if( (event.type == SDL_MOUSEBUTTONDOWN)
-			  || (event.type == SDL_MOUSEMOTION && event.motion.state != 0) )
+		else if( (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+			  || (event.type == SDL_EVENT_MOUSE_MOTION && event.motion.state != 0) )
 		{
 			Point windowSize;
 			SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
@@ -76,7 +79,7 @@ namespace JanSordid::SDL_Example
 
 			return true;
 		}
-		else if( event.type == SDL_MOUSEBUTTONUP )
+		else if( event.type == SDL_EVENT_MOUSE_BUTTON_UP )
 		{
 			_mouseOffset = {0, 0 };
 
@@ -90,8 +93,8 @@ namespace JanSordid::SDL_Example
 
 	bool CameraState::Input()
 	{
-		const u8 *  key_array = SDL_GetKeyboardState( nullptr );
-		const float factor    = key_array[SDL_SCANCODE_RSHIFT]
+		const bool * key_array = SDL_GetKeyboardState( nullptr );
+		const float  factor    = key_array[SDL_SCANCODE_RSHIFT]
 			? 600.0f
 			: 80.0f;
 
@@ -165,14 +168,14 @@ namespace JanSordid::SDL_Example
 		if( !_isBackgroundVisible[index] )
 			return;
 
-		const Point size = _backgroundSize[index];
+		const FPoint size   = _backgroundSize[index];
 		const FPoint offset = BackgroundStartOffset[index] + camPos * BackgroundFactor[index];
 		for( float x = offset.x; x < windowSize.x; x += size.x * 2 )
 		{
 			for( float y = offset.y; y < windowSize.y; y += size.y * 2 )
 			{
-				Rect off = { .x = (int)x, .y = (int)y, .w = size.x * 2, .h = size.y * 2 };
-				SDL_RenderCopy( renderer(), _background[index].get(), EntireRect, &off );
+				const FRect off = { .x = x, .y = y, .w = size.x * 2, .h = size.y * 2 };
+				SDL_RenderTexture( renderer(), _background[index].get(), EntireFRect, &off );
 
 				// Makes only sense with texture hint == best
 				//FRect offset = { .x = x, .y = y, .w = size.x * 2.0f, .h = size.y * 2.0f };
