@@ -3,7 +3,7 @@
 #include <hsnr64/offset.hpp>
 #include <hsnr64/palette.hpp>
 
-//#include <tilefont.h>
+#include <hsnr64/tilefont.hpp>
 
 namespace JanSordid::SDL_Example
 {
@@ -194,14 +194,13 @@ namespace JanSordid::SDL_Example
 					_blendedText = SDL_CreateTextureFromSurface( renderer(), surf );
 
 					SDL_GetTextureSize( _blendedText, &_blendedTextSize.x, &_blendedTextSize.y );
-
 				}
 
 				SDL_SetTextureColorMod( _blendedText, outlineColor.r, outlineColor.g, outlineColor.b );
 
-				for( const Point & offset : HSNR64::ShadowOffset::Rhombus )
+				for( const FPoint & offset : HSNR64::ShadowOffset::Rhombus )
 				{
-					const FRect dst_rect = FRect{ _textStartPoint.x, _textStartPoint.y, _blendedTextSize.x, _blendedTextSize.y } + toF( offset );
+					const FRect dst_rect = FRect{ _textStartPoint.x, _textStartPoint.y, _blendedTextSize.x, _blendedTextSize.y } + offset;
 					SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dst_rect );
 				}
 
@@ -212,13 +211,8 @@ namespace JanSordid::SDL_Example
 			}
 			else
 			{
-				// TODO: Prepare to check this in, there is still unmigrated stuff in sdl_basegame :(
-				/*
-				TileFont::TF_Init( renderer() );
-
-				Rect dimension { _p.x, _p.y, winSize.x - (32 + _p.x), 9999 };
-				TileFont::TF_Render( renderer(), text, dimension, HSNR64::Palette( _colorIndex ), outlineColor );
-				*/
+				FRect dimension { _textStartPoint.x, _textStartPoint.y, windowSize.x - (32 + _textStartPoint.x), 9999 };
+				_tf.Render( text, dimension, HSNR64::Palette( _colorIndex ), outlineColor );
 			}
 		}
 	}

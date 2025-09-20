@@ -175,6 +175,7 @@ if( MaximumOptimize )
     add_compile_options( -march=native )
 endif()
 
+
 add_executable( sor-pong
         src/sor/core.cpp
         src/sor/sdl_core.cpp
@@ -238,10 +239,13 @@ target_link_libraries(      sor-mini PUBLIC
         $<TARGET_NAME_IF_EXISTS:imgui::imgui>
 )
 
+
 add_executable( sor-example
         src/sor/core.cpp
         src/sor/sdl_core.cpp
         src/sor/sdl_game.cpp
+
+        src/hsnr64/tilefont.cpp
 
         src/example/game/example_game.cpp
 

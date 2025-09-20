@@ -7,6 +7,7 @@
 
 #include <hsnr64/offset.hpp>
 #include <hsnr64/palette.hpp>
+#include "hsnr64/tilefont.hpp"
 
 namespace JanSordid::SDL_Example
 {
@@ -73,11 +74,13 @@ namespace JanSordid::SDL_Example
 		using Base = MyGameState;
 
 	protected:
-		Owned<Font>    _font;
-		Owned<Texture> _image;
-		Owned<Music>   _music;
-		Owned<Chunk>   _sound;
-		Owned<Texture> _blendedText;
+		HSNR64::TileFont _tf { _game.renderer() };
+
+		Owned<Font>      _font;
+		Owned<Texture>   _image;
+		Owned<Music>     _music;
+		Owned<Chunk>     _sound;
+		Owned<Texture>   _blendedText;
 
 		FPoint _blendedTextSize = { 0, 0 };
 		u8     _textmode        = 0;

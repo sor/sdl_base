@@ -23,16 +23,16 @@ namespace JanSordid::HSNR64
 		 *   x x
 		 *    x
 		 */
-		static constexpr const Array<Point, 8> Rhombus = {
+		static constexpr const Array<FPoint, 8> Rhombus = {
 			//*
-			Point { -1, -1 },
-			Point { +1, -1 },
-			Point { -1, +1 },
-			Point { +1, +1 },
-			Point { +0, +2 },
-			Point { +2, +0 },
-			Point { +0, -2 },
-			Point { -2, +0 },
+			FPoint { -1, -1 },
+			FPoint { +1, -1 },
+			FPoint { -1, +1 },
+			FPoint { +1, +1 },
+			FPoint { +0, +2 },
+			FPoint { +2, +0 },
+			FPoint { +0, -2 },
+			FPoint { -2, +0 },
 			/*/
 			1_up   + 1_left,
 			1_up   + 1_right,
