@@ -288,9 +288,9 @@ namespace JanSordid::SDL_Example
 				SDL_SetTextureColorMod( t2, 0, 0, 0 );
 				//SDL::C::SDL_SetTextureBlendMode(t2, SDL::C::SDL_BLENDMODE_BLEND);
 				const FPoint p = { (f32)_tileSetSize.x * _paletteScale + 30, 20 };
-				for( const Point & pd : HSNR64::ShadowOffset::Cross )
+				for( const FPoint & offset : HSNR64::ShadowOffset::Cross )
 				{
-					const FRect dstRect = toFRect( p + toF( pd ), FPoint{ (f32)surf->w, (f32)surf->h } );
+					const FRect dstRect = toFRect( p + offset, FPoint{ (f32)surf->w, (f32)surf->h } );
 					SDL_RenderTexture( renderer(), t2, EntireFRect, &dstRect );
 				}
 				SDL_SetTextureColorMod( t2, 255, 255, 255 );

@@ -7,7 +7,7 @@
 
 namespace JanSordid::HSNR64
 {
-	const Array<const CharMetric,256> TileFont::CharMetrics = {
+	/*static*/ const Array<const CharMetric,256> TileFont::CharMetrics = {
 		CharMetric{ 99 },   // NUL
 		CharMetric{ 99 },
 		CharMetric{ 99 },
@@ -278,8 +278,7 @@ namespace JanSordid::HSNR64
 		CharMetric{ 11, -2,  2, { 0, 1, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 0, 1 }, 10, 0b0000'0001'0001'0001, 0b0001'0010'0000'0000 }, // y"
 	};
 
-	// differentiate between ligatures and just fixing the look, do a second map
-	const std::unordered_map<u64, const i8> TileFont::SpecialPairs = {
+	/*static*/ const HashMap<u64, const i8> TileFont::SpecialPairs = {
 		// lig
 		//{ combineChars( U'f', U'a' ), -4 },
 		//{ combineChars( U'c', U't' ), -3 },

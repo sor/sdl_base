@@ -15,21 +15,21 @@ namespace JanSordid::HSNR64
 
 	struct CharMetric
 	{
-		u8 width    = 16;
-		i8 xOff     = 0;
-		i8 yOff     = 0;
-		i8 left [8] = { 0, 0, 0, 0, 0, 0, 0, 0 };  // TODO: add 3 values for the belly, example: a (left lower), e (right high), d (left full)
-		i8 right[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-		u8 ligLevel = 255;    // higher => less likely; both chars will be multiplied together to form the final number
-		u16 mergeL  = 0b0000'0000'0000'0000;  // pointy / round
-		u16 mergeR  = 0b0000'0000'0000'0000;  // round  / pointy
+		u8  width    = 16;
+		i8  xOff     = 0;
+		i8  yOff     = 0;
+		i8  left [8] = { 0, 0, 0, 0, 0, 0, 0, 0 };  // TODO: add 3 values for the belly, example: a (left lower), e (right high), d (left full)
+		i8  right[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		u8  ligLevel = 255;    // higher => less likely; both chars will be multiplied together to form the final number
+		u16 mergeL   = 0b0000'0000'0000'0000;  // pointy / round
+		u16 mergeR   = 0b0000'0000'0000'0000;  // round  / pointy
 	};
 
 	// TODO: Move this sparsely stored and separate from CharMetric
 	struct CharLig
 	{
 		// leave "level" in CharMetric, so we already know from there if this here exists
-		u8 level    = 255;                   // higher => less likely; both chars will be multiplied together to form the final number
+		u8  level   = 255;                   // higher => less likely; both chars will be multiplied together to form the final number
 		u16 merge_l = 0b0000'0000'0000'0000; // pointy / round
 		u16 merge_r = 0b0000'0000'0000'0000; // round  / pointy
 	};
@@ -38,10 +38,10 @@ namespace JanSordid::HSNR64
 	struct CharChain
 	{
 		u32 uc; // "unicode" codepoint, not really, but the index into the tileset
-		u8 width;
-		u8 left;
-		i8 xoff;
-		i8 yoff;
+		u8  width;
+		u8  left;
+		i8  xoff;
+		i8  yoff;
 	};
 
 	class TileFont
@@ -63,9 +63,7 @@ namespace JanSordid::HSNR64
 		 ***/
 
 		static const Array<const CharMetric, 256> CharMetrics;
-
-		// differentiate between ligatures and just fixing the look, do a second map
-		static const std::unordered_map<u64, const i8> SpecialPairs;
+		static const HashMap<u64, const i8>       SpecialPairs; // TODO: To differentiate between ligatures and just fixing the look, add a second map
 
 		static constexpr u64 combineChars( char32_t last, char32_t curr )
 		{
@@ -94,7 +92,7 @@ namespace JanSordid::HSNR64
 			const Color  & outlineColor = { 0, 0, 0, SDL_ALPHA_OPAQUE } );
 
 	private:
-		using RenderFunc = void ( Renderer *, Texture *, const FRect &, const FRect & );
+		using RenderFunc = void ( Renderer * renderer, Texture * texture, const FRect & src, const FRect & dst );
 
 		// These are function declares ;)
 		static RenderFunc RenderOutline;

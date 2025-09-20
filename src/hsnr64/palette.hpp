@@ -3,11 +3,6 @@
 #include "sor/core.hpp"
 #include "sor/sdl_core.hpp"
 
-/*
- * ~ Jan Sordid's ~
- *     ~ Hybrid Sprite Navigator Revolution 64 ~
- *                             ~ Editor / Framework ~
- */
 namespace JanSordid::HSNR64
 {
 	using namespace JanSordid::SDL;
