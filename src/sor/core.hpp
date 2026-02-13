@@ -173,7 +173,7 @@ namespace JanSordid::Core//::inline V1
 	template<typename T>                                           using WeakPtr   = std::weak_ptr<T>;
 
 	template <typename... T>
-	inline void print_once( format_string<T...> fmt, T && ... args )
+	void print_once( format_string<T...> fmt, T && ... args )
 	{
 		static HashSet<String> all;
 		const String msg = format( fmt, forward<T>( args )... );
