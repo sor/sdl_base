@@ -2,18 +2,14 @@
 
 #include "example_game.hpp"
 
-#include <hsnr64/tiles.hpp>
-
 namespace JanSordid::SDL_Example
 {
-	using namespace HSNR64;
-
 	void TGUIState::Init()
 	{
 		Base::Init();
 
 		_gui.setWindow( _game.window(), _game.renderer() );
-		_gui.loadWidgetsFromFile( BasePathAsset "gui/form.txt" );
+		_gui.loadWidgetsFromFile( BasePathGUI "form.tgui" );
 
 		const f32 scale = _game.scalingFactor();
 		tgui::getBackend()->setFontScale( scale );

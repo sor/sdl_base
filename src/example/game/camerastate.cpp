@@ -81,7 +81,7 @@ namespace JanSordid::SDL_Example
 		}
 		else if( event.type == SDL_EVENT_MOUSE_BUTTON_UP )
 		{
-			_mouseOffset = {0, 0 };
+			_mouseOffset = { 0, 0 };
 
 			return true;
 		}
@@ -93,6 +93,7 @@ namespace JanSordid::SDL_Example
 
 	bool CameraState::StatefulInput()
 	{
+		// TODO: Mach das mal Stateless (Input)
 		const bool * key_array = SDL_GetKeyboardState( nullptr );
 		const float  factor    = key_array[SDL_SCANCODE_RSHIFT]
 			? 600.0f

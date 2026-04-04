@@ -14,7 +14,7 @@ int main( int argc, char * argv [] )
 namespace NotJanSordid::SDL_MiniExample
 {
 	MiniGame::MiniGame()
-		: Game( "MiniExampleGame", { 640, 360 }, -1, VSyncDisabled )
+		: Game( "MiniExampleGame", { 640, 360 }, ScalingFactorDynamic, VSyncAdaptive )
 	{
 		// The same as the _allStates.emplace...
 		AddStates<MiniState>( *this ); // State 0

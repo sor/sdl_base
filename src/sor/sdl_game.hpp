@@ -1,9 +1,11 @@
 #pragma once
 
+#include "core.hpp"
 #include "sdl_core.hpp"
 #include "sdl_smartptr.hpp"
 
 #include "adapt_sdl_imgui.hpp"
+#include "component/perftrack.hpp"
 
 namespace JanSordid::SDL
 {
@@ -85,15 +87,6 @@ namespace JanSordid::SDL
 	// abstract, pseudo interface (contains fields)
 	class IGame
 	{
-		ImGuiOnly(
-			Array<f32,128> _frameTimesTotal;
-			Array<f32,128> _frameTimesUpdate;
-			Array<f32,128> _frameTimesRender;
-			Array<f32,128> _frameTimesDeltaT;
-			uint           _frameTimesIndex      = 0;
-			bool           _isFrameTimeRecording = true;
-			bool           _isFrameTimeVisible   = false; )
-
 	protected:
 		/// Types
 		enum class NextStateOp : u8
@@ -105,6 +98,7 @@ namespace JanSordid::SDL
 		};
 
 		static constexpr f32 ScalingFactorDynamic = -1;
+		static constexpr f32 NoScaling            =  1;
 		static constexpr int VSyncDisabled        = SDL_RENDERER_VSYNC_DISABLED;
 		static constexpr int VSyncAdaptive        = SDL_RENDERER_VSYNC_ADAPTIVE;
 
@@ -122,15 +116,18 @@ namespace JanSordid::SDL
 		f32  _scalingFactor;
 		bool _isRunning = true;
 
-		SDL_Point    _requestedSizeScaled;
+		Point        _requestedSizeScaled;
 		const char * _windowTitle;
 		int          _vSync;
+
+		ImGuiOnly(
+			PerformanceTrackerComponent _perfTracker;)
 
 	public:
 		/// Ctors & Dtor
 		// scalingFactor:
-		//  -1.0f (or unspecified) for autoscaling,
-		//   1.0f for "no" scaling,
+		// ScalingFactorDynamic = -1.0f (or unspecified) for autoscaling,
+		// NoScaling            =  1.0f for "no" scaling,
 		//  integer floating point values for pixel perfect scaling
 		explicit IGame(
 			const char * windowTitle   = "SDL Game",
@@ -145,10 +142,10 @@ namespace JanSordid::SDL
 		IGame && operator=(       IGame && ) = delete;
 
 		/// Getters & Setters: non-virtual first, followed by (pure) virtual/override
-		[[nodiscard]] constexpr bool       isRunning()         const noexcept { return _isRunning;  }
 		[[nodiscard]]           Window   * window()            const noexcept { return _window.get();   } // even though this is a pointer, it is usually not null
 		[[nodiscard]]           Renderer * renderer()          const noexcept { return _renderer.get(); } // even though this is a pointer, it is usually not null
-		[[nodiscard]]           f32        scalingFactor()     const          { return _scalingFactor; }
+		[[nodiscard]] constexpr bool       isRunning()         const noexcept { return _isRunning;  }
+		[[nodiscard]] constexpr f32        scalingFactor()     const noexcept { return _scalingFactor; }
 		[[nodiscard]] constexpr bool       isStateChanging()   const noexcept { return _stateNextOp != NextStateOp::None; }
 		[[nodiscard]] constexpr u8         currentStateIndex() const          { Assert( !_stateStack.empty() ); return _stateStack.back(); }
 
@@ -175,6 +172,9 @@ namespace JanSordid::SDL
 		ImGuiOnly(
 			void CreateImGui();
 			void DestroyImGui();)
+
+		void RenderClear();
+		void RenderPresent();
 
 	public:
 		virtual int  Run();

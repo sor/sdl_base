@@ -62,7 +62,6 @@ namespace JanSordid::SDL_Example
 		using Base::Base;
 	};
 
-
 	class MyGame final : public SDL::Game<MyGameState,MyGS>
 	{
 		using Base = Game;
@@ -224,7 +223,7 @@ namespace JanSordid::SDL_Example
 		void Update( u64 framesSinceStart, Duration timeSinceStart, f32 deltaT       ) override;
 		void Render( u64 framesSinceStart, Duration timeSinceStart, f32 deltaTNeeded ) override;
 
-		FPoint CalcFluxCam( Duration timeSinceStart ) const;
+		[[nodiscard]] FPoint CalcFluxCam( Duration timeSinceStart ) const;
 		void RenderLayer( Point windowSize, FPoint camPos, int index ) const;
 	};
 

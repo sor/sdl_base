@@ -14,6 +14,7 @@
 #define BasePathAsset   BasePath      "asset/"
 #define BasePathFont    BasePathAsset "font/"
 #define BasePathGraphic BasePathAsset "graphic/"
+#define BasePathGUI     BasePathAsset "gui/"
 #define BasePathMap     BasePathAsset "map/"
 #define BasePathMusic   BasePathAsset "music/"
 #define BasePathSound   BasePathAsset "sound/"

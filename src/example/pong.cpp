@@ -1,11 +1,241 @@
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_render.h>
-#include <SDL3_image/SDL_image.h>
+
+//#include <SDL3_image/SDL_image.h>
 
 #include "global.hpp"
 
 //#include "sor/sdl_shapeops.hpp"
 
+#include <iostream>
+#include <deque>
+#include <vector>
+#include <SDL3/SDL.h>
+
+/*
+static int allocAmount = 0;
+static int putCount    = 0;
+
+void * operator new( decltype(sizeof(0)) n ) noexcept(false)
+{
+	allocAmount += n;
+	auto p = malloc( n );
+	std::cout.put( '+' );
+	if( ++putCount % 120 == 0 )
+	{
+		std::cout.put( '\n' );
+	}
+	std::cout.flush();
+	return p;
+}
+
+void operator delete( void * p ) noexcept
+{
+	std::cout.put( '?' );
+	if( ++putCount % 120 == 0 )
+	{
+		std::cout.put( '\n' );
+	}
+	std::cout.flush();
+	free( p );
+}
+
+void operator delete( void * p, decltype(sizeof(0)) n ) noexcept
+{
+	allocAmount -= n;
+	std::cout.put( '-' );
+	if( ++putCount % 120 == 0 )
+	{
+		std::cout.put( '\n' );
+	}
+	std::cout.flush();
+	free( p );
+}
+//*/
+
+namespace JanSordid
+{
+	class PongGame final
+	{
+		constexpr static SDL_Point WinSize = { 640, 480 };
+
+		std::vector<SDL_FPoint> _polygon;
+		std::deque<SDL_FRect>   _trail;
+		SDL_Window *            _window    = nullptr;
+		SDL_Renderer *          _renderer  = nullptr;
+		SDL_FPoint              _ballSpeed = { 4, 5 };
+		SDL_FRect               _ballPos   = {  20, 100, 20, 20 }; // Mittelpunkt ist bei 30, 110
+		SDL_FRect               _playerPos = { 100, 100, 20, 20 };
+
+	public:
+		void Init();
+		void Input();
+		void Update();
+		void Draw();
+
+		static bool ReflectAtLimit( float & value, float & direction, const float lower, const float upper );
+		static bool WrapAtLimit   ( float & value, float & direction, const float lower, const float upper );
+	};
+
+	void PongGame::Init()
+	{
+		using namespace std;
+
+		SDL_Init( SDL_INIT_VIDEO );
+		_window = SDL_CreateWindow( "Pong Clone", WinSize.x, WinSize.y, SDL_WINDOW_OPENGL );
+		if( _window == nullptr )
+		{
+			cerr << "Es ist ein Fehler aufgetreten bei win: " << SDL_GetError() << endl;
+			exit( 123 );
+		}
+
+		for( int i = 0; i < SDL_GetNumRenderDrivers() - 1; ++i )
+		{
+			const char * name = SDL_GetRenderDriver( i );
+			cout << "RenderDriver: " << name << endl;
+		}
+
+		_renderer = SDL_CreateRenderer( _window, "opengl" );
+		if( _renderer == nullptr )
+		{
+			cerr << "Es ist ein Fehler aufgetreten bei rend: " << SDL_GetError() << endl;
+			exit( 124 );
+		}
+		cout << "Used Renderer: " << SDL_GetRendererName( _renderer ) << endl;
+		SDL_SetRenderVSync( _renderer, 1 );
+	}
+
+	void PongGame::Input()
+	{
+		SDL_PumpEvents();
+		const bool * keys = SDL_GetKeyboardState( nullptr );
+
+		SDL_Event e;
+		while( SDL_PollEvent( &e ) )
+		{
+			if( e.type == SDL_EVENT_MOUSE_BUTTON_DOWN )
+			{
+				auto mbe = e.button;
+				AssertInOptimized( mbe.down );
+				if( mbe.button == SDL_BUTTON_LEFT )
+				{
+					_polygon.emplace_back(SDL_FPoint{ mbe.x, mbe.y });
+					//_polygon.emplace_back( mbe.x, mbe.y ); // Clang 15 says no
+				}
+				else if( mbe.button == SDL_BUTTON_RIGHT && !_polygon.empty() )
+				{
+					_polygon.pop_back();
+				}
+			}
+		}
+
+		if( keys[SDL_SCANCODE_Q] && keys[SDL_SCANCODE_LCTRL] )
+			exit( 0 );
+
+		if( keys[SDL_SCANCODE_RIGHT] )
+			_playerPos.x += 5;
+
+		if( keys[SDL_SCANCODE_LEFT] )
+			_playerPos.x += -5;
+	}
+
+	void PongGame::Update()
+	{
+		_ballPos.x += _ballSpeed.x;
+		_ballPos.y += _ballSpeed.y;
+
+		ReflectAtLimit( _ballPos.x, _ballSpeed.x, 10, 610 );
+		ReflectAtLimit( _ballPos.y, _ballSpeed.y, 10, 450 );
+
+		_trail.push_back( _ballPos );
+		if( _trail.size() > 50 )
+			_trail.pop_front();
+	}
+
+	void PongGame::Draw()
+	{
+		using namespace JanSordid::Core;
+		if( SDL_GetWindowFlags( _window ) & SDL_WINDOW_MINIMIZED )
+		{
+			//SDL_RenderPresent( rend );
+			SDL_DelayNS( 16'666'000 );
+			return;
+		}
+
+		SDL_SetRenderDrawColor( _renderer, 0, 255, 0, 255 );
+		SDL_RenderClear( _renderer );
+
+		SDL_SetRenderDrawBlendMode( _renderer, SDL_BLENDMODE_BLEND );
+		//for( int j = 0; j < 1500; j++ )
+		for( unsigned int i = 0; i < _trail.size(); ++i )
+		{
+			SDL_SetRenderDrawColor( _renderer, 255, 127, 0, i * 5 );
+			SDL_RenderFillRect( _renderer, &_trail[i] );
+		}
+
+		SDL_SetRenderDrawColor( _renderer, 255, 0, 0, 255 );
+		SDL_RenderLines(_renderer, _polygon.data(), _polygon.size() );
+
+		bool isCollision = SDL_HasRectIntersectionFloat( &_ballPos, &_playerPos );
+		SDL_SetRenderDrawColor( _renderer, 255, isCollision ? 255 : 0, isCollision ? 255 : 0, 255 );
+		SDL_RenderFillRect( _renderer, &_ballPos );
+		SDL_RenderFillRect( _renderer, &_playerPos );
+
+		SDL_SetRenderDrawColor( _renderer, 0, 0, 0, 255 );
+		SDL_RenderDebugText( _renderer, _playerPos.x - 30, _playerPos.y - 20, "Hans Hans" );
+
+		SDL_RenderPresent( _renderer );
+	}
+
+	bool PongGame::ReflectAtLimit( float & value, float & direction, const float lower, const float upper )
+	{
+		if( value < lower )
+		{
+			value     = 2 * lower - value; // e.g. 2 * 20 - 18 => 22
+			direction = std::abs( direction );
+			return true;
+		}
+		else if( value > upper )
+		{
+			value     = 2 * upper - value; // e.g. 2 * 400 - 402 => 398
+			direction = -std::abs( direction );
+			return true;
+		}
+		return false;
+	}
+
+	bool PongGame::WrapAtLimit( float & value, [[maybe_unused]] float & direction, const float lower, const float upper )
+	{
+		if( value < lower )
+		{
+			value = value - lower + upper;
+			return true;
+		}
+		else if( value > upper )
+		{
+			value = upper - value + lower;
+			return true;
+		}
+		return false;
+	}
+}
+
+int main( int argc, char * argv[] )
+{
+	using namespace JanSordid;
+
+	PongGame pongGame;
+
+	pongGame.Init();
+
+	while( true )
+	{
+		pongGame.Input();
+		pongGame.Update();
+		pongGame.Draw();
+	}
+}
+
+
+/*
 
 // Global/GameState/AppState wäre hier vielleicht auch angebracht, WorldState/LevelState erst ab "wall"
 struct WorldState
@@ -165,36 +395,7 @@ int main( int argc, char * argv [] )
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+*/
 
 
 /*

@@ -9,6 +9,11 @@ set( CMAKE_C_STANDARD               17  )
 set( CMAKE_CXX_STANDARD             20  )
 set( CMAKE_CXX_STANDARD_REQUIRED    ON  )
 set( CMAKE_CXX_EXTENSIONS           OFF )
+set( BUILD_SHARED_LIBS              ON  )
+set( BUILD_STATIC_LIBS              OFF )
+
+set( SDL_SHARED ON  CACHE BOOL "" )
+set( SDL_STATIC OFF CACHE BOOL "" )
 
 if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
     set( IS_DEBUG TRUE )
@@ -26,6 +31,7 @@ option( USE_ImGuiFreetype   "Use Dear ImGui Freetype" OFF         )   # Usage of
 option( USE_OpenMP          "Use OpenMP"              ON          )   # No-brain SIMD and MP
 option( USE_RTTI            "Use RTTI"                ON          )   # Don't need dynamic_cast or type_id? Then don't pay for them
 option( USE_Exceptions      "Use Exceptions"          ON          )   # Don't need exceptions? Then don't pay for them
+option( USE_TargetNative    "Use march=native"        OFF         )   # Don't need to run this somewhere else? Build for THIS machine only
 
 #cmake_dependent_option()
 
@@ -122,10 +128,35 @@ add_compile_options(
         -Werror=unused-value
         $<$<CXX_COMPILER_ID:Clang>:-Werror=comma>
 
+        -Werror=array-bounds                                # Out-of-bounds array access
+        -Werror=format                                      # printf/scanf format string mismatches
+        -Werror=format-security                             # Dangerous format string usage
+        -Werror=null-dereference                            # Potential NULL pointer dereferences
+        $<$<CXX_COMPILER_ID:GNU>:-Werror=stringop-overflow> # Buffer overflows in string operations
+
+        $<$<COMPILE_LANGUAGE:C>:-Werror=implicit-function-declaration> # Using functions without declaration
+        $<$<COMPILE_LANGUAGE:C>:-Werror=incompatible-pointer-types>    # Assigning incompatible pointer types
+        $<$<COMPILE_LANGUAGE:C>:-Werror=int-conversion>                # Implicit conversion between int and pointer
+
+        -Werror=misleading-indentation           # Indentation suggests different control flow
+        -Werror=dangling-else                    # Ambiguous else clauses
+        -Werror=switch                           # Switch statement issues (missing break, etc)
+        -Wswitch-enum                            # Switch on enum missing cases
+        $<$<CONFIG:RELEASE>:-Werror=switch-enum> # Switch on enum missing cases
+
+        $<$<CXX_COMPILER_ID:GNU>:-Werror=div-by-zero>                             # Compile-time division by zero
+        $<$<CXX_COMPILER_ID:Clang>:-Werror=division-by-zero>                      # Compile-time division by zero
+        $<$<CXX_COMPILER_ID:Clang>:-Werror=missing-braces>                        # Missing braces in initializers
+        $<$<COMPILE_LANGUAGE:C>:$<$<CXX_COMPILER_ID:GNU>:-Werror=missing-braces>> # Missing braces in initializers
+        -Werror=sizeof-pointer-memaccess                                          # sizeof on pointer when array intended
+
         ## Soften up some general rules which are too harsh, with no-* options
         -Wno-unused-parameter                                                       # Base class functions can have plenty of unused parameters
         $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:Clang>:-Wno-c++98-compat>>    # Do not strive for prehistoric compatibility
         $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:GNU>:-Wno-volatile>>          # Senseless C++20 deprecation that has been de-deprecated for C++23, works in GCC 11 but not Clang 15
+        -Wno-unused-parameter                                                     # Base class functions can have plenty of unused parameters
+        $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:Clang>:-Wno-c++98-compat>>  # Do not strive for prehistoric compatibility
+        $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:GNU>:-Wno-volatile>>        # Senseless C++20 deprecation that has been de-deprecated for C++23, works in GCC 11 but not Clang 15
 
         $<$<COMPILE_LANGUAGE:CXX>:-Werror=deprecated-copy>
         $<$<COMPILE_LANGUAGE:CXX>:-Werror=deprecated-copy-dtor>
@@ -150,11 +181,30 @@ add_compile_options(
         $<$<COMPILE_LANGUAGE:CXX>:-fconstexpr-depth=127>
         $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:GNU>:-fconstexpr-ops-limit=127124200>>
         $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:Clang>:-fconstexpr-steps=127124200>>
-        # MSVC /constexpr:steps 127124200
 
         # Get messages from the vectorizer
         #$<$<CXX_COMPILER_ID:Clang>:-Rpass=loop-vectorize>
-)
+    )
+else()
+    add_compile_options(
+            /W4
+
+            /we4706   # assignment within conditional (parentheses)
+            /we4715   # not all control paths return a value (return-type)
+            /we4717   # recursive on all control paths (return-type related)
+            /we4552   # operator has no effect (unused-value)
+            /we4553   # operator has no effect; did you intend '!='? (comma operator misuse)
+            /we4700   # uninitialized local variable used
+            #/we6031   # return value ignored (unused-result, requires /analyze)
+
+            /we4013   # implicit function declaration
+            /we4047   # different levels of indirection (pointer type mismatch)
+            /we4024   # different types for formal and actual parameter
+            /we4013   # function undefined; assuming extern returning int
+            /we4716   # must return a value
+
+            /constexpr:steps 127124200
+    )
 endif()
 
 
@@ -180,7 +230,7 @@ if( NOT USE_OpenMP )
 endif()
 
 # Only build for this machine
-if( MaximumOptimize )
+if( USE_TargetNative )
     add_compile_options( -march=native )
 endif()
 
@@ -254,6 +304,9 @@ add_executable( sor-example
         src/sor/core.cpp
         src/sor/sdl_core.cpp
         src/sor/sdl_game.cpp
+
+        src/sor/component/perftrack.cpp
+        src/sor/component/perftrack.hpp
 
         src/hsnr64/tilefont.cpp
         src/hsnr64/tiles.cpp

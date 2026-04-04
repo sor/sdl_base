@@ -13,7 +13,7 @@ namespace JanSordid::SDL_Example
 
 		if( !_font )
 		{
-			_font = TTF_OpenFont( BasePath "asset/font/RobotoSlab-Bold.ttf", (int)(_game.scalingFactor() * 10) );
+			_font = TTF_OpenFont( BasePathFont "RobotoSlab-Bold.ttf", (int)(_game.scalingFactor() * 10) );
 			if( !_font )
 				print( stderr, "TTF_OpenFont failed: {}\n", SDL_GetError() );
 			TTF_SetFontHinting( _font, TTF_HintingFlags::TTF_HINTING_LIGHT_SUBPIXEL );
@@ -22,21 +22,21 @@ namespace JanSordid::SDL_Example
 
 		if( !_image )
 		{
-			_image = IMG_LoadTexture( renderer(), BasePath "asset/graphic/background.png" );
+			_image = IMG_LoadTexture( renderer(), BasePathGraphic "background.png" );
 			if( !_image )
 				print( stderr, "IMG_LoadTexture failed: {}\n", SDL_GetError() );
 		}
 
 		if( !_music )
 		{
-			_music = Mix_LoadMUS( BasePath "asset/music/severance.ogg" );
+			_music = Mix_LoadMUS( BasePathMusic "severance.ogg" );
 			if( !_music )
 				print( stderr, "Mix_LoadMUS failed: {}\n", SDL_GetError() );
 		}
 
 		if( !_sound )
 		{
-			_sound = Mix_LoadWAV( BasePath "asset/sound/pew.wav" );
+			_sound = Mix_LoadWAV( BasePathSound "pew.wav" );
 			if( !_sound )
 				print( stderr, "Mix_LoadWAV failed: {}\n", SDL_GetError() );
 		}

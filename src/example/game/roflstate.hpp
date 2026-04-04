@@ -112,6 +112,6 @@ namespace JanSordid::SDL_Example
 		void Render( u64 framesSinceStart, Duration timeSinceStart, f32 deltaTNeeded ) override;
 
 		Color clearColor() const noexcept override { return Color{ 0, 32, 0, 255 }; }
-		bool isFPSLimited() const noexcept override { return false; }
+		bool isFPSLimited() const noexcept override { return true; }
 	};
 }

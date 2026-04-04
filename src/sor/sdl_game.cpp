@@ -46,7 +46,7 @@ namespace JanSordid::SDL
 			print( "Scaling Factor was calculated to be: {}\n", scalingFactor );
 		}
 
-		if( scalingFactor != 1.0f )
+		if( scalingFactor != NoScaling )
 		{
 			// TODO: test if this works as intended
 			const bool isIntegerScaling = (scalingFactor == nearbyintf( scalingFactor ));
@@ -224,16 +224,20 @@ namespace JanSordid::SDL
 		currentState().Update( _framesSinceStart, _timeSinceStart, deltaT );
 	}
 
-	void IGame::Render( const f32 deltaTNeeded )
+	void IGame::RenderClear()
 	{
-#if IMGUI
-		TimePoint startTime = Clock::now();
-#endif
-
 		const Color clear = currentState().clearColor();
 		SDL_SetRenderDrawColor( _renderer, clear.r, clear.g, clear.b, clear.a );
 		SDL_RenderClear( _renderer );
+	}
 
+	void IGame::RenderPresent()
+	{
+		SDL_RenderPresent( _renderer );
+	}
+
+	void IGame::Render( const f32 deltaTNeeded )
+	{
 		// This is placed before the GameState::Render call, to also allow calls to ImGui inside Render (although most ImGui calls should be in RenderUI)
 #if IMGUI
 		//FPoint oldScale;
@@ -247,51 +251,13 @@ namespace JanSordid::SDL
 #endif
 
 		currentState().Render( _framesSinceStart, _timeSinceStart, deltaTNeeded );
-
-#if IMGUI
-		_frameTimesRender[_frameTimesIndex] = duration_cast<FMilliSec>( Clock::now() - startTime ).count();
-#endif
-
-		ImGuiOnly( RenderUI( deltaTNeeded ); )
-
-		SDL_RenderPresent( _renderer );
 	}
 
 #if IMGUI
 
 	void IGame::RenderUI( const f32 deltaTNeeded )
 	{
-		_frameTimesTotal[_frameTimesIndex]    = deltaTNeeded * 1000;
-
-		const uint nextFrameTimeIndex         = (_frameTimesIndex + 1) % _frameTimesTotal.size();
-		_frameTimesTotal[nextFrameTimeIndex]  = NAN;
-		_frameTimesUpdate[nextFrameTimeIndex] = NAN;
-		_frameTimesRender[nextFrameTimeIndex] = NAN;
-		_frameTimesDeltaT[nextFrameTimeIndex] = NAN;
-
-		if( _isFrameTimeRecording )
-		{
-			_frameTimesIndex = nextFrameTimeIndex;
-		}
-
-		if( _isFrameTimeVisible )
-		{
-			ImGui::Begin( "Frametime", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | /*ImGuiWindowFlags_NoSavedSettings |*/ ImGuiWindowFlags_NoFocusOnAppearing );
-			//			ImGui::PlotLines( "##Frame Times", _frameTimes.data(), (int)_frameTimes.size(), 0, nullptr, 0, 20, ImVec2{ (f32)_frameTimes.size()*2, 140 } );
-			//			ImPlot::SetNextAxesToFit();
-			ImPlot::SetNextAxesLimits( 0, (f64)_frameTimesTotal.size(), 0.1, 20, ImPlotCond_Once );
-			if( ImPlot::BeginPlot( "##Frame Times Plot", ImVec2{ (f32)_frameTimesTotal.size() * 2, 120 }, ImPlotFlags_NoInputs | ImPlotFlags_NoFrame | ImPlotFlags_NoChild | ImPlotFlags_NoTitle | ImPlotFlags_NoLegend | ImPlotFlags_NoMenus | ImPlotFlags_NoBoxSelect ) )
-			{
-				ImPlot::SetupAxisScale( ImAxis_Y1, ImPlotScale_SymLog );
-				ImPlot::PlotLine( "Total",  _frameTimesTotal.data(),  (int)_frameTimesTotal.size() );
-				ImPlot::PlotLine( "Update", _frameTimesUpdate.data(), (int)_frameTimesUpdate.size() );
-				ImPlot::PlotLine( "Render", _frameTimesRender.data(), (int)_frameTimesRender.size() );
-				ImPlot::PlotLine( "DeltaT", _frameTimesDeltaT.data(), (int)_frameTimesDeltaT.size() );
-				//ImPlot::PlotLine( "My Line Plot", x_data, y_data, 1000 );
-				ImPlot::EndPlot();
-			}
-			ImGui::End();
-		}
+		_perfTracker.RenderUI( deltaTNeeded );
 
 		currentState().RenderUI( _framesSinceStart, _timeSinceStart, deltaTNeeded );
 
@@ -333,9 +299,9 @@ namespace JanSordid::SDL
 					//         F11 -> toggle display of frame time graph
 					// Shift + F11 -> toggle recoding of frame time
 					if( what_key.mod & SDL_KMOD_SHIFT )
-						_isFrameTimeRecording = !_isFrameTimeRecording;
+						_perfTracker.ToggleRecording();
 					else
-						_isFrameTimeVisible = !_isFrameTimeVisible;
+						_perfTracker.ToggleMode();
 
 					return true;
 				}
@@ -410,15 +376,26 @@ namespace JanSordid::SDL
 				Input();
 
 #if IMGUI
-				TimePoint startUpdate = Clock::now();
+				_perfTracker.RecordDeltaTDuration( deltaT );
+
+				_perfTracker.StartUpdateTiming();
 #endif
 				Update( deltaT );
 #if IMGUI
-				_frameTimesDeltaT[_frameTimesIndex] = deltaT * 1000;
-				_frameTimesUpdate[_frameTimesIndex] = duration_cast<FMilliSec>( Clock::now() - startUpdate ).count();
-#endif
+				_perfTracker.EndUpdateTiming();
 
+				_perfTracker.StartRenderTiming();
+#endif
+				RenderClear();
 				Render( deltaTNeeded );
+#if IMGUI
+				_perfTracker.EndRenderTiming();
+
+				_perfTracker.StartRendUITiming();
+				RenderUI( deltaTNeeded );
+				_perfTracker.EndRendUITiming();
+#endif
+				RenderPresent();
 			}
 
 			deltaTDurNeeded = Clock::now() - start;

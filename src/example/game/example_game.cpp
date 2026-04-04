@@ -10,7 +10,7 @@ namespace JanSordid::SDL_Example
 	constexpr bool DoBenchmark = false;
 
 	MyGame::MyGame()
-		: Base( "Example SDL Game", { 640, 360 },  ScalingFactorDynamic, DoBenchmark ? VSyncDisabled : VSyncAdaptive )
+		: Base( "Example SDL Game", { 640, 360 }, ScalingFactorDynamic, DoBenchmark ? VSyncDisabled : VSyncAdaptive )
 	//	: Base( "Example SDL Game", Point { 1280, 960 }, ScalingFactorDynamic, doBenchmark ? 0 : VSyncAdaptive )
 	{
 		AddStates<

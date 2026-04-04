@@ -126,10 +126,10 @@ namespace JanSordid::SDL_Example
 		if( _spawnProjectileAt.x >= 0
 		 && _spawnProjectileAt.y >= 0 )
 		{
-			SpawnEnemyProjectile( _spawnProjectileAt );
 
 			if( _spawnProjectileSoundCD < timeSinceStart )
 			{
+				SpawnEnemyProjectile( _spawnProjectileAt );
 				//using namespace ChronoLiterals;
 
 				Mix_PlayChannel( -1, _sound, 0 );

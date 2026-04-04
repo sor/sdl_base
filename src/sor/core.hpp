@@ -32,8 +32,8 @@
  * Ask how could the macro be extended to add the msg if none given
  * by stringifying the cond, or having the ability to receive a handwritten msg
 template<typename T>
-constexpr void MyAssert( T condition, const char * msg) {
-    if (std::is_constant_evaluated()) {
+constexpr void MyAssert( T condition, const char * msg ) {
+    if( std::is_constant_evaluated() ) {
         if( !condition )
             throw msg;
     } else {
@@ -42,6 +42,7 @@ constexpr void MyAssert( T condition, const char * msg) {
 }
 */
 
+// throw only happens during compilation, this is necessary for constexpr scopes, as asserts are not possible there
 #define assertCE(expr)                                                         \
 	(std::is_constant_evaluated() && !static_cast<bool>(expr)                  \
 		? throw std::logic_error( "Assertion failed in constant expression!" ) \
@@ -126,6 +127,12 @@ namespace JanSordid::Core//::inline V1
 	constexpr f64  operator""_f64 (unsigned long long n) { return (f64)n; }
 	constexpr f32  operator""_f32 (long double n) { return (f32)n; }
 	constexpr f64  operator""_f64 (long double n) { return (f64)n; }
+
+	constexpr std::size_t operator""_KiB(unsigned long long n) { return n * 1024; }
+	constexpr std::size_t operator""_MiB(unsigned long long n) { return n * 1024_KiB; }
+	constexpr std::size_t operator""_GiB(unsigned long long n) { return n * 1024_MiB; }
+	constexpr std::size_t operator""_TiB(unsigned long long n) { return n * 1024_GiB; }
+	constexpr std::size_t operator""_PiB(unsigned long long n) { return n * 1024_TiB; }
 
 	// Classes / Structs
 	using String        = std::string;
