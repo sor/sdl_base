@@ -121,6 +121,7 @@ add_compile_options(
         -Wall
         -Wextra
         -Werror=parentheses
+        -Werror=pessimizing-move
         -Werror=return-type
         -Werror=sequence-point
         -Werror=uninitialized

@@ -28,20 +28,20 @@ namespace JanSordid::SDL
 	namespace PointLiterals
 	{
 #ifdef Y_IS_UP
-		constexpr SDL_Point   operator"" _up    (unsigned long long n)  { return { 0,  (int)n }; }
-		constexpr SDL_Point   operator"" _down  (unsigned long long n)  { return { 0, -(int)n }; }
-		constexpr SDL_FPoint  operator"" _up    (long double n)         { return { 0.0f,  (float)n }; }
-		constexpr SDL_FPoint  operator"" _down  (long double n)         { return { 0.0f, -(float)n }; }
+		constexpr SDL_Point   operator""_up    (unsigned long long n)  { return { 0,  (int)n }; }
+		constexpr SDL_Point   operator""_down  (unsigned long long n)  { return { 0, -(int)n }; }
+		constexpr SDL_FPoint  operator""_up    (long double n)         { return { 0.0f,  (float)n }; }
+		constexpr SDL_FPoint  operator""_down  (long double n)         { return { 0.0f, -(float)n }; }
 #else
-		constexpr SDL_Point   operator"" _up   ( unsigned long long n )  { return { 0, -(int)n }; }
-		constexpr SDL_Point   operator"" _down ( unsigned long long n )  { return { 0,  (int)n }; }
-		constexpr SDL_FPoint  operator"" _up   ( long double n )         { return { 0.0f, -(float)n }; }
-		constexpr SDL_FPoint  operator"" _down ( long double n )         { return { 0.0f,  (float)n }; }
+		constexpr SDL_Point   operator""_up   ( unsigned long long n )  { return { 0, -(int)n }; }
+		constexpr SDL_Point   operator""_down ( unsigned long long n )  { return { 0,  (int)n }; }
+		constexpr SDL_FPoint  operator""_up   ( long double n )         { return { 0.0f, -(float)n }; }
+		constexpr SDL_FPoint  operator""_down ( long double n )         { return { 0.0f,  (float)n }; }
 #endif
-		constexpr SDL_Point   operator"" _left ( unsigned long long n )  { return { -(int)n, 0 }; }
-		constexpr SDL_Point   operator"" _right( unsigned long long n )  { return {  (int)n, 0 }; }
-		constexpr SDL_FPoint  operator"" _left ( long double n )         { return { -(float)n, 0.0f }; }
-		constexpr SDL_FPoint  operator"" _right( long double n )         { return {  (float)n, 0.0f }; }
+		constexpr SDL_Point   operator""_left ( unsigned long long n )  { return { -(int)n, 0 }; }
+		constexpr SDL_Point   operator""_right( unsigned long long n )  { return {  (int)n, 0 }; }
+		constexpr SDL_FPoint  operator""_left ( long double n )         { return { -(float)n, 0.0f }; }
+		constexpr SDL_FPoint  operator""_right( long double n )         { return {  (float)n, 0.0f }; }
 	}
 
 
@@ -152,11 +152,11 @@ namespace JanSordid::SDL
 	constexpr SDL_FRect toFRect( const SDL_FPoint pos, const SDL_FPoint size ) { return SDL_FRect { pos.x, pos.y, size.x, size.y }; }
 
 	inline /*constexpr*/ int        calcLengthSq( const SDL_Point  n ) { return n.x * n.x + n.y * n.y; }
-	inline /*constexpr*/ f32        calcLength(   const SDL_Point  n ) { return sqrt( calcLengthSq( n ) ); }  // Care: Returns f32 as sqrt(int) will very likely not return an int
+	inline /*constexpr*/ f32        calcLength(   const SDL_Point  n ) { return sqrtf( (f32)calcLengthSq( n ) ); }  // Care: Returns f32 as sqrt(int) will very likely not return an int
 	inline /*constexpr*/ SDL_FPoint normalize(    const SDL_Point  n ) { return toF( n ) / calcLength( n ); } // Care: Returns FPoint
 
 	inline /*constexpr*/ f32        calcLengthSq( const SDL_FPoint n ) { return n.x * n.x + n.y * n.y; }
-	inline /*constexpr*/ f32        calcLength(   const SDL_FPoint n ) { return sqrt( calcLengthSq( n ) ); }
+	inline /*constexpr*/ f32        calcLength(   const SDL_FPoint n ) { return sqrtf( calcLengthSq( n ) ); }
 	inline /*constexpr*/ SDL_FPoint normalize(    const SDL_FPoint n ) { return n / calcLength( n ); }
 
 	inline bool hasIntersection( const SDL_Rect  && lhs, const SDL_Rect  && rhs ) { return SDL_HasRectIntersection( &lhs, &rhs ); }
