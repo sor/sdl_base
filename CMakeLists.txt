@@ -152,9 +152,6 @@ add_compile_options(
         -Werror=sizeof-pointer-memaccess                                          # sizeof on pointer when array intended
 
         ## Soften up some general rules which are too harsh, with no-* options
-        -Wno-unused-parameter                                                       # Base class functions can have plenty of unused parameters
-        $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:Clang>:-Wno-c++98-compat>>    # Do not strive for prehistoric compatibility
-        $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:GNU>:-Wno-volatile>>          # Senseless C++20 deprecation that has been de-deprecated for C++23, works in GCC 11 but not Clang 15
         -Wno-unused-parameter                                                     # Base class functions can have plenty of unused parameters
         $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:Clang>:-Wno-c++98-compat>>  # Do not strive for prehistoric compatibility
         $<$<COMPILE_LANGUAGE:CXX>:$<$<CXX_COMPILER_ID:GNU>:-Wno-volatile>>        # Senseless C++20 deprecation that has been de-deprecated for C++23, works in GCC 11 but not Clang 15
