@@ -110,7 +110,7 @@ namespace JanSordid::SDL_Example
 
 	void MyGame::Render( const f32 deltaT ) { Base::Render( deltaT ); }
 
-#if IMGUI
+#if USE_IMGUI
 	void MyGame::RenderUI( const f32 deltaTNeeded ) { Base::RenderUI( deltaTNeeded ); }
 #endif
 }

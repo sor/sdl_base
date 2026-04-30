@@ -1,6 +1,6 @@
 #include "perftrack.hpp"
 
-#if defined( IMGUI )
+#if USE_IMGUI
 
 #include <imgui.h>
 #include <implot.h>
@@ -42,8 +42,8 @@ namespace JanSordid::SDL
 			                              | ImGuiWindowFlags_NoFocusOnAppearing );
 			//			ImGui::PlotLines( "##Frame Times", _frameTimes.data(), (int)_frameTimes.size(), 0, nullptr, 0, 20, ImVec2{ (f32)_frameTimes.size()*2, 140 } );
 			//			ImPlot::SetNextAxesToFit();
-			ImPlot::SetNextAxesLimits( 0, (f64)_frameTimesTotal.size(), 0.1, 20, ImPlotCond_Once );
-			if( ImPlot::BeginPlot( "##Frame Times Plot", ImVec2{ (f32)_frameTimesTotal.size() * 2, 120 }, ImPlotFlags_NoInputs | ImPlotFlags_NoFrame | ImPlotFlags_NoChild | ImPlotFlags_NoTitle | ImPlotFlags_NoLegend | ImPlotFlags_NoMenus | ImPlotFlags_NoBoxSelect ) )
+			ImPlot::SetNextAxesLimits( 0, (f64)_frameTimesTotal.size(), 0.1, 40, ImPlotCond_Once );
+			if( ImPlot::BeginPlot( "##Frame Times Plot", ImVec2{ (f32)_frameTimesTotal.size() * 2, 120 }, ImPlotFlags_NoInputs | ImPlotFlags_NoFrame | /*ImPlotFlags_NoChild |*/ ImPlotFlags_NoTitle | ImPlotFlags_NoLegend | ImPlotFlags_NoMenus | ImPlotFlags_NoBoxSelect ) )
 			{
 				ImPlot::SetupAxisScale( ImAxis_Y1, ImPlotScale_SymLog );
 				ImPlot::PlotLine( "Total",  _frameTimesTotal.data(),  (int)_frameTimesTotal.size() );

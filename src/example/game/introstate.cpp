@@ -13,7 +13,7 @@ namespace JanSordid::SDL_Example
 
 		if( !_font )
 		{
-			_font = TTF_OpenFont( BasePathFont "RobotoSlab-Bold.ttf", (int)(_game.scalingFactor() * 10) );
+			_font = TTF_OpenFont( BasePathFont "RobotoSlab-Bold.ttf", _game.scalingFactor() * 10.0f );
 			if( !_font )
 				print( stderr, "TTF_OpenFont failed: {}\n", SDL_GetError() );
 			TTF_SetFontHinting( _font, TTF_HintingFlags::TTF_HINTING_LIGHT_SUBPIXEL );
@@ -27,18 +27,30 @@ namespace JanSordid::SDL_Example
 				print( stderr, "IMG_LoadTexture failed: {}\n", SDL_GetError() );
 		}
 
-		if( !_music )
+		if( !_music || !_trackMusic )
 		{
-			_music = Mix_LoadMUS( BasePathMusic "severance.ogg" );
+			_music = MIX_LoadAudio( mixer(), BasePathMusic "severance.ogg", PreDecode );
 			if( !_music )
-				print( stderr, "Mix_LoadMUS failed: {}\n", SDL_GetError() );
+				print( stderr, "MIX_LoadAudio failed: {}\n", SDL_GetError() );
+
+			_trackMusic = MIX_CreateTrack( mixer() );
+			if( !_trackMusic )
+				print( stderr, "MIX_CreateTrack failed: {}\n", SDL_GetError() );
+
+			MIX_SetTrackAudio( _trackMusic, _music );
 		}
 
-		if( !_sound )
+		if( !_sound || !_trackSound )
 		{
-			_sound = Mix_LoadWAV( BasePathSound "pew.wav" );
+			_sound = MIX_LoadAudio( mixer(), BasePathSound "pew.wav", PreDecode );
 			if( !_sound )
-				print( stderr, "Mix_LoadWAV failed: {}\n", SDL_GetError() );
+				print( stderr, "MIX_LoadAudio failed: {}\n", SDL_GetError() );
+
+			_trackSound = MIX_CreateTrack( mixer() );
+			if( !_trackSound )
+				print( stderr, "MIX_CreateTrack failed: {}\n", SDL_GetError() );
+
+			MIX_SetTrackAudio( _trackSound, _sound );
 		}
 	}
 
@@ -46,16 +58,16 @@ namespace JanSordid::SDL_Example
 	{
 		Base::Enter( stacking );
 
-		if( Mix_GetMusicPosition( _music ) <= 0.001 )
-			Mix_PlayMusic( _music, -1 );
-		else if( Mix_PausedMusic() )
-			Mix_ResumeMusic();
+		if( MIX_GetTrackPlaybackPosition( _trackMusic ) <= 10 )
+			MIX_PlayTrack( _trackMusic, SDL_PropertiesID{} );
+		else if( MIX_TrackPaused( _trackMusic ) )
+			MIX_ResumeTrack( _trackMusic );
 	}
 
 	void IntroState::Exit( bool stacking )
 	{
-		if( !Mix_PausedMusic() )
-			Mix_PauseMusic();
+		if( !MIX_TrackPaused( _trackMusic ) )
+			MIX_PauseTrack( _trackMusic );
 
 		Base::Exit( stacking );
 	}
@@ -84,21 +96,21 @@ namespace JanSordid::SDL_Example
 
 				if( key.scancode == SDL_SCANCODE_F1 && event.key.repeat == 0 )
 				{
-					if( Mix_PausedMusic() )
-						Mix_ResumeMusic();
+					if( MIX_TrackPaused( _trackMusic ) )
+						MIX_ResumeTrack( _trackMusic );
 					else
-						Mix_PauseMusic();
+						MIX_PauseTrack( _trackMusic );
 				}
 				else if( key.scancode == SDL_SCANCODE_F2 && event.key.repeat == 0 )
 				{
-					if( Mix_VolumeMusic( -1 ) == MIX_MAX_VOLUME )
-						Mix_VolumeMusic( 0 );
+					if( MIX_GetTrackGain( _trackMusic ) == 1.0f )
+						MIX_SetTrackGain( _trackMusic, 0 );
 					else
-						Mix_VolumeMusic( MIX_MAX_VOLUME );
+						MIX_SetTrackGain( _trackMusic, 1.0f );
 				}
 				else if( key.scancode == SDL_SCANCODE_F3 && event.key.repeat == 0 )
 				{
-					Mix_PlayChannel( -1, _sound, 0 );
+					MIX_PlayTrack( _trackSound, SDL_PropertiesID{} );
 				}
 				else if( key.scancode == SDL_SCANCODE_F4 && event.key.repeat == 0 )
 				{
@@ -218,7 +230,7 @@ namespace JanSordid::SDL_Example
 		}
 	}
 
-#ifdef IMGUI
+#ifdef USE_IMGUI
 
 	void IntroState::RenderUI( const u64 framesSinceStart, const Duration timeSinceStart, const f32 deltaTNeeded )
 	{
@@ -271,12 +283,11 @@ namespace JanSordid::SDL_Example
 		ImGui::PushStyleVar( ImGuiStyleVar_FrameBorderSize, 1 );
 		// CARE: ImU32 as color is 0xAABBGGRR - opposite of what might be expected
 		ImGui::PushStyleColor( ImGuiCol_Border, 0xAAFFFFFF );
-		constexpr fmt::format_string<int>
-			withNumber( "{:02}" ),
-			withoutNumber( "  ##{:02}" );
-		const fmt::format_string<int> & fmt = drawColorNumber
-			? withNumber
-			: withoutNumber;
+
+		using namespace StringViewLiterals;
+		const std::string_view prefix = drawColorNumber
+			? ""sv      // draws number                             "23"
+			: "  ##"sv; // draws spaces, names internally by number "  ##23"
 
 		for( int i = 0; i < 64; ++i )
 		{
@@ -286,7 +297,7 @@ namespace JanSordid::SDL_Example
 			//Color color = hsnr64::Palette[i];
 			ImGui::PushStyleColor( ImGuiCol_Button, pcol );
 			ImGui::PushStyleColor( ImGuiCol_Text, pcol ^ 0x00808080 );
-			if( ImGui::Button( format( fmt::runtime( fmt ), i ).c_str() ) )
+			if( ImGui::Button( format( "{}{:02}", prefix, i ).c_str() ) )
 				_colorIndex = i;
 			ImGui::PopStyleColor( 2 );
 			//ImGui::ColorButton( format( "color{}", i ).c_str(), *((ImVec4*)&hsnr64::Palette[i]), ImGuiColorEditFlags_Uint8 );

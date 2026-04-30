@@ -2,7 +2,7 @@
 
 void Callback( void * userdata, const char * const * filelist, int filter )
 {
-	fmt::print( "Hello {}! {}\n", "World", *filelist );
+	print( "Hello {}! {}\n", "World", *filelist );
 }
 
 int main()
@@ -20,7 +20,7 @@ int main()
 
 	auto lambdaCallback = []( void * userdata, const char * const * filelist, int filter )
 	{
-		fmt::print( "Hello {}! {}\n", "World", *filelist );
+		print( "Hello {}! {}\n", "World", *filelist );
 	};
 
 	SDL_ShowOpenFileDialog( lambdaCallback, nullptr, w, nullptr, 0, nullptr, false );
@@ -37,7 +37,7 @@ int main()
 	NFD::UniquePath upath;
 	if( NFD::OpenDialog( upath, nullptr, 0, nullptr ) == NFD_OKAY )
 	{
-		fmt::print( "Hello {}! {}\n", "World", upath.get() );
+		print( "Hello {}! {}\n", "World", upath.get() );
 	}
 
 	return 0;

@@ -6,9 +6,6 @@ namespace JanSordid::SDL
 {
 	// Care: I've really gone a bit to wild in here, some of those operators will be removed in the near future
 
-	constexpr const SDL_Rect  * EntireRect  = nullptr;
-	constexpr const SDL_FRect * EntireFRect = nullptr;
-
 	/*struct Index : SDL_Point
 	{
 

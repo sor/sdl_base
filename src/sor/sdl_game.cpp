@@ -9,6 +9,9 @@ namespace JanSordid::SDL
 	//template class           Game<IGameState,u8>;
 	//template class GameState<Game<IGameState,u8>>;
 
+	// We want one out of line virtual definition, to not have vtables in every TU
+	IGameState::~IGameState() noexcept = default;
+
 	IGame::IGame( const char * const windowTitle, const Point requestedSize, f32 scalingFactor, const int vSync ) noexcept
 		: _windowTitle{ windowTitle },
 		  _vSync{ vSync }
@@ -28,8 +31,7 @@ namespace JanSordid::SDL
 			exit( 2 );
 		}
 
-		constexpr MIX_InitFlags mixFlags = (MIX_InitFlags)(MIX_INIT_MP3 | MIX_INIT_OGG);
-		if( Mix_Init( mixFlags ) != mixFlags )
+		if( !MIX_Init() )
 		{
 			print( stderr, "Mix_Init failed: {}\n", SDL_GetError() );
 			exit( 4 );
@@ -79,11 +81,15 @@ namespace JanSordid::SDL
 
 	IGame::~IGame() noexcept
 	{
+		_mixer.release(); // RAII is sad
+
 		DestroyWindowEtc();
 
 		ImGuiOnly( DestroyImGui(); )
 
 		NFD::Quit();
+
+		MIX_Quit();
 
 		while( TTF_WasInit() )
 			TTF_Quit();
@@ -120,9 +126,10 @@ namespace JanSordid::SDL
 			exit( 7 );
 		}
 
-		if( !Mix_OpenAudio( 0, nullptr ) )
+		_mixer = MIX_CreateMixerDevice( SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr );
+		if( _mixer == nullptr )
 		{
-			print( stderr, "Mix_OpenAudio failed: {}\n", SDL_GetError() );
+			print( stderr, "MIX_CreateMixerDevice failed: {}\n", SDL_GetError() );
 			exit( 5 );
 		}
 
@@ -146,7 +153,7 @@ namespace JanSordid::SDL
 		}
 	}
 
-#if IMGUI
+#if USE_IMGUI
 
 	void IGame::CreateImGui()
 	{
@@ -239,7 +246,7 @@ namespace JanSordid::SDL
 	void IGame::Render( const f32 deltaTNeeded )
 	{
 		// This is placed before the GameState::Render call, to also allow calls to ImGui inside Render (although most ImGui calls should be in RenderUI)
-#if IMGUI
+#if USE_IMGUI
 		//FPoint oldScale;
 		//SDL_RenderGetScale(_renderer, &oldScale.x, &oldScale.y);
 		//const ImGuiIO & io = ImGui::GetIO();
@@ -253,7 +260,7 @@ namespace JanSordid::SDL
 		currentState().Render( _framesSinceStart, _timeSinceStart, deltaTNeeded );
 	}
 
-#if IMGUI
+#if USE_IMGUI
 
 	void IGame::RenderUI( const f32 deltaTNeeded )
 	{
@@ -270,7 +277,7 @@ namespace JanSordid::SDL
 	// Returns if the event has been handled
 	bool IGame::HandleEvent( const Event & event )
 	{
-#ifdef IMGUI
+#ifdef USE_IMGUI
 		const ImGuiIO & io = ImGui::GetIO();
 		ImGui_ImplSDL3_ProcessEvent( &event );
 #endif
@@ -293,7 +300,7 @@ namespace JanSordid::SDL
 					SDL_PushEvent( &next_event );
 					return true;
 				}
-#ifdef IMGUI
+#if USE_IMGUI
 				else if( what_key.scancode == SDL_SCANCODE_F11 && !event.key.repeat )
 				{
 					//         F11 -> toggle display of frame time graph
@@ -314,7 +321,7 @@ namespace JanSordid::SDL
 			}
 
 			case SDL_EVENT_KEY_UP:
-	#ifdef IMGUI
+	#if USE_IMGUI
 				if( io.WantCaptureKeyboard )
 					return true;
 	#endif
@@ -323,7 +330,7 @@ namespace JanSordid::SDL
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			case SDL_EVENT_MOUSE_BUTTON_UP:
 			case SDL_EVENT_MOUSE_WHEEL:
-	#ifdef IMGUI
+	#if USE_IMGUI
 				if( io.WantCaptureMouse )
 					return true;
 	#endif
@@ -375,20 +382,20 @@ namespace JanSordid::SDL
 			{
 				Input();
 
-#if IMGUI
+#if USE_IMGUI
 				_perfTracker.RecordDeltaTDuration( deltaT );
 
 				_perfTracker.StartUpdateTiming();
 #endif
 				Update( deltaT );
-#if IMGUI
+#if USE_IMGUI
 				_perfTracker.EndUpdateTiming();
 
 				_perfTracker.StartRenderTiming();
 #endif
 				RenderClear();
 				Render( deltaTNeeded );
-#if IMGUI
+#if USE_IMGUI
 				_perfTracker.EndRenderTiming();
 
 				_perfTracker.StartRendUITiming();
@@ -465,6 +472,7 @@ namespace JanSordid::SDL
 				}
 				break;
 
+			case PerformanceDrawMode::Graph:
 			case PerformanceDrawMode::None:
 			default: break;
 		}

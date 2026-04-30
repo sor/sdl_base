@@ -11,7 +11,6 @@
 #include "sdl_smartptr.hpp"
 
 // Additional convenience defines
-#define BasePathAsset   BasePath      "asset/"
 #define BasePathFont    BasePathAsset "font/"
 #define BasePathGraphic BasePathAsset "graphic/"
 #define BasePathGUI     BasePathAsset "gui/"
@@ -33,6 +32,12 @@ namespace JanSordid::SDL
 
 	/// Aliases of std::, SDL_, TTF_, Mix_ for easy usage
 
+	constexpr const SDL_Rect  * EntireRect  = nullptr;
+	constexpr const SDL_FRect * EntireFRect = nullptr;
+
+	constexpr const bool NoDecode  = false;
+	constexpr const bool PreDecode = true;
+
 	// Types which need memory management
 	using Window      = SDL_Window;
 	using Texture     = SDL_Texture;
@@ -41,10 +46,9 @@ namespace JanSordid::SDL
 	using Font        = TTF_Font;
 	using Text        = TTF_Text;
 	using TextEngine  = TTF_TextEngine;
-
-	// This is still SDL2 style and will be changed once SDL3_mixer is officially released
-	using Chunk       = Mix_Chunk;
-	using Music       = Mix_Music;
+	using Mixer       = MIX_Mixer;
+	using Audio       = MIX_Audio;
+	using Track       = MIX_Track;
 
 	// Usually not user controlled, do NOT use with smart pointers in the default case
 	using PixelFormat = SDL_PixelFormat;

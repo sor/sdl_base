@@ -5,8 +5,6 @@
 #include <cstddef>
 #include <cassert>
 
-#include <version>
-
 #include <algorithm>
 #include <chrono>
 #include <fstream>
@@ -27,6 +25,8 @@
 #else
 	#define BasePath "../../../"
 #endif
+
+#define BasePathAsset BasePath "asset/"
 
 /*
  * Ask how could the macro be extended to add the msg if none given
@@ -88,9 +88,12 @@ namespace JanSordid::Core//::inline V1
 {
 	/// Aliases of a lot of std:: for easy usage
 
-	namespace Chrono         { using namespace std::chrono;          }
-	namespace ChronoLiterals { using namespace std::chrono_literals; }
-	namespace Numbers        { using namespace std::numbers;         }
+//	namespace ComplexLiterals    { using namespace std::complex_literals;     }
+	namespace Chrono             { using namespace std::chrono;               }
+	namespace ChronoLiterals     { using namespace std::chrono_literals;      }
+	namespace Numbers            { using namespace std::numbers;              }
+	namespace StringLiterals     { using namespace std::string_literals;      }
+	namespace StringViewLiterals { using namespace std::string_view_literals; }
 
 	// Usage of `int` and `uint` conveys:
 	//  I don't mind about the size, avoid for preserved data (structs, classes, globals)
@@ -156,6 +159,7 @@ namespace JanSordid::Core//::inline V1
 	using std::abs, std::sin, std::cos;
 	using std::floor, std::ceil, std::round, std::lround, std::llround;
 
+	// TODO: Move to adapt_chrono, as not everything needs this
 	// Chrono Functions
 	using Chrono::duration_cast;
 	using ChronoLiterals::operator ""ns,
@@ -163,9 +167,8 @@ namespace JanSordid::Core//::inline V1
 	      ChronoLiterals::operator ""s;
 
 	// Functions
-	using std::move, std::forward;
+	using std::move, std::forward; // Clang does not like this, decide for yourself
 	using std::make_unique, std::make_shared;
-	using std::to_underlying;
 
 	// Templates
 	template<typename T, usize Size>            using Array     = std::array<T, Size>;

@@ -25,8 +25,9 @@ namespace std
 	IMPLEMENT_DEFAULT_DELETE( TTF_Font,        TTF_CloseFont       );
 	IMPLEMENT_DEFAULT_DELETE( TTF_Text,        TTF_DestroyText     );
 	IMPLEMENT_DEFAULT_DELETE( TTF_TextEngine,  TTF_DestroyRendererTextEngine ); // Care: Might be a different kind of Engine
-	IMPLEMENT_DEFAULT_DELETE( Mix_Chunk,       Mix_FreeChunk       );
-	IMPLEMENT_DEFAULT_DELETE( Mix_Music,       Mix_FreeMusic       );
+	IMPLEMENT_DEFAULT_DELETE( MIX_Mixer,       MIX_DestroyMixer    );
+	IMPLEMENT_DEFAULT_DELETE( MIX_Audio,       MIX_DestroyAudio    );
+	IMPLEMENT_DEFAULT_DELETE( MIX_Track,       MIX_DestroyTrack    );
 
 #undef IMPLEMENT_DEFAULT_DELETE
 }

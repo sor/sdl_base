@@ -45,7 +45,8 @@ namespace JanSordid::SDL_Example
 		Invalid,
 	};
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
 	// Only create this intermediary class if you want to add something to ALL of your GameStates,
 	// else let them derive from SDL::GameState<MyGame> directly
 	// abstract
@@ -61,6 +62,7 @@ namespace JanSordid::SDL_Example
 		// ctor
 		using Base::Base;
 	};
+#pragma clang diagnostic pop
 
 	class MyGame final : public SDL::Game<MyGameState,MyGS>
 	{
@@ -86,8 +88,10 @@ namespace JanSordid::SDL_Example
 
 		Owned<Font>    _font;
 		Owned<Texture> _image;
-		Owned<Music>   _music;
-		Owned<Chunk>   _sound;
+		Owned<Audio>   _music;
+		Owned<Audio>   _sound;
+		Owned<Track>   _trackMusic;
+		Owned<Track>   _trackSound;
 		Owned<Texture> _blendedText;
 
 		FPoint _blendedTextSize = { 0, 0 };
@@ -234,9 +238,12 @@ namespace JanSordid::SDL_Example
 	protected:
 		static constexpr int SatRadius = 25;
 
-		Owned<Chunk>               _sound;
+		Owned<Audio>               _sound;
+		Array<Owned<Track>,8>      _tracksSound;
 		Array<Owned<Texture>,4>    _projectile;
 		//ReuseFPoints rvProjectiles;
+
+		usize                       _currTrack = 0;
 
 		DynArray<FPoint>           _enemyProjectiles;
 		DynArray<FPoint>::iterator _enemyProjReuse;

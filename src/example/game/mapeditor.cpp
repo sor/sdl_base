@@ -522,7 +522,7 @@ namespace JanSordid::SDL_Example
 		}
 	}
 
-#ifdef IMGUI
+#if USE_IMGUI
 
 	void MapEditorState::RenderUI( const u64 framesSinceStart, const Duration timeSinceStart, const float deltaTNeeded )
 	{
@@ -591,12 +591,12 @@ namespace JanSordid::SDL_Example
 		ImGui::PushStyleVar( ImGuiStyleVar_FrameBorderSize, 1 );
 		// CARE: ImU32 as color is 0XAABBGGRR - opposite of what might be expected
 		ImGui::PushStyleColor( ImGuiCol_Border, 0xAAFFFFFF );
-		constexpr fmt::format_string<int>
-			withNumber   ( "{:02}" ),
-			withoutNumber( "  ##{:02}" );
-		const fmt::format_string<int> & fmt = drawColorNumber
-			? withNumber
-			: withoutNumber;
+
+		using namespace StringViewLiterals;
+		const std::string_view prefix = drawColorNumber
+			? ""sv      // draws number                             "23"
+			: "  ##"sv; // draws spaces, names internally by number "  ##23"
+
 		for( int i = 0; i < 64; ++i )
 		{
 			//ImU32 rcol = std::bit_cast<ImU32>( HSNR64::Palette( randColor ) );
@@ -607,7 +607,7 @@ namespace JanSordid::SDL_Example
 			ImGui::PushStyleColor( ImGuiCol_Border,       bcol );
 			ImGui::PushStyleColor( ImGuiCol_BorderShadow, bcol );
 			ImGui::PushStyleColor( ImGuiCol_Text,         pcol ^ 0x00808080 );
-			if( ImGui::Button( format( fmt::runtime( fmt ), i ).c_str() ) )
+			if( ImGui::Button( format( "{}{:02}", prefix, i ).c_str() ) )
 				_selectedColor = i;
 			ImGui::PopStyleColor( 4 );
 			//ImGui::ColorButton( format( "color{}", i ).c_str(), *((ImVec4*)&sor::hsnr64::Palette[i]), ImGuiColorEditFlags_Uint8 );
@@ -632,7 +632,7 @@ namespace JanSordid::SDL_Example
 		const char * filename = "map-i-map.json5"; // json5 is a relaxed version of json
 		File * file = std::fopen( filename, "w" );
 		if( file == nullptr )
-			throw fmt::system_error( errno, "cannot open file '{}'", filename );
+			throw system_error( errno, "cannot open file '{}'", filename );
 
 		print( file,
 			"{{"

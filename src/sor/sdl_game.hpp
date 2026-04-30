@@ -29,7 +29,7 @@ namespace JanSordid::SDL
 	public:
 		/// Ctors & Dtor
 		         IGameState() noexcept = default;
-		virtual ~IGameState() noexcept = default;
+		virtual ~IGameState() noexcept;
 
 		IGameState(              const IGameState &  ) = delete;
 		IGameState(                    IGameState && ) = delete;
@@ -76,12 +76,13 @@ namespace JanSordid::SDL
 
 	public:
 		/// Ctors & Dtor
-		explicit GameState( TGame & game ) noexcept : _game( game ) {}
-		        ~GameState()               noexcept override = default;
+		constexpr explicit GameState( TGame & game ) noexcept : _game( game ) {}
+		constexpr         ~GameState()               noexcept override = default;
 
 		/// Getters & Setters: non-virtual first, followed by (pure) virtual/override
 		[[nodiscard]] constexpr Window   * window()   const noexcept { return _game.window();   }
 		[[nodiscard]] constexpr Renderer * renderer() const noexcept { return _game.renderer(); }
+		[[nodiscard]] constexpr Mixer    * mixer()    const noexcept { return _game.mixer();    }
 	};
 
 	// abstract, pseudo interface (contains fields)
@@ -105,6 +106,7 @@ namespace JanSordid::SDL
 		/// Members / Fields
 		Owned<Window>   _window;
 		Owned<Renderer> _renderer;
+		Owned<Mixer>    _mixer;
 		u64             _framesSinceStart = 0;
 		Duration        _timeSinceStart   = Duration::zero();
 
@@ -144,6 +146,7 @@ namespace JanSordid::SDL
 		/// Getters & Setters: non-virtual first, followed by (pure) virtual/override
 		[[nodiscard]]           Window   * window()            const noexcept { return _window.get();   } // even though this is a pointer, it is usually not null
 		[[nodiscard]]           Renderer * renderer()          const noexcept { return _renderer.get(); } // even though this is a pointer, it is usually not null
+		[[nodiscard]]           Mixer    * mixer()             const noexcept { return _mixer.get();    } // even though this is a pointer, it is usually not null
 		[[nodiscard]] constexpr bool       isRunning()         const noexcept { return _isRunning;  }
 		[[nodiscard]] constexpr f32        scalingFactor()     const noexcept { return _scalingFactor; }
 		[[nodiscard]] constexpr bool       isStateChanging()   const noexcept { return _stateNextOp != NextStateOp::None; }

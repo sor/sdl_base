@@ -17,9 +17,18 @@ namespace JanSordid::SDL_Example
 
 		if( !_sound )
 		{
-			_sound = Mix_LoadWAV( BasePathSound "pew.wav" );
+			_sound = MIX_LoadAudio( mixer(), BasePathSound "pew.wav", true );
 			if( !_sound )
-				print( stderr, "Mix_LoadWAV failed: {}\n", SDL_GetError() );
+				print( stderr, "MIX_LoadAudio failed: {}\n", SDL_GetError() );
+
+			for (auto & track : _tracksSound)
+			{
+				track = MIX_CreateTrack( mixer() );
+				if( !track )
+					print( stderr, "MIX_CreateTrack failed: {}\n", SDL_GetError() );
+
+				MIX_SetTrackAudio( track, _sound );
+			}
 		}
 	}
 
@@ -132,11 +141,16 @@ namespace JanSordid::SDL_Example
 				SpawnEnemyProjectile( _spawnProjectileAt );
 				//using namespace ChronoLiterals;
 
-				Mix_PlayChannel( -1, _sound, 0 );
+				constexpr size_t tsSize = std::tuple_size<decltype(_tracksSound)>();
+				MIX_PlayTrack( _tracksSound[_currTrack], SDL_PropertiesID{} );
 				_spawnProjectileSoundCD = timeSinceStart + 45ms;
+				_currTrack              = (_currTrack + 1) & (tsSize-1);
+				//_currTrack              = (_currTrack + 1) & (_tracksSound.size()-1);
+
+				static_assert( (tsSize & (tsSize - 1)) == 0, "_tracksSound must have a size power of two" );
 			}
 
-			_spawnProjectileAt = {-1, -1 };
+			_spawnProjectileAt = { -1, -1 };
 		}
 
 		for( auto & p : _enemyProjectiles )

@@ -1,17 +1,23 @@
 {
   "name": "sor-sdl3",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "dependencies": [
     {
       "name": "sdl3",
-      "version>=": "3.2.20"
+      "version>=": "3.4.0",
+      "features": [
+        {
+          "name": "dbus",
+          "platform": "!osx & !windows"
+        }
+      ]
     }, {
       "name": "sdl3-image",
-      "version>=": "3.2.4",
+      "version>=": "3.4.0",
       "features": [ "jpeg", "png" ]
     }, {
       "name": "sdl3-mixer",
-      "version>=": "3.0.2",
+      "version>=": "3.2.0",
       "features": [ "mpg123", "opusfile" ],
       "$features": [ "libflac" ]
     }, {
@@ -44,6 +50,10 @@
     }, {
       "name": "nlohmann-json",
       "version>=": "3.11.3#1"
+    }, {
+      "name": "dbus",
+      "platform": "!osx & !windows",
+      "default-features": false
     }
   ],
   "overrides": [
