@@ -509,7 +509,7 @@ namespace JanSordid::HSNR64
 			const Point index{ (int)(uc % stride), (int)(uc / stride) };
 
 			// TODO: Do the conversion to f32 inside this whole function
-			const FRect src       = toF( toRect( tilesize, index * 16 ) );
+			const FRect src       = toF( toRect( index * 16, tilesize ) );
 			const FRect dst_final = dst + dst_off; // Angry text: + Point{-2+rand()%5, -1+rand()%3};
 
 			renderFunc( _renderer, _tiles, src, dst_final );

@@ -11,6 +11,7 @@
 #include <memory>
 #include <numbers>
 #include <string>
+#include <type_traits>
 
 #include <array>
 #include <vector>
@@ -48,6 +49,11 @@ constexpr void MyAssert( T condition, const char * msg ) {
 		? throw std::logic_error( "Assertion failed in constant expression!" ) \
 		: assert(expr))
 
+#define AssertNoOp( ... ) do{                                                              \
+	static_assert( !std::is_pointer_v< std::decay_t< decltype((__VA_ARGS__)) > >,           \
+		"Assert misuse: attach messages via && instead of ',', the comma discards the condition" ); \
+	(void)sizeof((__VA_ARGS__)); } while( 0 )
+
 #if defined( _DEBUG )
 	#define Assert(            ... ) assertCE( __VA_ARGS__ )
 	#define AssertInOptimized( ... ) assertCE( __VA_ARGS__ )
@@ -59,7 +65,7 @@ constexpr void MyAssert( T condition, const char * msg ) {
 	#define IfFinal     if constexpr( false )
 	#define IfNotFinal  if constexpr( true  )
 #elif defined( OPTIMIZED )
-	#define Assert(            ... ) do{ (void)sizeof((__VA_ARGS__)); } while( 0 )
+	#define Assert(            ... ) AssertNoOp( __VA_ARGS__ )
 	#define AssertInOptimized( ... ) assertCE( __VA_ARGS__ )
 	#define DebugOnly(         ... )
 	#define OptimizedOnly(     ... ) __VA_ARGS__
@@ -69,8 +75,8 @@ constexpr void MyAssert( T condition, const char * msg ) {
 	#define IfFinal     if constexpr( false )
 	#define IfNotFinal  if constexpr( true  )
 #elif defined( FINAL )
-	#define Assert(            ... ) do{ (void)sizeof((__VA_ARGS__)); } while( 0 )
-	#define AssertInOptimized( ... ) do{ (void)sizeof((__VA_ARGS__)); } while( 0 )
+	#define Assert(            ... ) AssertNoOp( __VA_ARGS__ )
+	#define AssertInOptimized( ... ) AssertNoOp( __VA_ARGS__ )
 	#define DebugOnly(         ... )
 	// Final also counts as an Optimized build, therefore the OptimizedOnly define is active
 	#define OptimizedOnly(     ... ) __VA_ARGS__

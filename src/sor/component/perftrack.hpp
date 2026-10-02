@@ -26,6 +26,15 @@ namespace JanSordid::SDL
 		bool _isFrameTimeRecording = true;
 
 	public:
+		PerformanceTrackerComponent()
+		{
+			_frameTimesTotal.fill( NAN );
+			_frameTimesUpdate.fill( NAN );
+			_frameTimesRender.fill( NAN );
+			_frameTimesRendUI.fill( NAN );
+			_frameTimesDeltaT.fill( NAN );
+		}
+
 		void RenderUI( const f32 deltaTNeeded );
 
 		[[nodiscard]] Duration UpdateDuration() const { return Clock::now() - _startTimeUpdate; }

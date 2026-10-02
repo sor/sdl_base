@@ -3,7 +3,9 @@
 #include "simpleeditor.hpp"
 #include "roflstate.hpp"
 #include "mapeditor.hpp"
+#if USE_TGUI
 #include "tgui.hpp"
+#endif
 
 namespace JanSordid::SDL_Example
 {
@@ -21,9 +23,11 @@ namespace JanSordid::SDL_Example
 			ShooterState,
 			EditorState,
 			RoflState,
-			MapEditorState,
-			TGUIState
+			MapEditorState
 		>( *this );
+#if USE_TGUI
+		AddStates<TGUIState>( *this );
+#endif
 
 		// Set initial State
 		PushState( MyGS::Intro );
@@ -86,11 +90,13 @@ namespace JanSordid::SDL_Example
 					ReplaceState( MyGS::AdvEditor );
 					return true;
 				}
+#if USE_TGUI
 				else if( what_key.scancode == SDL_SCANCODE_9 )
 				{
 					ReplaceState( MyGS::GUI );
 					return true;
 				}
+#endif
 				else if( what_key.scancode == SDL_SCANCODE_0 )
 				{
 					ReplaceState( MyGS::Invalid );

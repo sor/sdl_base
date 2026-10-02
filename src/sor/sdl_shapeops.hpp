@@ -156,6 +156,6 @@ namespace JanSordid::SDL
 	inline /*constexpr*/ f32        calcLength(   const SDL_FPoint n ) { return sqrtf( calcLengthSq( n ) ); }
 	inline /*constexpr*/ SDL_FPoint normalize(    const SDL_FPoint n ) { return n / calcLength( n ); }
 
-	inline bool hasIntersection( const SDL_Rect  && lhs, const SDL_Rect  && rhs ) { return SDL_HasRectIntersection( &lhs, &rhs ); }
-	inline bool hasIntersection( const SDL_FRect && lhs, const SDL_FRect && rhs ) { return SDL_HasRectIntersectionFloat( &lhs, &rhs ); }
+	inline bool hasIntersection( const SDL_Rect  & lhs, const SDL_Rect  & rhs ) { return SDL_HasRectIntersection( &lhs, &rhs ); }
+	inline bool hasIntersection( const SDL_FRect & lhs, const SDL_FRect & rhs ) { return SDL_HasRectIntersectionFloat( &lhs, &rhs ); }
 }

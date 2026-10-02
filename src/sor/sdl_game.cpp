@@ -277,7 +277,7 @@ namespace JanSordid::SDL
 	// Returns if the event has been handled
 	bool IGame::HandleEvent( const Event & event )
 	{
-#ifdef USE_IMGUI
+#if USE_IMGUI
 		const ImGuiIO & io = ImGui::GetIO();
 		ImGui_ImplSDL3_ProcessEvent( &event );
 #endif

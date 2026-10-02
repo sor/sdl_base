@@ -1,3 +1,4 @@
+#if USE_TGUI
 #include "tgui.hpp"
 
 #include "example_game.hpp"
@@ -60,3 +61,4 @@ namespace JanSordid::SDL_Example
 		SDL_RenderFillRect( renderer(), &rect2 );
 	}
 }
+#endif

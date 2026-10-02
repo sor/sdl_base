@@ -2,6 +2,8 @@
   "name": "sor-sdl3",
   "version": "0.1.3",
   "dependencies": [
+    { "name": "cxxopts" },
+    { "name": "range-v3" },
     {
       "name": "sdl3",
       "version>=": "3.4.0",

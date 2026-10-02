@@ -1,6 +1,11 @@
 cmake_minimum_required( VERSION 3.20 )
 
-if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
+if( "${CMAKE_BUILD_TYPE}" STREQUAL "" ) # e.g. multi-config generators (Visual Studio, Xcode), which choose the config per build instead
+	message( STATUS "No CMAKE_BUILD_TYPE given, using Debug-ish defaults for the build options" )
+	set( IS_DEBUG     TRUE  )
+	set( IS_OPTIMIZED FALSE )
+	set( IS_FINAL     FALSE )
+elseif( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 	set( IS_DEBUG     TRUE  )
 	set( IS_OPTIMIZED FALSE )
 	set( IS_FINAL     FALSE )
@@ -59,8 +64,13 @@ find_package( nfd           CONFIG REQUIRED )
 find_package( benchmark     CONFIG REQUIRED )
 find_package( Eigen3        CONFIG REQUIRED )
 find_package( nlohmann_json CONFIG REQUIRED )
+find_package( range-v3      CONFIG REQUIRED )
+find_package( cxxopts       CONFIG REQUIRED )
 if( USE_TGUI )
 	find_package( TGUI      CONFIG REQUIRED )
+endif()
+if( TGUI_FOUND )
+	add_compile_definitions( USE_TGUI )
 endif()
 if( USE_ImGui )
 	find_package( imgui     CONFIG REQUIRED )
@@ -224,7 +234,6 @@ elseif( MSVC )
 		/we4013   # implicit function declaration
 		/we4047   # different levels of indirection (pointer type mismatch)
 		/we4024   # different types for formal and actual parameter
-		/we4013   # function undefined; assuming extern returning int
 		/we4716   # must return a value
 
 		/constexpr:steps 127124200
@@ -367,6 +376,10 @@ target_link_libraries(      sor-example
 
 	$<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
 	$<TARGET_NAME_IF_EXISTS:nfd::nfd>
+
+	PRIVATE
+	$<TARGET_NAME_IF_EXISTS:range-v3::range-v3>
+	$<TARGET_NAME_IF_EXISTS:cxxopts::cxxopts>
 
 	#$<TARGET_NAME_IF_EXISTS:benchmark::benchmark>
 	#$<TARGET_NAME_IF_EXISTS:benchmark::benchmark_main>

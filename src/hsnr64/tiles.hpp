@@ -81,7 +81,7 @@ namespace JanSordid::HSNR64
 
 	// HACK: This must go
 	#ifdef TILE_INDEX_MAX_4096
-		using   Tile = Tile3Byte;
+		using   Tile = Tile4K;
 		// index must be free of side effects
 		#define TileIndex( index ) TileIndex3Byte( index )
 		#define TileIndexCtor( index ) (u8)(index%256), (u8)(index/256)

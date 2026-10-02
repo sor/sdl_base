@@ -76,11 +76,11 @@ namespace JanSordid::SDL
 		     | (c.a << 24);
 	}
 
-	constexpr Color ToColor( const Core::u32 & c )
+	consteval Color ToColor( const Core::u32 & c )
 	{
-		// TODO: I don't need it now and I am tired :D
-		if (!std::is_constant_evaluated())
-			assert( false );
+		// If consteval is not available, change to constexpr and comment in the following lines
+		//if (!std::is_constant_evaluated())
+		//	assert( false );
 		return Color {
 			(Core::u8)(c>>0 & 0xFF),
 			(Core::u8)(c>>8 & 0xFF),
