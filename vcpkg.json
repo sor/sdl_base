@@ -8,10 +8,8 @@
       "name": "sdl3",
       "version>=": "3.4.0",
       "features": [
-        {
-          "name": "dbus",
-          "platform": "!osx & !windows"
-        }
+        { "name": "alsa", "platform": "linux" },
+        { "name": "dbus", "platform": "linux" }
       ]
     }, {
       "name": "sdl3-image",
@@ -54,7 +52,7 @@
       "version>=": "3.11.3#1"
     }, {
       "name": "dbus",
-      "platform": "!osx & !windows",
+      "platform": "linux",
       "default-features": false
     }
   ],
