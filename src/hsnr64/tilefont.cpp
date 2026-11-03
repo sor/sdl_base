@@ -354,12 +354,12 @@ namespace JanSordid::HSNR64
 		const FRect  & dimension,
 		const u8       ligatureLevel,
 		const u8       spacing,
-		const Point  & tilesize,
+		const FPoint & tilesize,
 		RenderFunc     renderFunc )
 	{
 		//DebugOnly(
 		String skipChar; // UTF-8 char build over time, therefore a string
-		FRect  dst     = { dimension.x, dimension.y, (f32)tilesize.x, (f32)tilesize.y };
+		FRect  dst     = toFRect( fromXY( dimension ), tilesize );
 		int    skip    = 0;
 		u32    prefix  = 0;
 		u32    last_uc = '\n';
@@ -509,7 +509,7 @@ namespace JanSordid::HSNR64
 			const Point index{ (int)(uc % stride), (int)(uc / stride) };
 
 			// TODO: Do the conversion to f32 inside this whole function
-			const FRect src       = toF( toRect( index * 16, tilesize ) );
+			const FRect src       = toFRect( toF( index * 16 ), tilesize );
 			const FRect dst_final = dst + toXY( dst_off ); // Angry text: + Point{-2+rand()%5, -1+rand()%3};
 
 			renderFunc( _renderer, _tiles, src, dst_final );
@@ -534,9 +534,9 @@ namespace JanSordid::HSNR64
 		const Color  & color,
 		const Color  & outlineColor )
 	{
-		constexpr u8    ligatureLevel = 25; // 0 off, 9 only ffi, 25 acst, 130 a lot
-		constexpr u8    spacing       = 2;
-		constexpr Point tilesize      = { 16, 16 };
+		constexpr u8     ligatureLevel = 25; // 0 off, 9 only ffi, 25 acst, 130 a lot
+		constexpr u8     spacing       = 2;
+		constexpr FPoint tilesize      = { 16, 16 };
 
 		// HACK: Calling RenderSingle two times in part does the exact same work twice, refactor out the common steps to make this more efficient
 

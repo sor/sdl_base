@@ -103,7 +103,7 @@ namespace JanSordid::HSNR64
 			const FRect  & dimension,
 			const u8       ligatureLevel,
 			const u8       spacing,
-			const Point  & tilesize,
+			const FPoint & tilesize,
 			RenderFunc     renderFunc );
 	};
 }

@@ -94,6 +94,12 @@ namespace JanSordid::SDL
 	constexpr SDL_Rect  toRect(  const SDL_Point  pos, const SDL_Point  size ) { return SDL_Rect  { pos.x, pos.y, size.x, size.y }; }
 	constexpr SDL_FRect toFRect( const SDL_FPoint pos, const SDL_FPoint size ) { return SDL_FRect { pos.x, pos.y, size.x, size.y }; }
 
+	// Extracting out data
+	constexpr SDL_Point  fromXY( const SDL_Rect  rect ) { return SDL_Point  { rect.x, rect.y }; }
+	constexpr SDL_FPoint fromXY( const SDL_FRect rect ) { return SDL_FPoint { rect.x, rect.y }; }
+	constexpr SDL_Point  fromWH( const SDL_Rect  rect ) { return SDL_Point  { rect.w, rect.h }; }
+	constexpr SDL_FPoint fromWH( const SDL_FRect rect ) { return SDL_FPoint { rect.w, rect.h }; }
+
 	inline /*constexpr*/ int        calcLengthSq( const SDL_Point  n ) { return n.x * n.x + n.y * n.y; }
 	inline /*constexpr*/ f32        calcLength(   const SDL_Point  n ) { return sqrtf( (f32)calcLengthSq( n ) ); }  // Care: Returns f32 as sqrt(int) will very likely not return an int
 	inline /*constexpr*/ SDL_FPoint normalize(    const SDL_Point  n ) { return toF( n ) / calcLength( n ); } // Care: Returns FPoint

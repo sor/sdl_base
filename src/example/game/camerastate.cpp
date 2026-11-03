@@ -40,7 +40,8 @@ namespace JanSordid::SDL_Example
 
 	void CameraState::Destroy()
 	{
-		// TODO
+		for( Owned<Texture> & bg : _background )
+			bg.reset();
 
 		Base::Destroy();
 	}

@@ -87,6 +87,8 @@ namespace JanSordid::SDL_Example
 
 	void MapEditorState::Destroy()
 	{
+		_tileSet.texture.reset();
+
 		Base::Destroy();
 	}
 
@@ -180,8 +182,8 @@ namespace JanSordid::SDL_Example
 		{
 			case SDLK_LEFT:  _selectedIndex--;                                break;
 			case SDLK_RIGHT: _selectedIndex++;                                break;
-			case SDLK_UP:    _selectedIndex-=_tileSet.tileCount.x;            break;
-			case SDLK_DOWN:  _selectedIndex+=_tileSet.tileCount.x;            break;
+			case SDLK_UP:    _selectedIndex   -= _tileSet.tileCount.x;        break;
+			case SDLK_DOWN:  _selectedIndex   += _tileSet.tileCount.x;        break;
 			case SDLK_H:     _selectedFlip    ^= SDL_FLIP_HORIZONTAL;         break;
 			case SDLK_V:     _selectedFlip    ^= SDL_FLIP_VERTICAL;           break;
 			case SDLK_R:     _selectedRotation = (_selectedRotation + 1) % 4; break;
@@ -545,7 +547,7 @@ namespace JanSordid::SDL_Example
 		if( ImGui::Button( "Save" ) )                     // Buttons return true when clicked (most widgets return true when edited/activated)
 			SaveMap();
 
-		ImGui::SliderFloat2( "Blah", (float*)(void*)&_viewScale, 0.1, 8.0 );
+		ImGui::SliderFloat2( "Blah", reinterpret_cast<float*>(&_viewScale), 0.1, 8.0 );
 
 		if( ImGui::SliderInt( "Layer", &_selectedLayer, 0, 4 ) ) { }
 
@@ -628,76 +630,41 @@ namespace JanSordid::SDL_Example
 
 	void MapEditorState::SaveMap() const
 	{
-		// TODO: Show filepicker to to allow custom naming
+		// TODO: Show filepicker to allow custom naming
 		const char * filename = "map-i-map.json5"; // json5 is a relaxed version of json
-		File * file = std::fopen( filename, "w" );
-		if( file == nullptr )
+		std::ofstream file( filename );
+		if( !file )
 			throw system_error( errno, "cannot open file '{}'", filename );
 
-		print( file,
-			"{{"
-			"\n\ttileByteSize: {},"
-			"\n\tmap: {{"
-			"\n\t\tlayers: [ ",
-			sizeof( Tile ) );
+		JSON j;
+		j["tileByteSize"] = sizeof( Tile );
 
 		for( int l = 0; l < 2; ++l )
 		{
 			const TileMap & tileMap = _tileMaps[l];
 
-			if( l != 0 )
-				print( file, ",\n\t\t" );
+			JSON layer;
+			layer["num"]  = l;
+			layer["size"] = { tileMap.size.x, tileMap.size.y };
 
-			print( file,
-				"{{"
-				"\n\t\t\tnum: {0},"
-				"\n\t\t\tsize: [ {1}, {2} ],"
-				"\n\t\t\ttiles:"
-				,
-				l,
-				tileMap.size.x,
-				tileMap.size.y,
-				nullptr );
-
-			//const Point  viewSize     = { 640, 480 };
-			//const Point  startIndex   = toI( _viewOffset / tileMap.tileDist );
-
-			print( file, " [" );
+			JSON rows = JSON::array();
 			for( int y = 0; y < tileMap.size.y; ++y )
 			{
-				if( y == 0 ) [[unlikely]]
-					print( file, "\n\t\t\t\t[" );
-				else
-					print( file, ",\n\t\t\t\t[" );
-
+				JSON row = JSON::array();
 				for( int x = 0; x < tileMap.size.x; ++x )
 				{
 					constexpr u32 mask = (sizeof(Tile) == 3) ? 0x00ffffff : 0xffffffff;
-					const int    index    = x + y * tileMap.stride;
-					const Tile * currTile = &tileMap.tiles[index];
-					if( x == 0 ) [[unlikely]]
-					{
-						u32 tileData = mask & *reinterpret_cast<const u32 *>( currTile );
-						print( file, "{:#x}", tileData );
-					}
-					else
-					{
-						print( file, ",{:#x}", mask & *reinterpret_cast<const u32 *>( currTile ) );
-					}
+					const u32 tileData = mask & *reinterpret_cast<const u32 *>( &tileMap.tiles[x + y * tileMap.stride] );
+					row.push_back( tileData );
 				}
-				print( file, "]" );
+				rows.push_back( row );
 			}
-			print( file,
-				"\n\t\t\t]"
-				"\n\t\t}}" );
+			layer["tiles"] = rows;
+
+			j["map"]["layers"].push_back( layer );
 		}
 
-		print( file,
-			" ]"
-			"\n\t}}"
-			"\n}}" );
-
-		std::fclose( file );
+		file << j.dump( 1, '\t' );
 	}
 
 }

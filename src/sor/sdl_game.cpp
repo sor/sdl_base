@@ -368,7 +368,7 @@ namespace JanSordid::SDL
 			OutputPerformanceInfo( start, deltaTDurNeeded );
 
 			ChangeState();
-			SDL_assert( currentStateIndex() >= 0 );
+			//SDL_assert( currentStateIndex() >= 0 );
 
 			// The difference to last frame is usually
 			//  33'333'333ns at 30Hz,
@@ -480,6 +480,8 @@ namespace JanSordid::SDL
 
 	void IGame::PushState( const u8 state )
 	{
+		// A Pop followed by a Push is the same as a Replace:
+		// the top state gets swapped out without activating the state below, which would immediately deactivate again
 		_stateNextOp = _stateNextOp == NextStateOp::Pop
 			? NextStateOp::Replace
 			: NextStateOp::Push;

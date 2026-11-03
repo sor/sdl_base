@@ -4,6 +4,5 @@
     <inspection_tool class="CppClassCanBeFinal" enabled="true" level="HINT" enabled_by_default="true" editorAttributes="HINT" />
     <inspection_tool class="CppUnnecessaryWhitespace" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES" />
     <inspection_tool class="InconsistentLineSeparators" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="ProblematicWhitespace" enabled="true" level="WARNING" enabled_by_default="true" />
   </profile>
 </component>

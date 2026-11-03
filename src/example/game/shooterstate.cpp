@@ -34,7 +34,13 @@ namespace JanSordid::SDL_Example
 
 	void ShooterState::Destroy()
 	{
-		// TODO
+		for( Owned<Texture> & tex : _projectile )
+			tex.reset();
+
+		for( Owned<Track> & track : _tracksSound )
+			track.reset();
+
+		_sound.reset();
 
 		Base::Destroy();
 	}
@@ -329,12 +335,8 @@ namespace JanSordid::SDL_Example
 				const FPoint & p = *it;
 
 				const Point index      = IndexUnpackClamped<10, 6>( framesSinceStart + lround( p.y ) );
-				const FRect srcIndexed = toFRect( texSize * toF( index ), texSize );// toF( src * index );
-				const FRect pos        = {
-					(p.x + fluxCam.x) - pivot.x / 2,
-					(p.y + fluxCam.y) - pivot.y,
-					texSize.x * 2,
-					texSize.y * 2 };
+				const FRect srcIndexed = toFRect( texSize * toF( index ), texSize );
+				const FRect pos        = toFRect( p + fluxCam - pivot * FPoint{ 0.5f, 1.0f }, texSize * 2 );
 				SDL_RenderTextureRotated( renderer(), _projectile[0], &srcIndexed, &pos, 90, &pivot, SDL_FlipMode::SDL_FLIP_NONE );
 				//SDL_RenderCopy( renderer(), projectile[2], &src, &pos );
 			}
@@ -352,11 +354,7 @@ namespace JanSordid::SDL_Example
 
 				const Point index      = IndexUnpackClamped<10, 6>( framesSinceStart + (u64)p.y );
 				const FRect srcIndexed = toFRect( texSize * toF( index ), texSize );
-				const FRect pos        = {
-					(p.x + fluxCam.x) - pivot.x / 2,
-					(p.y + fluxCam.y) - pivot.y,
-					texSize.x * 2,
-					texSize.y * 2 };
+				const FRect pos        = toFRect( p + fluxCam - pivot * FPoint{ 0.5f, 1.0f }, texSize * 2 );
 				SDL_RenderTextureRotated( renderer(), _projectile[2], &srcIndexed, &pos, 180, &pivot, SDL_FlipMode::SDL_FLIP_NONE );
 				//SDL_RenderCopy( renderer(), _projectile[2], &src, &pos );
 			}
