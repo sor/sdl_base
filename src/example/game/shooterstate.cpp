@@ -319,9 +319,7 @@ namespace JanSordid::SDL_Example
 
 		{
 			constexpr FPoint pivot   = { 10, 45 };
-			constexpr Point  texSize = { 10, 26 };
-			constexpr FPoint texSizeF = { 10, 26 };
-			constexpr Rect   src     = toXYWH( texSize );
+			constexpr FPoint texSize = { 10, 26 };
 			//for( auto & p : enemyProjectiles )
 			for( auto it = _enemyProjectiles.begin(); it != _enemyProjectiles.end(); ++it )
 			{
@@ -331,7 +329,7 @@ namespace JanSordid::SDL_Example
 				const FPoint & p = *it;
 
 				const Point index      = IndexUnpackClamped<10, 6>( framesSinceStart + lround( p.y ) );
-				const FRect srcIndexed = toFRect( texSizeF * toF( index ), texSizeF );// toF( src * index );
+				const FRect srcIndexed = toFRect( texSize * toF( index ), texSize );// toF( src * index );
 				const FRect pos        = {
 					(p.x + fluxCam.x) - pivot.x / 2,
 					(p.y + fluxCam.y) - pivot.y,
@@ -344,8 +342,7 @@ namespace JanSordid::SDL_Example
 
 		{
 			constexpr FPoint pivot   = { 10, 9 };
-			constexpr Point  texSize = { 65, 9 };
-			constexpr Rect   src     = toXYWH( texSize );
+			constexpr FPoint texSize = { 65, 9 };
 			for( auto it = _myProjectiles.begin(); it != _myProjectiles.end(); ++it )
 			{
 				auto & p = *it;
@@ -354,7 +351,7 @@ namespace JanSordid::SDL_Example
 					continue;
 
 				const Point index      = IndexUnpackClamped<10, 6>( framesSinceStart + (u64)p.y );
-				const FRect srcIndexed = toF( src * index );
+				const FRect srcIndexed = toFRect( texSize * toF( index ), texSize );
 				const FRect pos        = {
 					(p.x + fluxCam.x) - pivot.x / 2,
 					(p.y + fluxCam.y) - pivot.y,
@@ -370,7 +367,7 @@ namespace JanSordid::SDL_Example
 		SDL_SetRenderDrawColor( renderer(), 0, 255, 0, 127 );
 
 		//const Point fluxCamI = { (int)fluxCam.x, (int)fluxCam.y };
-		const FRect pos = _player + fluxCam;
+		const FRect pos = _player + toXY( fluxCam );
 		SDL_RenderFillRect( renderer(), &pos );
 
 		// Draw player satellites
@@ -390,7 +387,7 @@ namespace JanSordid::SDL_Example
 		for( auto & e : _enemies )
 		{
 			//const Point fluxCamI = { (int)fluxCam.x, (int)fluxCam.y };
-			const FRect posOffsetted = e + fluxCam;
+			const FRect posOffsetted = e + toXY( fluxCam );
 			SDL_RenderFillRect( renderer(), &posOffsetted );
 		}
 

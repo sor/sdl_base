@@ -211,15 +211,15 @@ namespace JanSordid::SDL_Example
 
 				SDL_SetTextureColorMod( _blendedText, outlineColor.r, outlineColor.g, outlineColor.b );
 
+				const FRect dst_rect = toFRect( _textStartPoint, _blendedTextSize );
 				for( const FPoint & offset : HSNR64::ShadowOffset::Rhombus )
 				{
-					const FRect dst_rect = FRect{ _textStartPoint.x, _textStartPoint.y, _blendedTextSize.x, _blendedTextSize.y } + offset;
-					SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dst_rect );
+					const FRect dst_off = dst_rect + toXY( offset );
+					SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dst_off );
 				}
 
 				const Color & color = HSNR64::Palette( _colorIndex );
 				SDL_SetTextureColorMod( _blendedText, color.r, color.g, color.b );
-				const FRect dst_rect = { _textStartPoint.x, _textStartPoint.y, _blendedTextSize.x, _blendedTextSize.y };
 				SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dst_rect );
 			}
 			else

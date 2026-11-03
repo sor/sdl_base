@@ -141,14 +141,14 @@ namespace JanSordid::SDL_Example
 
 			// Draw the shadow
 			SDL_SetTextureColorMod( _blendedText, 0, 0, 0 );
+			const FRect dstRect = toFRect( p, _blendedTextSize );
 			for( const FPoint & offset : HSNR64::ShadowOffset::Rhombus )
 			{
-				const FRect dstRect = FRect{ p.x, p.y, _blendedTextSize.x, _blendedTextSize.y } + (offset * shadowOffsetFactor);
-				SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dstRect );
+				const FRect dstOff = dstRect + toXY( offset * shadowOffsetFactor );
+				SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dstOff );
 			}
 
 			SDL_SetTextureColorMod( _blendedText, 255, 255, 255 );
-			const FRect dstRect = toFRect( p, _blendedTextSize );
 			SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dstRect );
 		}
 	}

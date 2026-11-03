@@ -62,10 +62,10 @@ namespace JanSordid::HSNR64
 		const     u16   index    = curr_tile.index();
 		const     Point sel      = Point{ (index % stride), (index / stride) } * tileSize;
 		const     FRect src      = toF( toRect( sel, tileSize ) ); // toF( toXY( idx2d, tileSize.x ) * tileSize );
-		const     f64   angle    = !(curr_tile.flipRot & FlipRot::Rotate45) * 45
-		                         + !(curr_tile.flipRot & FlipRot::Rotate90) * 90;
-		const SDL_FlipMode flip  = (SDL_FlipMode)(!(curr_tile.flipRot & FlipRot::HorizontalFlip) * SDL_FlipMode::SDL_FLIP_HORIZONTAL
-		                                        + !(curr_tile.flipRot & FlipRot::VerticalFlip)   * SDL_FlipMode::SDL_FLIP_VERTICAL);
+		const     f64   angle    = IsSet( curr_tile.flipRot, FlipRot::Rotate45 ) * 45
+		                         + IsSet( curr_tile.flipRot, FlipRot::Rotate90 ) * 90;
+		const SDL_FlipMode flip  = (SDL_FlipMode)(IsSet( curr_tile.flipRot, FlipRot::HorizontalFlip ) * SDL_FlipMode::SDL_FLIP_HORIZONTAL
+		                                        + IsSet( curr_tile.flipRot, FlipRot::VerticalFlip )   * SDL_FlipMode::SDL_FLIP_VERTICAL);
 
 		SDL_RenderTextureRotated( renderer, tex, &src, &dst, angle, &center, flip );
 	}

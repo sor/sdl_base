@@ -35,7 +35,7 @@ namespace JanSordid::HSNR64
 
 	constexpr FlipRot operator &( const FlipRot lhs, const FlipRot rhs ) { return (FlipRot)(to_underlying( lhs ) & to_underlying( rhs )); }
 	constexpr FlipRot operator |( const FlipRot lhs, const FlipRot rhs ) { return (FlipRot)(to_underlying( lhs ) | to_underlying( rhs )); }
-	constexpr bool    operator !( const FlipRot v ) { return v != FlipRot::None; }
+	constexpr bool    operator !( const FlipRot v ) { return v == FlipRot::None; }
 
 	// The Tileset to use is specified by the TileLayer
 

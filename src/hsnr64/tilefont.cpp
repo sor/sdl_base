@@ -510,7 +510,7 @@ namespace JanSordid::HSNR64
 
 			// TODO: Do the conversion to f32 inside this whole function
 			const FRect src       = toF( toRect( index * 16, tilesize ) );
-			const FRect dst_final = dst + dst_off; // Angry text: + Point{-2+rand()%5, -1+rand()%3};
+			const FRect dst_final = dst + toXY( dst_off ); // Angry text: + Point{-2+rand()%5, -1+rand()%3};
 
 			renderFunc( _renderer, _tiles, src, dst_final );
 
@@ -596,7 +596,7 @@ namespace JanSordid::HSNR64
 	{
 		for( const FPoint & offset : HSNR64::ShadowOffset::Rhombus )
 		{
-			const FRect dst_off = dst + offset;
+			const FRect dst_off = dst + toXY( offset );
 			SDL_RenderTexture( renderer, texture, &src, &dst_off );
 		}
 	}

@@ -1,0 +1,58 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/../vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_BOOTSTRAP_OPTIONS": "-disableMetrics",
+        "VCPKG_INSTALL_OPTIONS": "--no-print-usage"
+      }
+    },
+    {
+      "name": "debug",
+      "description": "Debug tier: asserts active, Dear ImGui on",
+      "inherits": [ "base" ],
+      "binaryDir": "${sourceDir}/build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "optimized",
+      "description": "Optimized tier: RelWithDebInfo, asserts on, Dear ImGui forced on",
+      "inherits": [ "base" ],
+      "binaryDir": "${sourceDir}/build/optimized",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "USE_ImGui": "ON"
+      }
+    },
+    {
+      "name": "final",
+      "description": "Final tier: Release, unity builds on",
+      "inherits": [ "base" ],
+      "binaryDir": "${sourceDir}/build/final",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "USE_Unity_Builds": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "optimized",
+      "configurePreset": "optimized"
+    },
+    {
+      "name": "final",
+      "configurePreset": "final"
+    }
+  ]
+}

@@ -4,8 +4,6 @@
 
 #include <hsnr64/tiles.hpp>
 
-#define lambda auto
-
 namespace JanSordid::SDL_Example
 {
 	using namespace JanSordid::SDL;
@@ -44,7 +42,7 @@ namespace JanSordid::SDL_Example
 	public:
 		using PerTileCallback = Tile( Point pos, Point size );
 
-		static lambda          uniformTile( TileColor color, FlipRot flipRot, u16 index );
+		static auto            uniformTile( TileColor color, FlipRot flipRot, u16 index );
 		static PerTileCallback emptyTile;
 		static PerTileCallback randomTile;
 		static PerTileCallback randomSolidTile;

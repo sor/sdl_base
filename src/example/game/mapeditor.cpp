@@ -5,7 +5,7 @@ namespace JanSordid::SDL_Example
 {
 	/// static functions
 
-	lambda MapEditorState::uniformTile( const TileColor color, const FlipRot flipRot, const u16 index )
+	auto MapEditorState::uniformTile( const TileColor color, const FlipRot flipRot, const u16 index )
 	{
 		return [ color, flipRot, index ]( const Point pos, const Point size )
 		{
@@ -400,7 +400,7 @@ namespace JanSordid::SDL_Example
 				for( int x = 0; x < tileMap.size.x; ++x )
 				{
 					const FPoint pos      = FPoint{ (f32)x, (f32)y } * distScale;
-					const FRect  dst      = pos + sizedOffset;
+					const FRect  dst      = toXY( pos ) + sizedOffset;
 //					const FRect  dst      = toXY( pt, 1 ) * toXYWH( toF( tileMap.tileSet->tileSize ) * viewScale ) + toF( viewOffset );
 
 					// TODO: It would be better to have the start and end indexes of the x and y loops do the culling already
@@ -444,7 +444,7 @@ namespace JanSordid::SDL_Example
 				//if(!isBright)
 				{
 					const Color compColor = { (u8)(color.r ^ 0x80), (u8)(color.g ^ 0x80), (u8)(color.b ^ 0x80), SDL_ALPHA_OPAQUE };
-					const FRect dst       = modOffset + FRect { -16, -16, 512, 128 };
+					const FRect dst       = toXY( modOffset ) + FRect { -16, -16, 512, 128 };
 					SDL_SetRenderDrawColor( renderer(), compColor.r, compColor.g, compColor.b, compColor.a );
 					//SDL_SetRenderDrawColor( renderer(), 180, 180, 180, SDL_ALPHA_OPAQUE );
 					SDL_RenderFillRect( renderer(), &dst );
@@ -474,7 +474,7 @@ namespace JanSordid::SDL_Example
 			_selectedMod         = _selectedFlip | _selectedRotation << 2;
 			constexpr int stride = 8;
 			const Point   sel    = { _selectedMod % stride, _selectedMod / stride };
-			const FRect   dst    = toF( sel * _tileSet.tileSize ) * _paletteScale * spacing + modOffset + selectorOverhang;
+			const FRect   dst    = toXY( toF( sel * _tileSet.tileSize ) * _paletteScale * spacing + modOffset ) + selectorOverhang;
 
 			// Draw Mod Cursor
 			DrawTile( renderer(), _tileSet.texture, selectorTile, sentinelTile, dst, {} );
@@ -497,7 +497,7 @@ namespace JanSordid::SDL_Example
 			const int   stride   = _tileSet.tileCount.x;
 			const Point sel      = { _selectedIndex % stride, _selectedIndex / stride };
 			//const FRect overhang = FRect{ -8, -8, 32, 32 } * toXYWH( _paletteScale );
-			const FRect dst      = toF( sel ) * paletteTileSize + _paletteOffset + selectorOverhang;
+			const FRect dst      = toXY( toF( sel ) * paletteTileSize + _paletteOffset ) + selectorOverhang;
 
 			const Rect clipRect2 = {
 				(windowSize.x - 512) + (int)selectorOverhang.x,

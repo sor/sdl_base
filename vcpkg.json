@@ -27,7 +27,8 @@
     }, {
       "name" : "tgui",
       "version>=" : "1.8.0#0",
-      "features": ["sdl2","sdl3","tool"]
+      "features": ["sdl2","sdl3","tool"],
+      "$note": "The sdl2 feature is required alongside sdl3, TGUI does not build with sdl3 alone (upstream quirk)"
     },{
       "name": "fmt",
       "version>=": "11.0.2#1"

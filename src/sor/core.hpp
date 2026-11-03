@@ -176,6 +176,17 @@ namespace JanSordid::Core//::inline V1
 	using std::move, std::forward; // Clang does not like this, decide for yourself
 	using std::make_unique, std::make_shared;
 
+	// Only scoped enums (enum class) are allowed, e.g.: IsSet( flipRot, FlipRot::Rotate90 )
+	// A strict std::is_scoped_enum_v is C++23 only, this is the C++20 equivalent
+	template<typename TEnum>
+	concept ScopedEnum = std::is_enum_v<TEnum> && !std::is_convertible_v<TEnum, int>;
+
+	template<ScopedEnum TEnum, ScopedEnum TEnumMask>
+	[[nodiscard]] constexpr bool IsSet( const TEnum value, const TEnumMask mask )
+	{
+		return ( to_underlying( value ) & to_underlying( mask ) ) != 0;
+	}
+
 	// Templates
 	template<typename T, usize Size>            using Array     = std::array<T, Size>;
 	template<typename T>                        using DynArray  = std::vector<T>;

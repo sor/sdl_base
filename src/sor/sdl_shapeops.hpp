@@ -58,13 +58,6 @@ namespace JanSordid::SDL
 	constexpr SDL_Point &  operator*=( SDL_Point & lhs, const int rhs ) { lhs = lhs * rhs; return lhs; }
 	constexpr SDL_Point &  operator/=( SDL_Point & lhs, const int rhs ) { lhs = lhs / rhs; return lhs; }
 
-	/// Rect <-> Rect => Rect
-	constexpr SDL_Rect     operator+ ( const SDL_Rect lhs, const SDL_Rect rhs ) { return { lhs.x + rhs.x, lhs.y + rhs.y, lhs.w + rhs.w, lhs.h + rhs.h }; }
-	constexpr SDL_Rect     operator- ( const SDL_Rect lhs, const SDL_Rect rhs ) { return { lhs.x - rhs.x, lhs.y - rhs.y, lhs.w - rhs.w, lhs.h - rhs.h }; }
-	constexpr SDL_Rect &   operator+=( SDL_Rect & lhs, const SDL_Rect rhs ) { lhs = lhs + rhs; return lhs; }
-	constexpr SDL_Rect &   operator-=( SDL_Rect & lhs, const SDL_Rect rhs ) { lhs = lhs - rhs; return lhs; }
-
-
 	/// FPoint <-> FPoint => FPoint
 	constexpr SDL_FPoint   operator+ ( const SDL_FPoint lhs, const SDL_FPoint rhs) { return { lhs.x + rhs.x, lhs.y + rhs.y }; }
 	constexpr SDL_FPoint   operator- ( const SDL_FPoint lhs, const SDL_FPoint rhs) { return { lhs.x - rhs.x, lhs.y - rhs.y }; }
@@ -81,56 +74,9 @@ namespace JanSordid::SDL
 	constexpr SDL_FPoint & operator*=( SDL_FPoint & lhs, const float rhs) { lhs = lhs * rhs; return lhs; }
 	constexpr SDL_FPoint & operator/=( SDL_FPoint & lhs, const float rhs) { lhs = lhs / rhs; return lhs; }
 
-	/// FRect <-> FRect
+	/// FRect <-> FRect => FRect
 	constexpr SDL_FRect    operator+ ( const SDL_FRect lhs, const SDL_FRect rhs ) { return { lhs.x + rhs.x, lhs.y + rhs.y, lhs.w + rhs.w, lhs.h + rhs.h }; }
-	constexpr SDL_FRect    operator- ( const SDL_FRect lhs, const SDL_FRect rhs ) { return { lhs.x - rhs.x, lhs.y - rhs.y, lhs.w - rhs.w, lhs.h - rhs.h }; }
 	constexpr SDL_FRect    operator* ( const SDL_FRect lhs, const SDL_FRect rhs ) { return { lhs.x * rhs.x, lhs.y * rhs.y, lhs.w * rhs.w, lhs.h * rhs.h }; }
-	constexpr SDL_FRect    operator/ ( const SDL_FRect lhs, const SDL_FRect rhs ) { return { lhs.x / rhs.x, lhs.y / rhs.y, lhs.w / rhs.w, lhs.h / rhs.h }; }
-	constexpr SDL_FRect &  operator+=( SDL_FRect & lhs, const SDL_FRect rhs ) { lhs = lhs + rhs; return lhs; }
-	constexpr SDL_FRect &  operator-=( SDL_FRect & lhs, const SDL_FRect rhs ) { lhs = lhs - rhs; return lhs; }
-	constexpr SDL_FRect &  operator*=( SDL_FRect & lhs, const SDL_FRect rhs ) { lhs = lhs * rhs; return lhs; }
-	constexpr SDL_FRect &  operator/=( SDL_FRect & lhs, const SDL_FRect rhs ) { lhs = lhs / rhs; return lhs; }
-
-
-	// TODO: All of the Operators below need to be revisited and evaluated if they do what one might expect
-	/// Point <-> FScalar => FPoint
-//	constexpr SDL_FPoint  operator*  ( const SDL_Point lhs, const float rhs ) { return { lhs.x * rhs, lhs.y * rhs }; }
-//	constexpr SDL_FPoint  operator/  ( const SDL_Point lhs, const float rhs ) { return { lhs.x / rhs, lhs.y / rhs }; }
-
-	/// Point <-> Rect => Rect
-//	constexpr SDL_Rect    operator+  ( const SDL_Rect rect, const SDL_Point offset ) { return { rect.x + offset.x, rect.y + offset.y, rect.w, rect.h }; }
-//	constexpr SDL_Rect    operator-  ( const SDL_Rect rect, const SDL_Point offset ) { return { rect.x - offset.x, rect.y - offset.y, rect.w, rect.h }; }
-	constexpr SDL_Rect    operator*  ( const SDL_Rect lhs, const SDL_Point rhs ) { return { lhs.x * rhs.x, lhs.y * rhs.y, lhs.w, lhs.h }; }
-//	constexpr SDL_Rect    operator/  ( const SDL_Rect lhs, const SDL_Point rhs ) { return { lhs.x / rhs.x, lhs.y / rhs.y, lhs.w, lhs.h }; }
-//	constexpr SDL_Rect &  operator+= ( SDL_Rect & rect, const SDL_Point offset ) { rect = rect + offset; return rect; }
-//	constexpr SDL_Rect &  operator-= ( SDL_Rect & rect, const SDL_Point offset ) { rect = rect - offset; return rect; }
-//	constexpr SDL_Rect &  operator*= ( SDL_Rect & lhs, const SDL_Point rhs ) { lhs = lhs * rhs; return lhs; }
-//	constexpr SDL_Rect &  operator/= ( SDL_Rect & lhs, const SDL_Point rhs ) { lhs = lhs / rhs; return lhs; }
-
-//	constexpr SDL_Rect    operator+  ( const SDL_Point lhs, const SDL_Rect rhs ) { return rhs + lhs; }
-//	constexpr SDL_Rect    operator*  ( const SDL_Point lhs, const SDL_Rect rhs ) { return rhs * lhs; }
-
-	/// Rect <-> Scalar => Rect
-//	constexpr SDL_Rect    operator*  ( const SDL_Rect lhs, const int rhs ) { return { lhs.x, lhs.y, lhs.w * rhs, lhs.h * rhs }; }
-//	constexpr SDL_Rect    operator/  ( const SDL_Rect lhs, const int rhs ) { return { lhs.x, lhs.y, lhs.w / rhs, lhs.h / rhs }; }
-//	constexpr SDL_Rect &  operator*= ( SDL_Rect & lhs, const int rhs ) { lhs = lhs * rhs; return lhs; }
-//	constexpr SDL_Rect &  operator/= ( SDL_Rect & lhs, const int rhs ) { lhs = lhs / rhs; return lhs; }
-
-	/// FPoint <-> FRect => FRect
-	constexpr SDL_FRect   operator+  ( const SDL_FRect rect, const SDL_FPoint offset ) { return { rect.x + offset.x, rect.y + offset.y, rect.w, rect.h }; }
-	constexpr SDL_FRect   operator-  ( const SDL_FRect rect, const SDL_FPoint offset ) { return { rect.x - offset.x, rect.y - offset.y, rect.w, rect.h }; }
-//	constexpr SDL_FRect & operator+= ( SDL_FRect & rect, const SDL_FPoint offset ) { rect = rect + offset; return rect; }
-//	constexpr SDL_FRect & operator-= ( SDL_FRect & rect, const SDL_FPoint offset ) { rect = rect - offset; return rect; }
-
-	constexpr SDL_FRect   operator+  ( const SDL_FPoint offset, const SDL_FRect rect ) { return rect + offset; }
-	constexpr SDL_FRect   operator-  ( const SDL_FPoint offset, const SDL_FRect rect ) { return rect - offset; }
-
-	/// Rect <-> Scalar
-//	constexpr SDL_FRect   operator*  ( const SDL_FRect lhs, const float rhs ) { return { lhs.x, lhs.y, lhs.w * rhs, lhs.h * rhs }; }
-//	constexpr SDL_FRect   operator/  ( const SDL_FRect lhs, const float rhs ) { return { lhs.x, lhs.y, lhs.w / rhs, lhs.h / rhs }; }
-//	constexpr SDL_FRect & operator*= ( SDL_FRect& lhs, const float rhs ) { lhs = lhs * rhs; return lhs; }
-//	constexpr SDL_FRect & operator/= ( SDL_FRect& lhs, const float rhs ) { lhs = lhs / rhs; return lhs; }
-
 
 	// Conversion F -> I, I -> F
 	constexpr SDL_Point  toI( const SDL_FPoint n ) { return SDL_Point  { (int)   n.x, (int)   n.y }; }

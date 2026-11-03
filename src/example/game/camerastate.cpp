@@ -176,7 +176,7 @@ namespace JanSordid::SDL_Example
 		{
 			for( float y = offset.y; y < windowSize.y; y += size.y * 2 )
 			{
-				const FRect off = { .x = x, .y = y, .w = size.x * 2, .h = size.y * 2 };
+				const FRect off = toFRect( FPoint{ x, y }, size * 2 );
 				SDL_RenderTexture( renderer(), _background[index].get(), EntireFRect, &off );
 
 				// Makes only sense with texture hint == best

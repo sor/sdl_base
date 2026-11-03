@@ -9,11 +9,11 @@ elseif( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 	set( IS_DEBUG     TRUE  )
 	set( IS_OPTIMIZED FALSE )
 	set( IS_FINAL     FALSE )
-elseif( "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo" ) # I call this Optimized
+elseif( "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo" ) # I do call this Optimized
 	set( IS_DEBUG     FALSE )
 	set( IS_OPTIMIZED TRUE  )
 	set( IS_FINAL     FALSE )
-elseif( "${CMAKE_BUILD_TYPE}" STREQUAL "Release" ) # I call this Final
+elseif( "${CMAKE_BUILD_TYPE}" STREQUAL "Release" ) # I do call this Final
 	set( IS_DEBUG     FALSE )
 	set( IS_OPTIMIZED FALSE )
 	set( IS_FINAL     TRUE  )
@@ -21,12 +21,14 @@ else()
 	message( SEND_ERROR "Unknown Build Type" )
 endif()
 
-option( USE_DeployBinary    "Deploy the binary in the base directory"    OFF )  # Activate dor distribution of the final product
+
+option( USE_DeployBinary    "Deploy the binary in the base directory"    OFF )  # Activate for distribution of the final product
 option( USE_FMT_HeaderOnly  "Use header-only implementation of FMT"      ON  )
 option( USE_NFD_Native      "Use native encoding instead of UTF8 in NFD" OFF )
 option( USE_Unity_Builds    "Compile multiple source files at once"      OFF )
 option( USE_IPO             "Perform Interprocedural Optimization"       ${IS_FINAL} )
 option( USE_StaticLink      "Statically-Link the binary (Linux only)"    ${IS_FINAL} )
+option( USE_CXX_RegEx       "Should cxxopts use std::regex"              OFF)
 
 option( USE_OpenMP          "Use OpenMP"       ON  )   # No-brain SIMD and MP
 option( USE_RTTI            "Use RTTI"         ON  )   # Don't need dynamic_cast or type_id? Then don't pay for them
@@ -36,6 +38,7 @@ option( USE_TargetNative    "Use march=native" OFF )   # Don't need to run this 
 option( USE_TGUI            "Use Texus' GUI"          ON          )   # Simple Embedding GUI Framework
 option( USE_ImGui           "Use Dear ImGui"          ${IS_DEBUG} )   # Can be manually enabled on Optimized and Final builds
 option( USE_ImGuiFreetype   "Use Dear ImGui Freetype" OFF         )   # Usage of Freetype in ImGui
+
 
 if( UNIX AND NOT APPLE AND NOT DEFINED VCPKG_TARGET_TRIPLET AND NOT USE_StaticLink )
 	set( VCPKG_TARGET_TRIPLET "x64-linux-dynamic" CACHE STRING "" )
@@ -269,6 +272,9 @@ if( USE_TargetNative )
 	add_compile_options( -march=native )
 endif()
 
+if( NOT USE_CXX_RegEx )
+	add_compile_definitions( CXXOPTS_NO_REGEX )
+endif()
 
 add_executable(             sor-pong
 	src/sor/core.cpp
