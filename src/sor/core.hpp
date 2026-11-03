@@ -149,14 +149,14 @@ namespace JanSordid::Core//::inline V1
 
 	using NanoSec       = Chrono::nanoseconds;                     // Nanoseconds
 	using MilliSec      = Chrono::milliseconds;                    // Milliseconds
-	using Sec           = Chrono::seconds;                         // Nanoseconds
+	using Sec           = Chrono::seconds;                         // Seconds
 	using FNanoSec      = Chrono::duration<f32, NanoSec::period>;  // Nanoseconds as float
 	using FMilliSec     = Chrono::duration<f32, MilliSec::period>; // Milliseconds as float
 	using FSec          = Chrono::duration<f32, Sec::period>;      // Seconds as float
-	using Clock         = Chrono::high_resolution_clock;
-	using TimePoint     = Clock::time_point;
-	using Duration      = Clock::duration; // Should be nanoseconds, but maybe don't rely on it
-	static_assert( std::is_same_v<Duration, NanoSec> ); // If this breaks, revisit a lot of Update and Render calls
+	// SDL provides the timestamps (nanoseconds since its epoch, see Clock in sdl_core.hpp), chrono the durations
+	// A TimePoint is therefore just a Duration relative to SDL's epoch
+	using TimePoint     = NanoSec;
+	using Duration      = NanoSec;
 
 	using File          = std::FILE;
 
@@ -168,6 +168,10 @@ namespace JanSordid::Core//::inline V1
 	// TODO: Move to adapt_chrono, as not everything needs this
 	// Chrono Functions
 	using Chrono::duration_cast;
+	constexpr f32 toFSec( const Duration d )  { return duration_cast<FSec>( d ).count(); }
+	constexpr f32 toFMilliSec( const Duration d ) { return duration_cast<FMilliSec>( d ).count(); }
+	constexpr i64 toNanoSec( const Duration d )  { return duration_cast<NanoSec>( d ).count(); }
+	constexpr i64 toMilliSec( const Duration d )  { return duration_cast<MilliSec>( d ).count(); }
 	using ChronoLiterals::operator ""ns,
 	      ChronoLiterals::operator ""ms,
 	      ChronoLiterals::operator ""s;

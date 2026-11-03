@@ -130,7 +130,7 @@ namespace JanSordid::SDL_Example
 		for( auto & e : _enemies )
 			e.x += travelDist;
 
-		const f32 angle       = duration_cast<FSec>( timeSinceStart ).count() * 1.0f;
+		const f32 angle       = toFSec( timeSinceStart ) * 1.0f;
 		const f32 offsetAngle = std::numbers::pi_v<f32> * 2.0f / (float)_satellites.size();
 		for( uint i = 0; i < _satellites.size(); ++i )
 		{

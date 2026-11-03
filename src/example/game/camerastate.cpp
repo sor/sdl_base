@@ -137,7 +137,7 @@ namespace JanSordid::SDL_Example
 
 	FPoint CameraState::CalcFluxCam( const Duration timeSinceStart ) const
 	{
-		const f32    timeInMS = duration_cast<FMilliSec>( timeSinceStart ).count();
+		const f32    timeInMS = toFMilliSec( timeSinceStart );
 		const FPoint flux     = _isFlux
 			? FPoint {
 				.x = sin( timeInMS / 650.0f  ) *  5.0f,

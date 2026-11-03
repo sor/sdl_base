@@ -145,7 +145,7 @@ namespace JanSordid::SDL_Example
 
 	void RoflState::Render( const u64 framesSinceStart, const Duration timeSinceStart, const f32 deltaTNeeded )
 	{
-		const i64 totalMS = duration_cast<MilliSec>( timeSinceStart ).count();
+		const i64 totalMS = toMilliSec( timeSinceStart );
 		const i64 changeFiveTimesASecond = totalMS / 200;
 		const i64 changeThreeTimesASecond = totalMS / 333;
 		const SDL_FlipMode flipAnim = changeFiveTimesASecond % 2 ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;

@@ -349,8 +349,8 @@ namespace JanSordid::SDL
 		{
 			const TimePoint start = Clock::now();
 
-			      f32 deltaT       = duration_cast<FSec>( deltaTDur       ).count();
-			const f32 deltaTNeeded = duration_cast<FSec>( deltaTDurNeeded ).count();
+			      f32 deltaT       = toFSec( deltaTDur       );
+			const f32 deltaTNeeded = toFSec( deltaTDurNeeded );
 
 			// TODO: Make it possible to opt out and configure this
 			constexpr f32 fpsLimit    = 30.0f;           // slowest frame rate in frames per second
@@ -376,7 +376,7 @@ namespace JanSordid::SDL
 			//  10'000'000ns at 100Hz,
 			//   8'333'333ns at 120Hz,
 			//   6'944'444ns at 144Hz...
-			_timeSinceStart = NanoSec{ SDL_GetTicksNS() };
+			_timeSinceStart = Clock::now();
 
 			// Main loop trinity
 			{
@@ -415,7 +415,7 @@ namespace JanSordid::SDL
 				const Duration dur = std::max( Duration::zero(), 16ms - deltaTDurNeeded );
 				if( dur > 1ns )
 				{
-					const i64 ns = duration_cast<NanoSec>( dur ).count();
+					const i64 ns = toNanoSec( dur );
 					//print( "need to sleep {}\n", ms );
 					// TODO: Change towards SDL_DelayPrecise if precision is paramount
 					SDL_DelayNS( ns );
@@ -435,7 +435,7 @@ namespace JanSordid::SDL
 	float IGame::AverageMSecPerFrame() const
 	{
 		const u64 passedFrames = _framesSinceStart - _lastPerfInfoFrame + 1;
-		return duration_cast<FMilliSec>( _accumulatedNeeded / passedFrames ).count();
+		return toFMilliSec( _accumulatedNeeded / passedFrames );
 	}
 
 	void IGame::ResetPerformanceInfo( const TimePoint current )

@@ -38,6 +38,12 @@ namespace JanSordid::SDL
 	constexpr const bool NoDecode  = false;
 	constexpr const bool PreDecode = true;
 
+	// SDL provides the timestamps, chrono the durations
+	struct Clock
+	{
+		[[nodiscard]] static TimePoint now() { return NanoSec{ SDL_GetTicksNS() }; }
+	};
+
 	// Types which need memory management
 	using Window      = SDL_Window;
 	using Texture     = SDL_Texture;

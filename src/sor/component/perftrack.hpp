@@ -45,9 +45,9 @@ namespace JanSordid::SDL
 		void StartRenderTiming() { _startTimeRender = Clock::now(); }
 		void StartRendUITiming() { _startTimeRendUI = Clock::now(); }
 		void RecordDeltaTDuration( const f32 deltaT ) { _frameTimesDeltaT[_frameTimesIndex] = deltaT * 1000.0f; }
-		void EndUpdateTiming() { _frameTimesUpdate[_frameTimesIndex] = duration_cast<FMilliSec>( UpdateDuration() ).count(); }
-		void EndRenderTiming() { _frameTimesRender[_frameTimesIndex] = duration_cast<FMilliSec>( RenderDuration() ).count(); }
-		void EndRendUITiming() { _frameTimesRendUI[_frameTimesIndex] = duration_cast<FMilliSec>( RendUIDuration() ).count(); }
+		void EndUpdateTiming() { _frameTimesUpdate[_frameTimesIndex] = toFMilliSec( UpdateDuration() ); }
+		void EndRenderTiming() { _frameTimesRender[_frameTimesIndex] = toFMilliSec( RenderDuration() ); }
+		void EndRendUITiming() { _frameTimesRendUI[_frameTimesIndex] = toFMilliSec( RendUIDuration() ); }
 
 		void ToggleRecording() { _isFrameTimeRecording = !_isFrameTimeRecording; }
 		void ToggleMode()      { _frameTimesMode = (_frameTimesMode + 1) % FrameTimesModeCount; }

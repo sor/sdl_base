@@ -40,7 +40,7 @@ namespace NotJanSordid::SDL_MiniExample
 
 		/// Methods: non-virtual first, followed by (pure) virtual/override
 		bool Input( const Event & event                                                ) override { return false; }
-		void Update( u64 framesSinceStart, Duration timeSinceStart, float deltaT       ) override { _colorRolling = duration_cast<FMilliSec>( timeSinceStart ).count(); }
+		void Update( u64 framesSinceStart, Duration timeSinceStart, float deltaT       ) override { _colorRolling = toFMilliSec( timeSinceStart ); }
 		void Render( u64 framesSinceStart, Duration timeSinceStart, float deltaTNeeded ) override {}
 
 		//bool isFPSLimited() const noexcept override { return false; }
