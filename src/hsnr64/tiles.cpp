@@ -26,7 +26,7 @@ namespace JanSordid::HSNR64
 	static_assert( std::is_trivial_v<Tile4K>);
 	static_assert( std::is_trivial_v<Tile64K>);
 
-	void DrawTile( Renderer * renderer, Texture * tex, const Tile & curr_tile, const Tile & last_tile, const FRect & dst, const FPoint & center )
+	void DrawTile( SDL_Renderer * renderer, SDL_Texture * tex, const Tile & curr_tile, const Tile & last_tile, const SDL_FRect & dst, const SDL_FPoint & center )
 	{
 		// Bullshit below: Index 0 should be usable and visible, color 0 (and also alpha 0?) is invisible
 		// An index of 0 means: Do not render anything, which fills in for alpha 0% (which therefore does not exist as value in alpha)
@@ -42,7 +42,7 @@ namespace JanSordid::HSNR64
 
 		if( curr_tile.color != last_tile.color )
 		{
-			const Color & color = Palette( curr_tile.color );
+			const SDL_Color & color = Palette( curr_tile.color );
 			SDL_SetTextureColorMod( tex, color.r, color.g, color.b );
 		}
 
@@ -57,15 +57,15 @@ namespace JanSordid::HSNR64
 			SDL_SetTextureAlphaMod( tex, alpha );
 		}
 
-		constexpr Point tileSize = { 16, 16 };
-		constexpr u16   stride   = 32; // How many per row
-		const     u16   index    = curr_tile.index();
-		const     Point sel      = Point{ (index % stride), (index / stride) } * tileSize;
-		const     FRect src      = toF( toRect( sel, tileSize ) ); // toF( toXY( idx2d, tileSize.x ) * tileSize );
-		const     f64   angle    = IsSet( curr_tile.flipRot, FlipRot::Rotate45 ) * 45
-		                         + IsSet( curr_tile.flipRot, FlipRot::Rotate90 ) * 90;
-		const SDL_FlipMode flip  = (SDL_FlipMode)(IsSet( curr_tile.flipRot, FlipRot::HorizontalFlip ) * SDL_FlipMode::SDL_FLIP_HORIZONTAL
-		                                        + IsSet( curr_tile.flipRot, FlipRot::VerticalFlip )   * SDL_FlipMode::SDL_FLIP_VERTICAL);
+		constexpr SDL_Point tileSize = { 16, 16 };
+		constexpr u16       stride   = 32; // How many per row
+		const     u16       index    = curr_tile.index();
+		const     SDL_Point sel      = SDL_Point{ (index % stride), (index / stride) } * tileSize;
+		const     SDL_FRect src      = toF( toRect( sel, tileSize ) ); // toF( toXY( idx2d, tileSize.x ) * tileSize );
+		const     f64       angle    = IsSet( curr_tile.flipRot, FlipRot::Rotate45 ) * 45
+		                             + IsSet( curr_tile.flipRot, FlipRot::Rotate90 ) * 90;
+		const  SDL_FlipMode flip     = (SDL_FlipMode)(IsSet( curr_tile.flipRot, FlipRot::HorizontalFlip ) * SDL_FlipMode::SDL_FLIP_HORIZONTAL
+		                                            + IsSet( curr_tile.flipRot, FlipRot::VerticalFlip )   * SDL_FlipMode::SDL_FLIP_VERTICAL);
 
 		SDL_RenderTextureRotated( renderer, tex, &src, &dst, angle, &center, flip );
 	}

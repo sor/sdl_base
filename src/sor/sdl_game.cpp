@@ -5,14 +5,7 @@
 
 namespace JanSordid::SDL
 {
-	// Explicit template instantiation in .cpp file
-	//template class           Game<IGameState,u8>;
-	//template class GameState<Game<IGameState,u8>>;
-
-	// We want one out of line virtual definition, to not have vtables in every TU
-	IGameState::~IGameState() noexcept = default;
-
-	IGame::IGame( const char * const windowTitle, const Point requestedSize, f32 scalingFactor, const int vSync ) noexcept
+	Game::Game( const char * const windowTitle, const SDL_Point requestedSize, f32 scalingFactor, const int vSync ) noexcept
 		: _windowTitle{ windowTitle },
 		  _vSync{ vSync }
 	{
@@ -42,7 +35,7 @@ namespace JanSordid::SDL
 		{
 			const SDL_DisplayID     displayID   = SDL_GetPrimaryDisplay();
 			const SDL_DisplayMode * displayMode = SDL_GetDesktopDisplayMode( displayID );
-			const FPoint            factor      = toF( Point{ displayMode->w, displayMode->h } ) / toF( requestedSize );
+			const SDL_FPoint        factor      = toF( SDL_Point{ displayMode->w, displayMode->h } ) / toF( requestedSize );
 			scalingFactor                       = std::max( 1.0f, std::floor( std::min( factor.x, factor.y ) - 0.2f ) );
 
 			print( "Scaling Factor was calculated to be: {}\n", scalingFactor );
@@ -79,7 +72,7 @@ namespace JanSordid::SDL
 		CreateWindowEtc();
 	}
 
-	IGame::~IGame() noexcept
+	Game::~Game() noexcept
 	{
 		_mixer.release(); // RAII is sad
 
@@ -99,7 +92,7 @@ namespace JanSordid::SDL
 			SDL_Quit();
 	}
 
-	void IGame::CreateWindowEtc()
+	void Game::CreateWindowEtc()
 	{
 		_window = SDL_CreateWindow(
 			_windowTitle,
@@ -108,7 +101,7 @@ namespace JanSordid::SDL
 			SDL_WINDOW_OPENGL /*| SDL_WINDOW_HIGH_PIXEL_DENSITY*/ );
 		if( _window == nullptr )
 		{
-			print( stderr, "Window could not be created: {}\n", SDL_GetError() );
+			print( stderr, "SDL_Window could not be created: {}\n", SDL_GetError() );
 			exit( 6 );
 		}
 
@@ -122,7 +115,7 @@ namespace JanSordid::SDL
 		_renderer = SDL_CreateRendererWithProperties( props );
 		if( _renderer == nullptr )
 		{
-			print( stderr, "Renderer could not be created: {}\n", SDL_GetError() );
+			print( stderr, "SDL_Renderer could not be created: {}\n", SDL_GetError() );
 			exit( 7 );
 		}
 
@@ -138,7 +131,7 @@ namespace JanSordid::SDL
 			ImGui_ImplSDLRenderer3_Init( _renderer ); )
 	}
 
-	void IGame::DestroyWindowEtc()
+	void Game::DestroyWindowEtc()
 	{
 		if( _renderer != nullptr )
 		{
@@ -155,7 +148,7 @@ namespace JanSordid::SDL
 
 #if USE_IMGUI
 
-	void IGame::CreateImGui()
+	void Game::CreateImGui()
 	{
 		//SDL_GLContext gl_context = SDL_GL_CreateContext( window );
 		//SDL_GL_MakeCurrent( window, gl_context );
@@ -194,7 +187,7 @@ namespace JanSordid::SDL
 		*/
 	}
 
-	void IGame::DestroyImGui()
+	void Game::DestroyImGui()
 	{
 		ImGui_ImplSDLRenderer3_Shutdown();
 		ImGui_ImplSDL3_Shutdown();
@@ -205,14 +198,14 @@ namespace JanSordid::SDL
 
 #endif
 
-	void IGame::Input()
+	void Game::Input()
 	{
 		SDL_PumpEvents();
 
 		if( currentState().StatefulInput() )
 			return;
 
-		Event event;
+		SDL_Event event;
 		while( SDL_PollEvent( &event ) )
 		{
 			// First try if Game wants to handle the input (globals), then pass it to the GameState
@@ -226,28 +219,28 @@ namespace JanSordid::SDL
 		}
 	}
 
-	void IGame::Update( const f32 deltaT )
+	void Game::Update( const f32 deltaT )
 	{
 		currentState().Update( _framesSinceStart, _timeSinceStart, deltaT );
 	}
 
-	void IGame::RenderClear()
+	void Game::RenderClear()
 	{
-		const Color clear = currentState().clearColor();
+		const SDL_Color clear = currentState().clearColor();
 		SDL_SetRenderDrawColor( _renderer, clear.r, clear.g, clear.b, clear.a );
 		SDL_RenderClear( _renderer );
 	}
 
-	void IGame::RenderPresent()
+	void Game::RenderPresent()
 	{
 		SDL_RenderPresent( _renderer );
 	}
 
-	void IGame::Render( const f32 deltaTNeeded )
+	void Game::Render( const f32 deltaTNeeded )
 	{
 		// This is placed before the GameState::Render call, to also allow calls to ImGui inside Render (although most ImGui calls should be in RenderUI)
 #if USE_IMGUI
-		//FPoint oldScale;
+		//SDL_FPoint oldScale;
 		//SDL_RenderGetScale(_renderer, &oldScale.x, &oldScale.y);
 		//const ImGuiIO & io = ImGui::GetIO();
 		//SDL_SetRenderScale( _renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y );
@@ -262,7 +255,7 @@ namespace JanSordid::SDL
 
 #if USE_IMGUI
 
-	void IGame::RenderUI( const f32 deltaTNeeded )
+	void Game::RenderUI( const f32 deltaTNeeded )
 	{
 		_perfTracker.RenderUI( deltaTNeeded );
 
@@ -275,7 +268,7 @@ namespace JanSordid::SDL
 #endif
 
 	// Returns if the event has been handled
-	bool IGame::HandleEvent( const Event & event )
+	bool Game::HandleEvent( const SDL_Event & event )
 	{
 #if USE_IMGUI
 		const ImGuiIO & io = ImGui::GetIO();
@@ -296,7 +289,7 @@ namespace JanSordid::SDL
 				if( (what_key.mod & SDL_KMOD_ALT) &&
 				    (what_key.scancode == SDL_SCANCODE_F4) )
 				{
-					Event next_event = { .type = SDL_EVENT_QUIT };
+					SDL_Event next_event = { .type = SDL_EVENT_QUIT };
 					SDL_PushEvent( &next_event );
 					return true;
 				}
@@ -340,7 +333,7 @@ namespace JanSordid::SDL
 		return false;
 	}
 
-	int IGame::Run()
+	int Game::Run()
 	{
 		Duration deltaTDur       = {};
 		Duration deltaTDurNeeded = {};   // How much time was really necessary
@@ -365,7 +358,7 @@ namespace JanSordid::SDL
 				deltaT = deltaTLimit;
 			}
 
-			OutputPerformanceInfo( start, deltaTDurNeeded );
+			_perfOutput.Output( _window.get(), _framesSinceStart, start, deltaTDurNeeded );
 
 			ChangeState();
 			//SDL_assert( currentStateIndex() >= 0 );
@@ -432,53 +425,7 @@ namespace JanSordid::SDL
 		return 0;
 	}
 
-	float IGame::AverageMSecPerFrame() const
-	{
-		const u64 passedFrames = _framesSinceStart - _lastPerfInfoFrame + 1;
-		return toFMilliSec( _accumulatedNeeded / passedFrames );
-	}
-
-	void IGame::ResetPerformanceInfo( const TimePoint current )
-	{
-		_lastPerfInfoFrame = _framesSinceStart;
-		_lastPerfInfoTime  = current;
-		_accumulatedNeeded = Duration::zero();
-	}
-
-	void IGame::OutputPerformanceInfo( const TimePoint current, const Duration needed )
-	{
-		//using namespace ChronoLiterals;
-
-		_accumulatedNeeded += needed;
-
-		const Duration passedTime = current - _lastPerfInfoTime;
-
-		switch( _perfDrawMode )
-		{
-			case PerformanceDrawMode::Title:
-				if( passedTime > 250ms )
-				{
-					const std::string avgms = format( "{}ms", AverageMSecPerFrame() );
-					SDL_SetWindowTitle( _window, avgms.c_str() );
-					ResetPerformanceInfo( current );
-				}
-				break;
-
-			case PerformanceDrawMode::OStream:
-				if( passedTime > 1000ms )
-				{
-					print( "{}ms", AverageMSecPerFrame() );
-					ResetPerformanceInfo( current );
-				}
-				break;
-
-			case PerformanceDrawMode::Graph:
-			case PerformanceDrawMode::None:
-			default: break;
-		}
-	}
-
-	void IGame::PushState( const u8 state )
+	void Game::PushState( const u8 state )
 	{
 		// A Pop followed by a Push is the same as a Replace:
 		// the top state gets swapped out without activating the state below, which would immediately deactivate again
@@ -489,19 +436,19 @@ namespace JanSordid::SDL
 		_stateNextVal = state;
 	}
 
-	void IGame::PopState()
+	void Game::PopState()
 	{
 		assert( !_stateStack.empty() );
 		_stateNextOp = NextStateOp::Pop;
 	}
 
-	void IGame::ReplaceState( const u8 state )
+	void Game::ReplaceState( const u8 state )
 	{
 		PopState();
 		PushState( state );
 	}
 
-	void IGame::ChangeState()
+	void Game::ChangeState()
 	{
 		if( _stateNextOp == NextStateOp::None )
 		{

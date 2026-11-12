@@ -40,13 +40,13 @@ namespace JanSordid::SDL_Example
 
 	void CameraState::Destroy()
 	{
-		for( Owned<Texture> & bg : _background )
+		for( Owned<SDL_Texture> & bg : _background )
 			bg.reset();
 
 		Base::Destroy();
 	}
 
-	bool CameraState::Input( const Event & event )
+	bool CameraState::Input( const SDL_Event & event )
 	{
 		if( event.type == SDL_EVENT_KEY_DOWN && event.key.repeat == 0 )
 		{
@@ -68,11 +68,11 @@ namespace JanSordid::SDL_Example
 		else if( (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
 			  || (event.type == SDL_EVENT_MOUSE_MOTION && event.motion.state != 0) )
 		{
-			Point windowSize;
+			SDL_Point windowSize;
 			SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
-			const FPoint halfWinSize = toF( windowSize / 2 );
-			const FPoint mousePos    = { (float) event.motion.x, (float) event.motion.y };
+			const SDL_FPoint halfWinSize = toF( windowSize / 2 );
+			const SDL_FPoint mousePos    = { (float) event.motion.x, (float) event.motion.y };
 
 			_mouseOffset = _isInverted
 				? halfWinSize - mousePos
@@ -135,17 +135,17 @@ namespace JanSordid::SDL_Example
 		}
 	}
 
-	FPoint CameraState::CalcFluxCam( const Duration timeSinceStart ) const
+	SDL_FPoint CameraState::CalcFluxCam( const Duration timeSinceStart ) const
 	{
 		const f32    timeInMS = toFMilliSec( timeSinceStart );
-		const FPoint flux     = _isFlux
-			? FPoint {
+		const SDL_FPoint flux     = _isFlux
+			? SDL_FPoint {
 				.x = sin( timeInMS / 650.0f  ) *  5.0f,
 				.y = sin( timeInMS / 500.0f  ) * 10.0f
 				   + sin( timeInMS / 850.0f  ) *  5.0f
 				   + cos( timeInMS / 1333.0f ) *  5.0f }
-			: FPoint { 0, 0 };
-		const FPoint fluxCam = _camera + flux + _mouseOffsetEased;
+			: SDL_FPoint { 0, 0 };
+		const SDL_FPoint fluxCam = _camera + flux + _mouseOffsetEased;
 		return fluxCam;
 	}
 
@@ -155,10 +155,10 @@ namespace JanSordid::SDL_Example
 		// only showing how bad they would behave if this var would be float instead, the cast to float happens inside CalcFluxCam
 		//msSinceStart += 2147470000u + 2147480000u;
 
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
-		const FPoint fluxCam = CalcFluxCam( timeSinceStart );
+		const SDL_FPoint fluxCam = CalcFluxCam( timeSinceStart );
 
 		for( int i = 0; i <= 3; ++i ) // The 4 layers, rendered back to front
 		{
@@ -166,22 +166,22 @@ namespace JanSordid::SDL_Example
 		}
 	}
 
-	void CameraState::RenderLayer( const Point windowSize, const FPoint camPos, const int index ) const
+	void CameraState::RenderLayer( const SDL_Point windowSize, const SDL_FPoint camPos, const int index ) const
 	{
 		if( !_isBackgroundVisible[index] )
 			return;
 
-		const FPoint size   = _backgroundSize[index];
-		const FPoint offset = BackgroundStartOffset[index] + camPos * BackgroundFactor[index];
+		const SDL_FPoint size   = _backgroundSize[index];
+		const SDL_FPoint offset = BackgroundStartOffset[index] + camPos * BackgroundFactor[index];
 		for( float x = offset.x; x < windowSize.x; x += size.x * 2 )
 		{
 			for( float y = offset.y; y < windowSize.y; y += size.y * 2 )
 			{
-				const FRect off = toFRect( FPoint{ x, y }, size * 2 );
+				const SDL_FRect off = toFRect( SDL_FPoint{ x, y }, size * 2 );
 				SDL_RenderTexture( renderer(), _background[index].get(), EntireFRect, &off );
 
 				// Makes only sense with texture hint == best
-				//FRect offset = { .x = x, .y = y, .w = size.x * 2.0f, .h = size.y * 2.0f };
+				//SDL_FRect offset = { .x = x, .y = y, .w = size.x * 2.0f, .h = size.y * 2.0f };
 				//SDL_RenderCopyF( renderer, bg[i], EntireRect, &offset );
 			}
 		}

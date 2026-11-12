@@ -23,10 +23,10 @@ namespace JanSordid::SDL_Example
 		void Init() override;
 		void Destroy() override;
 
-		bool Input( const Event & event ) override;
+		bool Input( const SDL_Event & event ) override;
 		void Update( u64 framesSinceStart, Duration timeSinceStart, f32 deltaT       ) override;
 		void Render( u64 framesSinceStart, Duration timeSinceStart, f32 deltaTNeeded ) override;
 
-		Color clearColor() const noexcept override{ return Color{191,191,191,255}; }
+		SDL_Color clearColor() const noexcept override{ return SDL_Color{191,191,191,255}; }
 	};
 }

@@ -79,32 +79,32 @@ namespace JanSordid::HSNR64
 			else return -1; // Invalid UTF-8 sequence
 		}
 
-		Owned<Texture> _tiles;
-		Renderer     * _renderer;
+		Owned<SDL_Texture> _tiles;
+		SDL_Renderer     * _renderer;
 
 	public:
-		TileFont( Renderer * renderer );
+		TileFont( SDL_Renderer * renderer );
 
 		void Render(
-			const String & text,
-			const FRect  & dimension,
-			const Color  & color,
-			const Color  & outlineColor = { 0, 0, 0, SDL_ALPHA_OPAQUE } );
+			const String    & text,
+			const SDL_FRect & dimension,
+			const SDL_Color & color,
+			const SDL_Color & outlineColor = { 0, 0, 0, SDL_ALPHA_OPAQUE } );
 
 	private:
-		using RenderFunc = void ( Renderer * renderer, Texture * texture, const FRect & src, const FRect & dst );
+		using RenderFunc = void ( SDL_Renderer * renderer, SDL_Texture * texture, const SDL_FRect & src, const SDL_FRect & dst );
 
 		// These are function declares ;)
 		static RenderFunc RenderOutline;
 		static RenderFunc RenderCenter;
 
 		void RenderSingle(
-			const String & text,
-			const FRect  & dimension,
-			const u8       ligatureLevel,
-			const u8       spacing,
-			const FPoint & tilesize,
-			RenderFunc     renderFunc );
+			const String     & text,
+			const SDL_FRect  & dimension,
+			const u8           ligatureLevel,
+			const u8           spacing,
+			const SDL_FPoint & tilesize,
+			RenderFunc         renderFunc );
 	};
 }
 

@@ -91,25 +91,25 @@ namespace JanSordid::HSNR64
 		#define TileIndexCtor( index ) (index)
 	#endif
 
-	void DrawTile( Renderer * renderer, Texture * tex, const Tile & curr_tile, const Tile & last_tile, const FRect & dst, const FPoint & center );
+	void DrawTile( SDL_Renderer * renderer, SDL_Texture * tex, const Tile & curr_tile, const Tile & last_tile, const SDL_FRect & dst, const SDL_FPoint & center );
 
 	struct TileInfo
 	{
 		// Collider, Hitbox, Hurtbox (does it hurt you or others?)
 		// Bounding volumes/areas
-		u16     bitset;
-		Point   orderPivot;  // might be interesting for DrawingOrder::BackToFront
+		u16        bitset;
+		SDL_Point  orderPivot;  // might be interesting for DrawingOrder::BackToFront
 	};
 
 	// Should be able to be used multiple times
 	struct TileSet
 	{
-		Owned<Texture>  texture;
-		Point           textureSize = {  512,  1024 };     // Refering to the texture x,y = size of one tile; w,h = amount of tiles
-		Point           tileSize    = {   16,    16 };     // Size of a Tile in pixels
-		Point           tileCount   = {   32,    64 };     // Refering to the texture x,y = size of one tile; w,h = amount of tiles
-	//	Point           startOffset = {    0,     0 };     // Empty space left/top of the first Tile
-	//	Point           margin      = {    0,     0 };     // Empty space between the Tiles
+		Owned<SDL_Texture>  texture;
+		SDL_Point           textureSize = {  512,  1024 };     // Refering to the texture x,y = size of one tile; w,h = amount of tiles
+		SDL_Point           tileSize    = {   16,    16 };     // Size of a Tile in pixels
+		SDL_Point           tileCount   = {   32,    64 };     // Refering to the texture x,y = size of one tile; w,h = amount of tiles
+	//	SDL_Point           startOffset = {    0,     0 };     // Empty space left/top of the first Tile
+	//	SDL_Point           margin      = {    0,     0 };     // Empty space between the Tiles
 	};
 
 	// Uniform Tiling of 2D Space
@@ -117,16 +117,16 @@ namespace JanSordid::HSNR64
 	struct TileMap // TileLayer
 	{
 		static constexpr f32    halfSize  = 0.5f;
-		static constexpr FPoint halfPoint = { 0.5f, 0.5f };
+		static constexpr SDL_FPoint halfPoint = { 0.5f, 0.5f };
 
 		DynArray<Tile>  tiles;
 		TileSet *       tileSet;
-		FPoint          tileDist    = { 16.0f, 16.0f };     // This should usually be the same as tileSet.tileSize, but for an overlapping TileSet this can for example be lower
-		FPoint          tileOffset  = {  0.0f,  0.0f };     // Offset from the zero coordinate
-		FPoint          sizeScale   = {  1.0f,  1.0f };     // Output size scaling
-		FPoint          scrollScale = {  1.0f,  1.0f };     // Parallax scroll scaling
-		FPoint          center;  // = toF( tileSet->tileSize ) * sizeScale * halfSize;
-		Point           size;
+		SDL_FPoint      tileDist    = { 16.0f, 16.0f };     // This should usually be the same as tileSet.tileSize, but for an overlapping TileSet this can for example be lower
+		SDL_FPoint      tileOffset  = {  0.0f,  0.0f };     // Offset from the zero coordinate
+		SDL_FPoint      sizeScale   = {  1.0f,  1.0f };     // Output size scaling
+		SDL_FPoint      scrollScale = {  1.0f,  1.0f };     // Parallax scroll scaling
+		SDL_FPoint      center;  // = toF( tileSet->tileSize ) * sizeScale * halfSize;
+		SDL_Point       size;
 		int             stride; // Same as size.x?
 		SDL_BlendMode   blendMode   = SDL_BLENDMODE_BLEND;  // SDL_SetTextureBlendMode
 		SDL_ScaleMode   scaleMode   = SDL_ScaleMode::SDL_SCALEMODE_NEAREST; // SDL_SetTextureScaleMode -OR- SDL_HINT_RENDER_SCALE_QUALITY 0, 1, 2

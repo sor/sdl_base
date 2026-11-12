@@ -22,16 +22,16 @@ namespace JanSordid::HSNR64
 		 *   x x
 		 *    x
 		 */
-		static constexpr Array<FPoint, 8> Rhombus = {
+		static constexpr Array<SDL_FPoint, 8> Rhombus = {
 			//*
-			FPoint { -1, -1 },
-			FPoint { +1, -1 },
-			FPoint { -1, +1 },
-			FPoint { +1, +1 },
-			FPoint { +0, +2 },
-			FPoint { +2, +0 },
-			FPoint { +0, -2 },
-			FPoint { -2, +0 },
+			SDL_FPoint { -1, -1 },
+			SDL_FPoint { +1, -1 },
+			SDL_FPoint { -1, +1 },
+			SDL_FPoint { +1, +1 },
+			SDL_FPoint { +0, +2 },
+			SDL_FPoint { +2, +0 },
+			SDL_FPoint { +0, -2 },
+			SDL_FPoint { -2, +0 },
 			/*/
 			1.0_up   + 1.0_left,
 			1.0_up   + 1.0_right,
@@ -53,16 +53,16 @@ namespace JanSordid::HSNR64
 		 *   xxx
 		 */
 
-		static constexpr Array<FPoint, 8> Square = {
+		static constexpr Array<SDL_FPoint, 8> Square = {
 			//*
-			FPoint { -1, -1 },
-			FPoint { +1, -1 },
-			FPoint { -1, +1 },
-			FPoint { +1, +1 },
-			FPoint { +0, +1 },
-			FPoint { +1, +0 },
-			FPoint { +0, -1 },
-			FPoint { -1, +0 },
+			SDL_FPoint { -1, -1 },
+			SDL_FPoint { +1, -1 },
+			SDL_FPoint { -1, +1 },
+			SDL_FPoint { +1, +1 },
+			SDL_FPoint { +0, +1 },
+			SDL_FPoint { +1, +0 },
+			SDL_FPoint { +0, -1 },
+			SDL_FPoint { -1, +0 },
 			/*/
 			1.0_up   + 1.0_left,
 			1.0_up   + 1.0_right,
@@ -83,12 +83,12 @@ namespace JanSordid::HSNR64
 		 *    x
 		 */
 
-		static constexpr Array<FPoint, 4> Plus = {
+		static constexpr Array<SDL_FPoint, 4> Plus = {
 			//*
-			FPoint { +0, +1 },
-			FPoint { +1, +0 },
-			FPoint { +0, -1 },
-			FPoint { -1, +0 },
+			SDL_FPoint { +0, +1 },
+			SDL_FPoint { +1, +0 },
+			SDL_FPoint { +0, -1 },
+			SDL_FPoint { -1, +0 },
 			/*/
 			1.0_right,
 			1.0_left,
@@ -104,12 +104,12 @@ namespace JanSordid::HSNR64
 		 *    o
 		 *   x x
 		 */
-		static constexpr Array<FPoint, 4> Cross = {
+		static constexpr Array<SDL_FPoint, 4> Cross = {
 			//*
-			FPoint { -1, -1 },
-			FPoint { +1, -1 },
-			FPoint { -1, +1 },
-			FPoint { +1, +1 },
+			SDL_FPoint { -1, -1 },
+			SDL_FPoint { +1, -1 },
+			SDL_FPoint { -1, +1 },
+			SDL_FPoint { +1, +1 },
 			/*/
 			1.0_up   + 1.0_left,
 			1.0_up   + 1.0_right,

@@ -134,8 +134,8 @@ namespace JanSordid::Core//::inline V1
 	// TODO: Do all the other types as well?
 	constexpr f32  operator""_f32 (unsigned long long n) { return (f32)n; }
 	constexpr f64  operator""_f64 (unsigned long long n) { return (f64)n; }
-	constexpr f32  operator""_f32 (long double n) { return (f32)n; }
-	constexpr f64  operator""_f64 (long double n) { return (f64)n; }
+	constexpr f32  operator""_f32 (long double n)        { return (f32)n; }
+	constexpr f64  operator""_f64 (long double n)        { return (f64)n; }
 
 	constexpr std::size_t operator""_KiB(unsigned long long n) { return n * 1024; }
 	constexpr std::size_t operator""_MiB(unsigned long long n) { return n * 1024_KiB; }
@@ -168,13 +168,14 @@ namespace JanSordid::Core//::inline V1
 	// TODO: Move to adapt_chrono, as not everything needs this
 	// Chrono Functions
 	using Chrono::duration_cast;
-	constexpr f32 toFSec( const Duration d )  { return duration_cast<FSec>( d ).count(); }
-	constexpr f32 toFMilliSec( const Duration d ) { return duration_cast<FMilliSec>( d ).count(); }
-	constexpr i64 toNanoSec( const Duration d )  { return duration_cast<NanoSec>( d ).count(); }
-	constexpr i64 toMilliSec( const Duration d )  { return duration_cast<MilliSec>( d ).count(); }
 	using ChronoLiterals::operator ""ns,
 	      ChronoLiterals::operator ""ms,
 	      ChronoLiterals::operator ""s;
+
+	constexpr f32 toFSec(      const Duration d ) { return duration_cast<FSec     >( d ).count(); }
+	constexpr f32 toFMilliSec( const Duration d ) { return duration_cast<FMilliSec>( d ).count(); }
+	constexpr i64 toNanoSec(   const Duration d ) { return duration_cast<NanoSec  >( d ).count(); }
+	constexpr i64 toMilliSec(  const Duration d ) { return duration_cast<MilliSec >( d ).count(); }
 
 	// Functions
 	using std::move, std::forward; // Clang does not like this, decide for yourself

@@ -34,10 +34,10 @@ namespace JanSordid::SDL_Example
 
 	void ShooterState::Destroy()
 	{
-		for( Owned<Texture> & tex : _projectile )
+		for( Owned<SDL_Texture> & tex : _projectile )
 			tex.reset();
 
-		for( Owned<Track> & track : _tracksSound )
+		for( Owned<MIX_Track> & track : _tracksSound )
 			track.reset();
 
 		_sound.reset();
@@ -45,7 +45,7 @@ namespace JanSordid::SDL_Example
 		Base::Destroy();
 	}
 
-	bool ShooterState::Input( const Event & event )
+	bool ShooterState::Input( const SDL_Event & event )
 	{
 		if( event.type == SDL_EVENT_KEY_DOWN && event.key.repeat == 0 )
 		{
@@ -67,7 +67,7 @@ namespace JanSordid::SDL_Example
 		}
 		else if( event.type == SDL_EVENT_MOUSE_BUTTON_DOWN )
 		{
-			const FPoint mousePos = FPoint{
+			const SDL_FPoint mousePos = SDL_FPoint{
 				(f32)event.button.x,
 				(f32)event.button.y } - _mouseOffsetEased - _camera;
 			//enemyProjectiles.push_back( mousePos );
@@ -81,17 +81,17 @@ namespace JanSordid::SDL_Example
 		}
 		else if( event.type == SDL_EVENT_MOUSE_MOTION )
 		{
-			Point windowSize;
+			SDL_Point windowSize;
 			SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
-			const FPoint halfWindowSize = toF( windowSize / 2 );
-			const FPoint mousePos = { (float)event.motion.x, (float)event.motion.y };
+			const SDL_FPoint halfWindowSize = toF( windowSize / 2 );
+			const SDL_FPoint mousePos = { (float)event.motion.x, (float)event.motion.y };
 
 			_mouseOffset = halfWindowSize - mousePos;
 
 			if( event.motion.state != 0 )
 			{
-				const FPoint mousePosOffsetted = FPoint{
+				const SDL_FPoint mousePosOffsetted = SDL_FPoint{
 					(float)event.motion.x,
 					(float)event.motion.y } - _mouseOffsetEased - _camera;
 				//enemyProjectiles.push_back( mousePosOffsetted );
@@ -177,16 +177,16 @@ namespace JanSordid::SDL_Example
 			if( _shootCooldown < timeSinceStart )
 				_shootCooldown = timeSinceStart + 250ms;
 
-			SpawnMyProjectile( FPoint{ _player.x + _player.w,      _player.y + _player.h / 2      } );
-			SpawnMyProjectile( FPoint{ _player.x + _player.w - 20, _player.y + _player.h / 2 - 10 } );
-			SpawnMyProjectile( FPoint{ _player.x + _player.w - 20, _player.y + _player.h / 2 + 10 } );
+			SpawnMyProjectile( SDL_FPoint{ _player.x + _player.w,      _player.y + _player.h / 2      } );
+			SpawnMyProjectile( SDL_FPoint{ _player.x + _player.w - 20, _player.y + _player.h / 2 - 10 } );
+			SpawnMyProjectile( SDL_FPoint{ _player.x + _player.w - 20, _player.y + _player.h / 2 + 10 } );
 			for( uint i = 0; i < _satellites.size(); ++i )
 			{
 				SpawnMyProjectile( _satellites[i] );
 			}
 		}
 
-		const Rect playerRect = { (int)_player.x, (int)_player.y, (int)_player.w, (int)_player.h };
+		const SDL_Rect playerRect = { (int)_player.x, (int)_player.y, (int)_player.w, (int)_player.h };
 
 		for( auto it = _enemyProjectiles.begin(); it != _enemyProjectiles.end(); ++it )
 		{
@@ -195,9 +195,9 @@ namespace JanSordid::SDL_Example
 			if( !IsProjectileAlive( it ) )
 				continue;
 
-			const Point pos              = { (int)p.x, (int)p.y };
-			const bool  isJustOutOfLevel = p.x < 0;
-			const bool  isPlayerHit      = SDL_PointInRect( &pos, &playerRect );
+			const SDL_Point pos              = { (int)p.x, (int)p.y };
+			const bool      isJustOutOfLevel = p.x < 0;
+			const bool      isPlayerHit      = SDL_PointInRect( &pos, &playerRect );
 
 			bool isPlayerExtraHit = false;
 			for( uint i = 0; i < _satellites.size(); ++i )
@@ -221,7 +221,7 @@ namespace JanSordid::SDL_Example
 			}
 		}
 
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
 		for( auto it = _myProjectiles.begin(); it != _myProjectiles.end(); ++it )
@@ -231,8 +231,8 @@ namespace JanSordid::SDL_Example
 			if( !IsProjectileAlive( it ) )
 				continue;
 
-			const Point pos = { (int)p.x, (int)p.y };
-			const bool isJustOutOfLevel = p.x > _progress + windowSize.x * 2;
+			const SDL_Point pos              = { (int)p.x, (int)p.y };
+			const bool      isJustOutOfLevel = p.x > _progress + windowSize.x * 2;
 			if( isJustOutOfLevel )
 			{
 				RetireMyProjectile( it );
@@ -241,8 +241,8 @@ namespace JanSordid::SDL_Example
 
 			for( auto & e : _enemies )
 			{
-				const Rect enemyRect  = { (int)e.x, (int)e.y, (int)e.w, (int)e.h };
-				const bool isEnemyHit = SDL_PointInRect( &pos, &enemyRect );
+				const SDL_Rect enemyRect  = { (int)e.x, (int)e.y, (int)e.w, (int)e.h };
+				const bool     isEnemyHit = SDL_PointInRect( &pos, &enemyRect );
 				if( isEnemyHit )
 				{
 					// TODO: Damage the enemy
@@ -313,10 +313,10 @@ namespace JanSordid::SDL_Example
 
 	void ShooterState::Render( const u64 framesSinceStart, const Duration timeSinceStart, const f32 deltaTNeeded )
 	{
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
-		const FPoint fluxCam = CalcFluxCam( timeSinceStart );
+		const SDL_FPoint fluxCam = CalcFluxCam( timeSinceStart );
 
 		for( int i = 0; i <= 2; ++i ) // Only the first 3 layers, rendered back to front
 		{
@@ -324,27 +324,27 @@ namespace JanSordid::SDL_Example
 		}
 
 		{
-			constexpr FPoint pivot   = { 10, 45 };
-			constexpr FPoint texSize = { 10, 26 };
+			constexpr SDL_FPoint pivot   = { 10, 45 };
+			constexpr SDL_FPoint texSize = { 10, 26 };
 			//for( auto & p : enemyProjectiles )
 			for( auto it = _enemyProjectiles.begin(); it != _enemyProjectiles.end(); ++it )
 			{
 				if( !IsProjectileAlive( it ) )
 					continue;
 
-				const FPoint & p = *it;
+				const SDL_FPoint & p = *it;
 
-				const Point index      = IndexUnpackClamped<10, 6>( framesSinceStart + lround( p.y ) );
-				const FRect srcIndexed = toFRect( texSize * toF( index ), texSize );
-				const FRect pos        = toFRect( p + fluxCam - pivot * FPoint{ 0.5f, 1.0f }, texSize * 2 );
+				const SDL_Point index      = IndexUnpackClamped<10, 6>( framesSinceStart + lround( p.y ) );
+				const SDL_FRect srcIndexed = toFRect( texSize * toF( index ), texSize );
+				const SDL_FRect pos        = toFRect( p + fluxCam - pivot * SDL_FPoint{ 0.5f, 1.0f }, texSize * 2 );
 				SDL_RenderTextureRotated( renderer(), _projectile[0], &srcIndexed, &pos, 90, &pivot, SDL_FlipMode::SDL_FLIP_NONE );
 				//SDL_RenderCopy( renderer(), projectile[2], &src, &pos );
 			}
 		}
 
 		{
-			constexpr FPoint pivot   = { 10, 9 };
-			constexpr FPoint texSize = { 65, 9 };
+			constexpr SDL_FPoint pivot   = { 10, 9 };
+			constexpr SDL_FPoint texSize = { 65, 9 };
 			for( auto it = _myProjectiles.begin(); it != _myProjectiles.end(); ++it )
 			{
 				auto & p = *it;
@@ -352,9 +352,9 @@ namespace JanSordid::SDL_Example
 				if( !IsProjectileAlive( it ) )
 					continue;
 
-				const Point index      = IndexUnpackClamped<10, 6>( framesSinceStart + (u64)p.y );
-				const FRect srcIndexed = toFRect( texSize * toF( index ), texSize );
-				const FRect pos        = toFRect( p + fluxCam - pivot * FPoint{ 0.5f, 1.0f }, texSize * 2 );
+				const SDL_Point index      = IndexUnpackClamped<10, 6>( framesSinceStart + (u64)p.y );
+				const SDL_FRect srcIndexed = toFRect( texSize * toF( index ), texSize );
+				const SDL_FRect pos        = toFRect( p + fluxCam - pivot * SDL_FPoint{ 0.5f, 1.0f }, texSize * 2 );
 				SDL_RenderTextureRotated( renderer(), _projectile[2], &srcIndexed, &pos, 180, &pivot, SDL_FlipMode::SDL_FLIP_NONE );
 				//SDL_RenderCopy( renderer(), _projectile[2], &src, &pos );
 			}
@@ -364,8 +364,8 @@ namespace JanSordid::SDL_Example
 		SDL_SetRenderDrawBlendMode( renderer(), SDL_BLENDMODE_BLEND );
 		SDL_SetRenderDrawColor( renderer(), 0, 255, 0, 127 );
 
-		//const Point fluxCamI = { (int)fluxCam.x, (int)fluxCam.y };
-		const FRect pos = _player + toXY( fluxCam );
+		//const SDL_Point fluxCamI = { (int)fluxCam.x, (int)fluxCam.y };
+		const SDL_FRect pos = _player + toXY( fluxCam );
 		SDL_RenderFillRect( renderer(), &pos );
 
 		// Draw player satellites
@@ -374,7 +374,7 @@ namespace JanSordid::SDL_Example
 
 		for( uint i = 0; i < _satellites.size(); ++i )
 		{
-			const FPoint sat2Pos = _satellites[i] + fluxCam;
+			const SDL_FPoint sat2Pos = _satellites[i] + fluxCam;
 			DrawCircle( renderer(), sat2Pos, SatRadius );
 		}
 
@@ -384,8 +384,8 @@ namespace JanSordid::SDL_Example
 
 		for( auto & e : _enemies )
 		{
-			//const Point fluxCamI = { (int)fluxCam.x, (int)fluxCam.y };
-			const FRect posOffsetted = e + toXY( fluxCam );
+			//const SDL_Point fluxCamI = { (int)fluxCam.x, (int)fluxCam.y };
+			const SDL_FRect posOffsetted = e + toXY( fluxCam );
 			SDL_RenderFillRect( renderer(), &posOffsetted );
 		}
 
@@ -393,12 +393,12 @@ namespace JanSordid::SDL_Example
 			RenderLayer( windowSize, fluxCam, i );
 	}
 
-	bool ShooterState::IsProjectileAlive( const DynArray<FPoint>::iterator & it ) const
+	bool ShooterState::IsProjectileAlive( const DynArray<SDL_FPoint>::iterator & it ) const
 	{
 		return std::isfinite( it->x );
 	}
 
-	void ShooterState::SpawnEnemyProjectile( const FPoint pos )
+	void ShooterState::SpawnEnemyProjectile( const SDL_FPoint pos )
 	{
 		if( _numDeadEnemyProj > 20 )
 		{
@@ -434,7 +434,7 @@ namespace JanSordid::SDL_Example
 		}
 	}
 
-	void ShooterState::SpawnMyProjectile( const FPoint pos )
+	void ShooterState::SpawnMyProjectile( const SDL_FPoint pos )
 	{
 		if( _numDeadMyProj > 20 )
 		{
@@ -470,14 +470,14 @@ namespace JanSordid::SDL_Example
 		}
 	}
 
-	void ShooterState::RetireProjectile( const DynArray<FPoint>::iterator & it )
+	void ShooterState::RetireProjectile( const DynArray<SDL_FPoint>::iterator & it )
 	{
 		it->x = INFINITY;
 		_enemyProjReuse = it;
 		++_numDeadEnemyProj;
 	}
 
-	void ShooterState::RetireMyProjectile( const DynArray<FPoint>::iterator & it )
+	void ShooterState::RetireMyProjectile( const DynArray<SDL_FPoint>::iterator & it )
 	{
 		it->x = -INFINITY;
 		_myProjReuse = it;

@@ -328,15 +328,15 @@ namespace JanSordid::HSNR64
 	 * A merge means that the score at this spot is 2 better
 	 */
 
-	TileFont::TileFont( Renderer * renderer )
+	TileFont::TileFont( SDL_Renderer * renderer )
 	{
 		_renderer = renderer;
 
 		//SDL_DestroyTexture(tiles);
 		if( !_tiles )
 		{
-			Owned<Surface>
-			//Surface *
+			Owned<SDL_Surface>
+			//SDL_Surface *
 			    tileSurf = IMG_Load( BasePath "asset/graphic/hsnr64.png" );
 	//		SDL_SetColorKey( tileSurf, true, SDL_MapRGB( tileSurf->format, 178, 185, 212 ) );
 			const u32 paletteIndex = SDL_MapRGB( SDL_GetPixelFormatDetails( tileSurf->format ), SDL_GetSurfacePalette( tileSurf ), 0, 0, 0 );
@@ -350,19 +350,19 @@ namespace JanSordid::HSNR64
 	}
 
 	void TileFont::RenderSingle(
-		const String & text,
-		const FRect  & dimension,
-		const u8       ligatureLevel,
-		const u8       spacing,
-		const FPoint & tilesize,
-		RenderFunc     renderFunc )
+		const String     & text,
+		const SDL_FRect  & dimension,
+		const u8           ligatureLevel,
+		const u8           spacing,
+		const SDL_FPoint & tilesize,
+		RenderFunc         renderFunc )
 	{
 		//DebugOnly(
-		String skipChar; // UTF-8 char build over time, therefore a string
-		FRect  dst     = toFRect( fromXY( dimension ), tilesize );
-		int    skip    = 0;
-		u32    prefix  = 0;
-		u32    last_uc = '\n';
+		String    skipChar; // UTF-8 char build over time, therefore a string
+		SDL_FRect dst     = toFRect( fromXY( dimension ), tilesize );
+		int       skip    = 0;
+		u32       prefix  = 0;
+		u32       last_uc = '\n';
 		for( const char c : text )
 		{
 			// ++ skip a lot of Unicode for now
@@ -503,14 +503,14 @@ namespace JanSordid::HSNR64
 			}
 
 			// y offset for: g, p, q, y, etc.
-			const FPoint dst_off = (31 < uc && uc < 256) ? FPoint{ (f32)met_curr.xOff, (f32)met_curr.yOff } : FPoint{ 0, 0 };
+			const SDL_FPoint dst_off = (31 < uc && uc < 256) ? SDL_FPoint{ (f32)met_curr.xOff, (f32)met_curr.yOff } : SDL_FPoint{ 0, 0 };
 
 			constexpr int stride = 32;
-			const Point index{ (int)(uc % stride), (int)(uc / stride) };
+			const SDL_Point index{ (int)(uc % stride), (int)(uc / stride) };
 
 			// TODO: Do the conversion to f32 inside this whole function
-			const FRect src       = toFRect( toF( index * 16 ), tilesize );
-			const FRect dst_final = dst + toXY( dst_off ); // Angry text: + Point{-2+rand()%5, -1+rand()%3};
+			const SDL_FRect src       = toFRect( toF( index * 16 ), tilesize );
+			const SDL_FRect dst_final = dst + toXY( dst_off ); // Angry text: + SDL_Point{-2+rand()%5, -1+rand()%3};
 
 			renderFunc( _renderer, _tiles, src, dst_final );
 
@@ -529,14 +529,14 @@ namespace JanSordid::HSNR64
 	}
 
 	void TileFont::Render(
-		const String & text,
-		const FRect  & dimension,
-		const Color  & color,
-		const Color  & outlineColor )
+		const String    & text,
+		const SDL_FRect & dimension,
+		const SDL_Color & color,
+		const SDL_Color & outlineColor )
 	{
-		constexpr u8     ligatureLevel = 25; // 0 off, 9 only ffi, 25 acst, 130 a lot
-		constexpr u8     spacing       = 2;
-		constexpr FPoint tilesize      = { 16, 16 };
+		constexpr u8         ligatureLevel = 25; // 0 off, 9 only ffi, 25 acst, 130 a lot
+		constexpr u8         spacing       = 2;
+		constexpr SDL_FPoint tilesize      = { 16, 16 };
 
 		// HACK: Calling RenderSingle two times in part does the exact same work twice, refactor out the common steps to make this more efficient
 
@@ -549,7 +549,7 @@ namespace JanSordid::HSNR64
 		RenderSingle( text, dimension, ligatureLevel, spacing, tilesize, RenderCenter );
 
 		/* early version, keep for now
-		Rect dst{ 32, 100, 16, 16 };
+		SDL_Rect dst{ 32, 100, 16, 16 };
 		char last_c = ' ';
 		for( const char c : string( text ) )
 		{
@@ -569,15 +569,15 @@ namespace JanSordid::HSNR64
 
 			const int x = c % 32;
 			const int y = c / 32;
-			const Point dst_off = (31 < c && c < 127) ? Point{ 0, char_metrics[c].yOff } : Point{ 0, 0 };
-			const Rect src = (_textmode == 1)
-			                 ? Rect{ x * 8, y * 8, 8, 8 }
-			                 : Rect{ x * 16, (y + 3) * 16, 16, 16 };
-			const Rect dst_final = dst + dst_off;
+			const SDL_Point dst_off = (31 < c && c < 127) ? SDL_Point{ 0, char_metrics[c].yOff } : SDL_Point{ 0, 0 };
+			const SDL_Rect src = (_textmode == 1)
+			                 ? SDL_Rect{ x * 8, y * 8, 8, 8 }
+			                 : SDL_Rect{ x * 16, (y + 3) * 16, 16, 16 };
+			const SDL_Rect dst_final = dst + dst_off;
 			SDL_SetTextureColorMod( tiles, 0, 0, 0 );
-			for( const Point & pd : shadowOffsets )
+			for( const SDL_Point & pd : shadowOffsets )
 			{
-				const Rect dst_rect = dst_final + pd;
+				const SDL_Rect dst_rect = dst_final + pd;
 				SDL_RenderCopy( renderer, tiles, &src, &dst_rect );
 			}
 			SDL_SetTextureColorMod( tiles, 255, 255, 255 );
@@ -592,16 +592,16 @@ namespace JanSordid::HSNR64
 	}
 
 
-	/*static*/ void TileFont::RenderOutline( Renderer * renderer, Texture * texture, const FRect & src, const FRect & dst )
+	/*static*/ void TileFont::RenderOutline( SDL_Renderer * renderer, SDL_Texture * texture, const SDL_FRect & src, const SDL_FRect & dst )
 	{
-		for( const FPoint & offset : HSNR64::ShadowOffset::Rhombus )
+		for( const SDL_FPoint & offset : HSNR64::ShadowOffset::Rhombus )
 		{
-			const FRect dst_off = dst + toXY( offset );
+			const SDL_FRect dst_off = dst + toXY( offset );
 			SDL_RenderTexture( renderer, texture, &src, &dst_off );
 		}
 	}
 
-	/*static*/ void TileFont::RenderCenter( Renderer * renderer, Texture * texture, const FRect & src, const FRect & dst )
+	/*static*/ void TileFont::RenderCenter( SDL_Renderer * renderer, SDL_Texture * texture, const SDL_FRect & src, const SDL_FRect & dst )
 	{
 		SDL_RenderTexture( renderer, texture, &src, &dst );
 	}

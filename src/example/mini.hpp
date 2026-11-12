@@ -8,19 +8,19 @@
 namespace NotJanSordid::SDL_MiniExample
 {
 	// For MYLL: "using namespace" should provide access for the inside of the current scope,
-	// not for accessing e.g. SDL_MiniExample::Window from the outside (which came from JanSordid::SDL::Window)
+	// not for accessing e.g. SDL_MiniExample::Owned from the outside (which came from JanSordid::SDL::Owned)
 	using namespace JanSordid::SDL;
 	// Also possible to do this, but then everything SDL needs prefix SDL::
 	//namespace SDL = JanSordid::SDL;
 
-	class MiniGame : public Game<> //Game<IGameState,u8>
+	class MiniGame final : public Game
 	{
 	public:
 		/// Ctors & Dtor
 		MiniGame();
 	};
 
-	class MiniState : public GameState<MiniGame>
+	class MiniState final : public GameState
 	{
 	public:
 		/// Ctors & Dtor
@@ -29,7 +29,7 @@ namespace NotJanSordid::SDL_MiniExample
 		f32 _colorRolling = 0.0f;
 
 		/// Getters & Setters: non-virtual first, followed by (pure) virtual/override
-		[[nodiscard]] Color clearColor() const noexcept override {
+		[[nodiscard]] SDL_Color clearColor() const noexcept override {
 			return {
 				(u8)(127.5f + sin( _colorRolling * 0.007f ) * 127.5f),
 				(u8)(127.5f + sin( _colorRolling * 0.003f ) * 127.5f),
@@ -39,7 +39,7 @@ namespace NotJanSordid::SDL_MiniExample
 		}
 
 		/// Methods: non-virtual first, followed by (pure) virtual/override
-		bool Input( const Event & event                                                ) override { return false; }
+		bool Input( const SDL_Event & event                                            ) override { return false; }
 		void Update( u64 framesSinceStart, Duration timeSinceStart, float deltaT       ) override { _colorRolling = toFMilliSec( timeSinceStart ); }
 		void Render( u64 framesSinceStart, Duration timeSinceStart, float deltaTNeeded ) override {}
 

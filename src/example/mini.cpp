@@ -17,12 +17,12 @@ namespace NotJanSordid::SDL_MiniExample
 		: Game( "MiniExampleGame", { 640, 360 }, ScalingFactorDynamic, VSyncAdaptive )
 	{
 		// The same as the _allStates.emplace...
-		AddStates<MiniState>( *this ); // State 0
+		AddStates<MiniState>(); // State 0
 		//_allStates.emplace_back( make_unique<MiniState>( *this ) );
 
 		PushState( 0 );
 
 		IfNotFinal
-			SetPerfDrawMode( PerformanceDrawMode::Title );
+			_perfOutput.SetMode( PerformanceOutputComponent::DrawMode::Title );
 	}
 }

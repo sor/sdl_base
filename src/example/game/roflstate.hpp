@@ -6,11 +6,11 @@ namespace JanSordid::SDL_Example
 {
 	struct Entity
 	{
-		FPoint position;
-		i8     nextPath;
-		i8     faction;
-		i8     health;
-		i8     direction;
+		SDL_FPoint position;
+		i8         nextPath;
+		i8         faction;
+		i8         health;
+		i8         direction;
 	};
 
 	class RoflState final : public MyGameState
@@ -20,12 +20,12 @@ namespace JanSordid::SDL_Example
 	protected:
 		struct TileInfo
 		{
-			Point index;      // Position in the Tileset
-			Color color;
-			bool  isSolidForPlayers = false;
-			bool  isSolidForMinions = false;
-			f32   rotation          = 0;
-			i8    faction           = -1; // -1 neutral, 0 top-left, 1 bot-right
+			SDL_Point index;      // Position in the Tileset
+			SDL_Color color;
+			bool      isSolidForPlayers = false;
+			bool      isSolidForMinions = false;
+			f32       rotation          = 0;
+			i8        faction           = -1; // -1 neutral, 0 top-left, 1 bot-right
 		};
 
 		static inline HashMap<char, const TileInfo> tileInfos = {
@@ -63,18 +63,18 @@ namespace JanSordid::SDL_Example
 			{ 'b',  { { 8,  27 }, { 0,   0,   127, 255 }, false, false, 0, -1 } }, // River
 		};
 
-		static constexpr Array<Color, 2> factionColors = {{
+		static constexpr Array<SDL_Color, 2> factionColors = {{
 			{ 255, 136, 0,   255 },
 			{ 137, 207, 240, 255 },
 		}};
 
-		Owned<Texture>              _tileset;
-		Array<Array<FPoint, 10>, 2> _paths; // forward for faction 0, backward for faction 1
-		Array<DynArray<Entity>, 2>  _minions;
-		Duration                    _respawnCD         = {};
-		Duration                    _explosionDeadline = {};
-		FPoint                      _explosionPosition;
-		bool                        _isPathRendered    = false;
+		Owned<SDL_Texture>              _tileset;
+		Array<Array<SDL_FPoint, 10>, 2> _paths; // forward for faction 0, backward for faction 1
+		Array<DynArray<Entity>, 2>      _minions;
+		Duration                        _respawnCD         = {};
+		Duration                        _explosionDeadline = {};
+		SDL_FPoint                      _explosionPosition;
+		bool                            _isPathRendered    = false;
 		// Minions follow path from 0 to 9 or the opposite way around
 		DynArray<String> _level = {
 			"uUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUr",
@@ -104,14 +104,14 @@ namespace JanSordid::SDL_Example
 		// ctor
 		using Base::Base;
 
-		void Init() override;
+		void Init()    override;
 		void Destroy() override;
 
-		bool Input( const Event & event ) override;
+		bool Input( const SDL_Event & event ) override;
 		void Update( u64 framesSinceStart, Duration timeSinceStart, f32 deltaT       ) override;
 		void Render( u64 framesSinceStart, Duration timeSinceStart, f32 deltaTNeeded ) override;
 
-		Color clearColor() const noexcept override { return Color{ 0, 32, 0, 255 }; }
-		bool isFPSLimited() const noexcept override { return true; }
+		SDL_Color clearColor()   const noexcept override { return SDL_Color{ 0, 32, 0, 255 }; }
+		bool      isFPSLimited() const noexcept override { return true; }
 	};
 }

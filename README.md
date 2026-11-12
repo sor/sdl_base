@@ -98,6 +98,63 @@ The codebase speaks a small dialect to stay terse:
 Two demo notes: state key **0** deliberately triggers the invalid-state path (it asserts on purpose in Debug builds),
 and **F11** toggles the frame-time graph (ImGui, Debug builds).
 
+### Class diagram
+
+```mermaid
+classDiagram
+	direction LR
+
+	class GameState {
+		<<abstract>>
+		+isFPSLimited() bool
+		+isFillingScreen() bool
+		+isAlwaysUpdated() bool
+		+clearColor() SDL_Color
+		+Init()
+		+Enter(isStacking)
+		+Exit(isStackedUpon)
+		+Destroy()
+		+Input(SDL_Event)*
+		+Update(frames, time, deltaT)*
+		+Render(frames, time, deltaTNeeded)*
+		+RenderUI(frames, time, deltaTNeeded)
+		-window()
+		-renderer()
+		-mixer()
+	}
+	class Game {
+		+Run() int
+		+Input()
+		+HandleEvent(SDL_Event) bool
+		+Update(deltaT)
+		+Render(deltaTNeeded)
+		+RenderUI(deltaTNeeded)
+		+PushState(u8)
+		+PopState()
+		+ReplaceState(u8)
+		+currentState() GameState
+	}
+	MiniState --|> GameState
+	MiniGame --|> Game
+
+	Game "1" *--> "1..n" GameState : _allStates
+	GameState "1..n" --> "1" Game : _game
+```
+
+`Game` owns all states (added and created via the `AddStates<TS...>()` template) and drives the game loop,
+each `GameState` holds the reference back to its `Game`.
+`Game` itself is not abstract: all virtuals have implementations, deriving it is only needed
+to add your own states (like here via `MiniGame`).
+`GameState` is abstract: the italic methods (marked `*`) are pure virtual — these are the ones
+you must implement in every state.
+`MiniGame` / `MiniState` stand for your classes — the minimal example lives in [src/example/mini.hpp](src/example/mini.hpp).
+
+If you later want typed access from your states to your own game class
+(states deriving `GameState<YourGame>`, your game deriving `Game<YourStates, MyGS>`),
+you can switch to the split/CRTP variant in [src/sor/sdl_extgame.hpp](src/sor/sdl_extgame.hpp)
+at any time without bigger changes: the class names, all overrides and the `Game` API are the same,
+you only split your classes over two inheritance steps.
+
 ## External Contents
 
 This project pulls in and enables **SDL3** with **SDL3_image**, **SDL3_ttf** and **SDL3_mixer** (audio),

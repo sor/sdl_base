@@ -8,7 +8,7 @@ namespace JanSordid::SDL
 
 	// LtR, TtB - Left to Right, Top to Bottom
 	template <uint X, uint Y>
-	constexpr uint IndexPack( const Point p )
+	constexpr uint IndexPack( const SDL_Point p )
 	{
 		static_assert( 1 <= X && 1 <= Y, "Tileset dimension sizes need to be 1 or greater" );
 
@@ -20,7 +20,7 @@ namespace JanSordid::SDL
 
 	// LtR, TtB - Left to Right, Top to Bottom
 	template <uint X, uint Y>
-	constexpr uint IndexPackClamped( const Point p )
+	constexpr uint IndexPackClamped( const SDL_Point p )
 	{
 		static_assert( 1 <= X && 1 <= Y, "Tileset dimension sizes need to be 1 or greater" );
 
@@ -32,7 +32,7 @@ namespace JanSordid::SDL
 
 	// LtR, TtB - Left to Right, Top to Bottom
 	template <uint X, uint Y>
-	constexpr Point IndexUnpack( const uint v )
+	constexpr SDL_Point IndexUnpack( const uint v )
 	{
 		static_assert( 1 <= X && 1 <= Y, "Tileset dimension sizes need to be 1 or greater" );
 
@@ -43,7 +43,7 @@ namespace JanSordid::SDL
 
 	// LtR, TtB - Left to Right, Top to Bottom
 	template <uint X, uint Y>
-	constexpr Point IndexUnpackClamped( const uint v )
+	constexpr SDL_Point IndexUnpackClamped( const uint v )
 	{
 		static_assert( 1 <= X && 1 <= Y, "Tileset dimension sizes need to be 1 or greater" );
 

@@ -99,7 +99,7 @@ namespace JanSordid
 			cerr << "Es ist ein Fehler aufgetreten bei rend: " << SDL_GetError() << endl;
 			exit( 124 );
 		}
-		cout << "Used Renderer: " << SDL_GetRendererName( _renderer ) << endl;
+		cout << "Used SDL_Renderer: " << SDL_GetRendererName( _renderer ) << endl;
 		SDL_SetRenderVSync( _renderer, 1 );
 	}
 

@@ -13,7 +13,7 @@ namespace JanSordid::SDL_Example
 
 	MyGame::MyGame()
 		: Base( "Example SDL Game", { 640, 360 }, ScalingFactorDynamic, DoBenchmark ? VSyncDisabled : VSyncAdaptive )
-	//	: Base( "Example SDL Game", Point { 1280, 960 }, ScalingFactorDynamic, doBenchmark ? 0 : VSyncAdaptive )
+	//	: Base( "Example SDL Game", SDL_Point { 1280, 960 }, ScalingFactorDynamic, doBenchmark ? 0 : VSyncAdaptive )
 	{
 		AddStates<
 			IntroState,
@@ -33,10 +33,10 @@ namespace JanSordid::SDL_Example
 		PushState( MyGS::Intro );
 
 		IfNotFinal
-			SetPerfDrawMode( PerformanceDrawMode::Title );
+			_perfOutput.SetMode( PerformanceOutputComponent::DrawMode::Title );
 	}
 
-	bool MyGame::HandleEvent( const Event & event )
+	bool MyGame::HandleEvent( const SDL_Event & event )
 	{
 		// Global Keybindings, will be checked before the ones in GameState
 		if( Base::HandleEvent( event ) )

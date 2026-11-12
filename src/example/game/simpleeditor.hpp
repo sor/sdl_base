@@ -8,19 +8,19 @@ namespace JanSordid::SDL_Example
 	{
 		using Base = MyGameState;
 
-		constexpr static Array<Color,8> BaseColors = {
-			Color{ 0,   0,   0,   255 },
-			Color{ 255, 0,   0,   255 },
-			Color{ 0,   255, 0,   255 },
-			Color{ 255, 255, 0,   255 },
-			Color{ 0,   0,   255, 255 },
-			Color{ 255, 0,   255, 255 },
-			Color{ 0,   255, 255, 255 },
-			Color{ 255, 255, 255, 255 },
+		constexpr static Array<SDL_Color,8> BaseColors = {
+			SDL_Color{ 0,   0,   0,   255 },
+			SDL_Color{ 255, 0,   0,   255 },
+			SDL_Color{ 0,   255, 0,   255 },
+			SDL_Color{ 255, 255, 0,   255 },
+			SDL_Color{ 0,   0,   255, 255 },
+			SDL_Color{ 255, 0,   255, 255 },
+			SDL_Color{ 0,   255, 255, 255 },
+			SDL_Color{ 255, 255, 255, 255 },
 		};
 
-		Owned<Font>    _font;
-		Owned<Texture> _tileSet;
+		Owned<TTF_Font>    _font;
+		Owned<SDL_Texture> _tileSet;
 
 		using WorldState = Array<Array<int, 40>, 20>; // TODO: These sizes here also need to be manually configured, expose dynamic sizing via ImGUI
 
@@ -45,16 +45,16 @@ namespace JanSordid::SDL_Example
 			* _currState = &_worldState1,
 			* _nextState = &_worldState2;
 
-		Point  _tileSetSize;
-		Point  _tileSize;
-		Point  _tileCount;
-		FPoint _camera;
-		Point  _pickedIdx    = Point{ 0, 0 };
-		i32    _mapScale     = 2;
-		i32    _paletteScale = 2; // Is set to _game.scalingFactor() in Init()
-		bool   _isPainting   = false;
-		bool   _isPanning    = false;
-		bool   _showGrid     = false;
+		SDL_Point  _tileSetSize;
+		SDL_Point  _tileSize;
+		SDL_Point  _tileCount;
+		SDL_FPoint _camera;
+		SDL_Point  _pickedIdx    = SDL_Point{ 0, 0 };
+		i32        _mapScale     = 2;
+		i32        _paletteScale = 2; // Is set to _game.scalingFactor() in Init()
+		bool       _isPainting   = false;
+		bool       _isPanning    = false;
+		bool       _showGrid     = false;
 
 		constexpr static Duration UpdateDeltaTime = 100ms;
 
@@ -67,10 +67,10 @@ namespace JanSordid::SDL_Example
 		void Init() override;
 		void Destroy() override;
 
-		bool Input( const Event & event ) override;
+		bool Input( const SDL_Event & event ) override;
 		void Update( u64 framesSinceStart, Duration timeSinceStart, f32 deltaT       ) override;
 		void Render( u64 framesSinceStart, Duration timeSinceStart, f32 deltaTNeeded ) override;
 
-		constexpr Color clearColor() const noexcept override { return HSNR64::Palette( HSNR64::NamedColor::Grey40 ); }
+		constexpr SDL_Color clearColor() const noexcept override { return HSNR64::Palette( HSNR64::NamedColor::Grey40 ); }
 	};
 }

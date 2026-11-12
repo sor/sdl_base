@@ -20,12 +20,12 @@ namespace JanSordid::SDL_Example
 		TileMap _tileMaps[2];
 
 		// Map Viewport
-		FPoint  _viewScale       = { 2, 2 };
-		FPoint  _viewOffset      = { -256, -256 };
+		SDL_FPoint  _viewScale       = { 2, 2 };
+		SDL_FPoint  _viewOffset      = { -256, -256 };
 
 		// Palette
-		FPoint  _paletteScale    = { 2, 2 };
-		FPoint  _paletteOffset   = { 0, 0 };
+		SDL_FPoint  _paletteScale    = { 2, 2 };
+		SDL_FPoint  _paletteOffset   = { 0, 0 };
 
 		int     _selectedLayer   = 1;
 		int     _selectedIndex   = 0;
@@ -40,7 +40,7 @@ namespace JanSordid::SDL_Example
 		bool    _isCtrlHeld      = false;
 
 	public:
-		using PerTileCallback = Tile( Point pos, Point size );
+		using PerTileCallback = Tile( SDL_Point pos, SDL_Point size );
 
 		static auto            uniformTile( TileColor color, FlipRot flipRot, u16 index );
 		static PerTileCallback emptyTile;
@@ -56,11 +56,11 @@ namespace JanSordid::SDL_Example
 		template <typename TCallback>
 		void FillLayer( u8 layer, TCallback       callback );
 		void FillLayer( u8 layer, PerTileCallback callback = randomSolidTile );
-		void SetTile( u8 layer, Point tileIndex, i8 color, i8 alpha, FlipRot flipRot, u16 paletteIndex );
+		void SetTile( u8 layer, SDL_Point tileIndex, i8 color, i8 alpha, FlipRot flipRot, u16 paletteIndex );
 
 		template <typename E>
 		void HandleSpecificEvent( const E & ev );
-		bool Input( const Event & event ) override;
+		bool Input( const SDL_Event & event ) override;
 		void Update( u64 framesSinceStart, Duration timeSinceStart, f32 deltaT ) override;
 		void Render( u64 framesSinceStart, Duration timeSinceStart, f32 deltaTNeeded ) override;
 		ImGuiOnly(

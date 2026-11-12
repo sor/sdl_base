@@ -11,7 +11,7 @@ namespace JanSordid::SDL_Example
 			_image = IMG_LoadTexture( renderer(), BasePath "asset/graphic/ball.png" );
 		}
 
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
 		f32 iter = 0;
@@ -41,7 +41,7 @@ namespace JanSordid::SDL_Example
 		Base::Destroy();
 	}
 
-	bool SortState::Input( const Event & event )
+	bool SortState::Input( const SDL_Event & event )
 	{
 		if( event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_F1 && event.key.repeat == 0 )
 			_isOrdered = !_isOrdered;
@@ -83,7 +83,7 @@ namespace JanSordid::SDL_Example
 			const u8 size = (u8)(ball.z * 80.f + 48.f);
 			if( _isDarkened )
 				SDL_SetTextureColorMod( _image, size * 2 - 20, size * 2 - 20, size * 2 - 20 );
-			const FRect dst_rect { ball.x - (size / 2), ball.y - (size), (f32)size, (f32)size };
+			const SDL_FRect dst_rect { ball.x - (size / 2), ball.y - (size), (f32)size, (f32)size };
 			SDL_RenderTexture( renderer(), _image, EntireFRect, &dst_rect );
 		}
 	}

@@ -120,7 +120,7 @@ endif()
 
 
 if( imgui_FOUND )
-	add_compile_definitions( USE_IMGUI      )
+	add_compile_definitions( USE_IMGUI )
 
 	if( implot_FOUND )
 		add_compile_definitions( USE_IMPLOT )
@@ -324,6 +324,8 @@ add_executable(             sor-mini
 
 	src/sor/component/perftrack.cpp
 	src/sor/component/perftrack.hpp
+	src/sor/component/perfoutput.cpp
+	src/sor/component/perfoutput.hpp
 
 	src/example/mini.cpp
 )
@@ -353,10 +355,12 @@ target_link_libraries(      sor-mini
 add_executable(             sor-example
 	src/sor/core.cpp
 	src/sor/sdl_core.cpp
-	src/sor/sdl_game.cpp
+	src/sor/sdl_extgame.cpp
 
 	src/sor/component/perftrack.cpp
 	src/sor/component/perftrack.hpp
+	src/sor/component/perfoutput.cpp
+	src/sor/component/perfoutput.hpp
 
 	src/hsnr64/tilefont.cpp
 	src/hsnr64/tiles.cpp

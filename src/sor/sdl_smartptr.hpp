@@ -58,7 +58,7 @@ namespace JanSordid::Core
 	 */
 
 	/*
-	// Usage: auto blah = Uniq( tex ); // blah will be of type UniquePtr<Renderer> with the correct deleter assigned
+	// Usage: auto blah = Uniq( tex ); // blah will be of type UniquePtr<SDL_Renderer> with the correct deleter assigned
 	template <typename T>
 	UniquePtr<T> Uniq( T * p )
 #ifdef UNIQ_ONLY_FOR_SDL
@@ -77,7 +77,7 @@ namespace JanSordid::Core
 	template<> inline UniquePtr<Mix_Chunk>       Uniq(  Mix_Chunk       * p ) { return UniquePtr<Mix_Chunk>      { p }; }
 	template<> inline UniquePtr<Mix_Music>       Uniq(  Mix_Music       * p ) { return UniquePtr<Mix_Music>      { p }; }
 
-	// Usage: auto blah = Share( tex ); // blah will be of type SharedPtr<Texture> with the correct deleter assigned
+	// Usage: auto blah = Share( tex ); // blah will be of type SharedPtr<SDL_Texture> with the correct deleter assigned
 	template <typename T>
 	SharedPtr<T> Share( T * p )
 #ifdef SHARE_ONLY_FOR_SDL

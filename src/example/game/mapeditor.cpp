@@ -7,24 +7,24 @@ namespace JanSordid::SDL_Example
 
 	auto MapEditorState::uniformTile( const TileColor color, const FlipRot flipRot, const u16 index )
 	{
-		return [ color, flipRot, index ]( const Point pos, const Point size )
+		return [ color, flipRot, index ]( const SDL_Point pos, const SDL_Point size )
 		{
 			return Tile{ color, flipRot, index };
 		};
 	}
 
-	Tile MapEditorState::emptyTile( const Point pos, const Point size )
+	Tile MapEditorState::emptyTile( const SDL_Point pos, const SDL_Point size )
 	{
 		return Tile{ TileColor{ 0, 0 }, FlipRot::None, 0 };
 	}
 
-	Tile MapEditorState::randomTile( const Point pos, const Point size )
+	Tile MapEditorState::randomTile( const SDL_Point pos, const SDL_Point size )
 	{
 		const int tIndex = 832 + (rand() & 255);
 		return Tile{ TileColor{ (u8)(27 + (rand() % 6)), 3 }, (FlipRot)(rand() % 9), (u16)tIndex };
 	}
 
-	Tile MapEditorState::randomSolidTile( const Point pos, const Point size )
+	Tile MapEditorState::randomSolidTile( const SDL_Point pos, const SDL_Point size )
 	{
 		return Tile{ TileColor{ (u8)(16 + (rand() % 6)), 3 }, FlipRot::None, 1000 };
 	}
@@ -79,7 +79,7 @@ namespace JanSordid::SDL_Example
 		// Fill map layer 1 with randomness
 		FillLayer( 1, randomTile );
 
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
 		_paletteOffset = { (f32)windowSize.x - 512, -768 };
@@ -95,32 +95,32 @@ namespace JanSordid::SDL_Example
 	template <typename TLambda>
 	void MapEditorState::FillLayer( const u8 layer, TLambda callback )
 	{
-		TileMap   & tileMap       = _tileMaps[layer];
-		const Point tileMapSize   = tileMap.size;
-		const int   tileMapStride = tileMap.stride;
+		TileMap       & tileMap       = _tileMaps[layer];
+		const SDL_Point tileMapSize   = tileMap.size;
+		const int       tileMapStride = tileMap.stride;
 
 		for( int y = 0; y < tileMapSize.y; ++y )
 		{
 			for( int x = 0; x < tileMapSize.x; ++x )
 			{
 				const int index = x + y * tileMapStride;
-				tileMap.tiles[index] = callback( Point{ x, y }, tileMapSize );
+				tileMap.tiles[index] = callback( SDL_Point{ x, y }, tileMapSize );
 			}
 		}
 	}
 
 	void MapEditorState::FillLayer( const u8 layer, PerTileCallback callback )
 	{
-		TileMap   & tileMap       = _tileMaps[layer];
-		const Point tileMapSize   = tileMap.size;
-		const int   tileMapStride = tileMap.stride;
+		TileMap       & tileMap       = _tileMaps[layer];
+		const SDL_Point tileMapSize   = tileMap.size;
+		const int       tileMapStride = tileMap.stride;
 
 		for( int y = 0; y < tileMapSize.y; ++y )
 		{
 			for( int x = 0; x < tileMapSize.x; ++x )
 			{
 				const int index = x + y * tileMapStride;
-				tileMap.tiles[index] = callback( Point{ x, y }, tileMapSize );
+				tileMap.tiles[index] = callback( SDL_Point{ x, y }, tileMapSize );
 			}
 		}
 	}
@@ -143,7 +143,7 @@ namespace JanSordid::SDL_Example
 		return flipRot;
 	}
 
-	void MapEditorState::SetTile( const u8 layer, const Point tileIndex, const i8 color, const i8 alpha, const FlipRot flipRot, const u16 paletteIndex )
+	void MapEditorState::SetTile( const u8 layer, const SDL_Point tileIndex, const i8 color, const i8 alpha, const FlipRot flipRot, const u16 paletteIndex )
 	{
 		Assert( -1 <= color && color <= 63 && "Color is only capable of storing 6 bits or staying the same on -1" );
 		Assert( -1 <= alpha && alpha <=  3 && "Alpha is only capable of storing 2 bits or staying the same on -1" );
@@ -199,9 +199,9 @@ namespace JanSordid::SDL_Example
 		if( _buttonHeld == 1 )
 		{
 			// Palette
-			FPoint pos     = FPoint{ ev.x, ev.y } - _paletteOffset;
-			Point  index2d = toI( pos ) / toI( toF( _tileSet.tileSize ) * _paletteScale );
-			u16    index1d = index2d.x + index2d.y * _tileSet.tileCount.x;
+			SDL_FPoint pos     = SDL_FPoint{ ev.x, ev.y } - _paletteOffset;
+			SDL_Point  index2d = toI( pos ) / toI( toF( _tileSet.tileSize ) * _paletteScale );
+			u16        index1d = index2d.x + index2d.y * _tileSet.tileCount.x;
 			print( "pos:   {} {}\n", pos.x, pos.y );
 			print( "index: {} {}\n", index2d.x, index2d.y );
 			print( "index: {}\n", index1d );
@@ -210,8 +210,8 @@ namespace JanSordid::SDL_Example
 		else if ( _buttonHeld == 2 )
 		{
 			// Map
-			FPoint pos     = FPoint{ ev.x, ev.y } - _viewOffset * _tileMaps[1].scrollScale;
-			Point  index2d = toI( pos ) / toI( toF( _tileSet.tileSize ) * _viewScale );
+			SDL_FPoint pos     = SDL_FPoint{ ev.x, ev.y } - _viewOffset * _tileMaps[1].scrollScale;
+			SDL_Point  index2d = toI( pos ) / toI( toF( _tileSet.tileSize ) * _viewScale );
 			print( "pos:   {} {}\n", pos.x, pos.y );
 			print( "index: {} {}\n", index2d.x, index2d.y );
 
@@ -222,7 +222,7 @@ namespace JanSordid::SDL_Example
 	template <>
 	void MapEditorState::HandleSpecificEvent( const SDL_MouseButtonEvent & ev )
 	{
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
 		if( ev.button == SDL_BUTTON_LEFT && !ev.down )
@@ -237,15 +237,15 @@ namespace JanSordid::SDL_Example
 			{
 				// Right: Palette side
 
-				const FPoint paletteTileSize = toF( _tileSet.tileSize ) * _paletteScale;
+				const SDL_FPoint paletteTileSize = toF( _tileSet.tileSize ) * _paletteScale;
 				if( ev.y > 128 )
 				{
 					// Down: Palette
 					_buttonHeld = 1;
 
-					FPoint pos     = FPoint { ev.x, ev.y } - _paletteOffset;
-					Point  index2d = toI( pos ) / toI( paletteTileSize );
-					u16    index1d = index2d.x + index2d.y * _tileSet.tileCount.x;
+					SDL_FPoint pos     = SDL_FPoint { ev.x, ev.y } - _paletteOffset;
+					SDL_Point  index2d = toI( pos ) / toI( paletteTileSize );
+					u16        index1d = index2d.x + index2d.y * _tileSet.tileCount.x;
 					print( "pos:   {} {}\n", pos.x, pos.y );
 					print( "index: {} {}\n", index2d.x, index2d.y );
 					print( "index: {}\n", index1d );
@@ -256,17 +256,17 @@ namespace JanSordid::SDL_Example
 					// Up: Modifiers
 					_buttonHeld = 0; // can not hold
 
-					const f32    spacing   = 2.f;
-					const FPoint modOffset = { (f32)windowSize.x - 512, 0 };
+					const f32        spacing   = 2.f;
+					const SDL_FPoint modOffset = { (f32)windowSize.x - 512, 0 };
 
-				//	const Point sel      = { x, y };
-				//	const FRect dst      = toF( sel ) * paletteTileSize * spacing + toF( modOffset ) + toWH( paletteTileSize );
+				//	const SDL_Point sel      = { x, y };
+				//	const SDL_FRect dst      = toF( sel ) * paletteTileSize * spacing + toF( modOffset ) + toWH( paletteTileSize );
 
-					FPoint pos        = FPoint { ev.x, ev.y } - modOffset;
-					Point  index2d    = toI( pos ) / toI( paletteTileSize * spacing );
-					u16    index1d    = index2d.x + index2d.y * 8;
-					_selectedFlip     = (index2d.x & 0b11);
-					_selectedRotation = ((index2d.x & 4) != 0) + index2d.y * 2;
+					SDL_FPoint pos     = SDL_FPoint { ev.x, ev.y } - modOffset;
+					SDL_Point  index2d = toI( pos ) / toI( paletteTileSize * spacing );
+					u16        index1d = index2d.x + index2d.y * 8;
+					_selectedFlip      = (index2d.x & 0b11);
+					_selectedRotation  = ((index2d.x & 4) != 0) + index2d.y * 2;
 					print( "pos:   {} {}\n", pos.x, pos.y );
 					print( "index: {} {}\n", index2d.x, index2d.y );
 					print( "index: {}\n", index1d );
@@ -278,8 +278,8 @@ namespace JanSordid::SDL_Example
 				// Left: Map
 				_buttonHeld = 2;
 
-				FPoint pos = FPoint{ev.x, ev.y} - _viewOffset * _tileMaps[1].scrollScale;
-				Point index2d = toI( pos ) / toI( toF( _tileSet.tileSize ) * _viewScale );
+				SDL_FPoint pos     = SDL_FPoint{ev.x, ev.y} - _viewOffset * _tileMaps[1].scrollScale;
+				SDL_Point  index2d = toI( pos ) / toI( toF( _tileSet.tileSize ) * _viewScale );
 				print( "pos:   {} {}\n", pos.x, pos.y );
 				print( "index: {} {}\n", index2d.x, index2d.y );
 
@@ -298,15 +298,15 @@ namespace JanSordid::SDL_Example
 	template <>
 	void MapEditorState::HandleSpecificEvent( const SDL_MouseWheelEvent & ev )
 	{
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
-		const Keymod keyMod    = SDL_GetModState();
-		const bool   isModded  = keyMod & SDL_KMOD_SHIFT;
-		const bool   isFlipped = ev.direction == SDL_MouseWheelDirection::SDL_MOUSEWHEEL_FLIPPED;
-		const f32    flipFactor= isFlipped ? -1 : 1;
-		const f32    xDivider  = (f32)(windowSize.x - 512);
-		const FPoint scroll    = isModded ? FPoint { ev.y * flipFactor, -ev.x } : FPoint { -ev.x, ev.y * flipFactor };
+		const SDL_Keymod keyMod     = SDL_GetModState();
+		const bool       isModded   = keyMod & SDL_KMOD_SHIFT;
+		const bool       isFlipped  = ev.direction == SDL_MouseWheelDirection::SDL_MOUSEWHEEL_FLIPPED;
+		const f32        flipFactor = isFlipped ? -1 : 1;
+		const f32        xDivider   = (f32)(windowSize.x - 512);
+		const SDL_FPoint scroll     = isModded ? SDL_FPoint { ev.y * flipFactor, -ev.x } : SDL_FPoint { -ev.x, ev.y * flipFactor };
 
 		if( ev.mouse_x >= xDivider )
 		{
@@ -318,14 +318,14 @@ namespace JanSordid::SDL_Example
 		else
 		{
 			// Map
-			const Point min = windowSize - toI( toF( _tileMaps[1].size * _tileSet.tileSize ) * _viewScale );
-			_viewOffset     += scroll * 16.0f;
-			_viewOffset.x    = std::clamp<f32>( _viewOffset.x, min.x - 512, 0 );
-			_viewOffset.y    = std::clamp<f32>( _viewOffset.y, min.y      , 0 );
+			const SDL_Point min = windowSize - toI( toF( _tileMaps[1].size * _tileSet.tileSize ) * _viewScale );
+			_viewOffset        += scroll * 16.0f;
+			_viewOffset.x       = std::clamp<f32>( _viewOffset.x, min.x - 512, 0 );
+			_viewOffset.y       = std::clamp<f32>( _viewOffset.y, min.y      , 0 );
 		}
 	}
 
-	bool MapEditorState::Input( const Event & ev )
+	bool MapEditorState::Input( const SDL_Event & ev )
 	{
 		switch( ev.type )
 		{
@@ -365,20 +365,20 @@ namespace JanSordid::SDL_Example
 
 	void MapEditorState::Render( const u64 framesSinceStart, const Duration timeSinceStart, const f32 deltaTNeeded )
 	{
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
-		const Rect  mapClipRect  = { 0, 0, windowSize.x - 512, windowSize.y };
-		const FRect mapClipRectF = toF( mapClipRect );
+		const SDL_Rect  mapClipRect  = { 0, 0, windowSize.x - 512, windowSize.y };
+		const SDL_FRect mapClipRectF = toF( mapClipRect );
 		SDL_SetRenderClipRect( renderer(), &mapClipRect );
 
-		const u8     randColor        = (9 + (rand() % 55));
-		const FRect  selectorOverhang = FRect{ -8, -8, 32, 32 } * toXYWH( _paletteScale );
-		const Tile   selectorTile     = Tile{ TileColor { randColor, 3 }, FlipRot::None,  827 };
-		const Tile   sentinelTile     = Tile{ TileColor { 9,         3 }, FlipRot::None, 1000 };
-		const Tile * lastTile         = &sentinelTile;
+		const u8        randColor        = (9 + (rand() % 55));
+		const SDL_FRect selectorOverhang = SDL_FRect{ -8, -8, 32, 32 } * toXYWH( _paletteScale );
+		const Tile      selectorTile     = Tile{ TileColor { randColor, 3 }, FlipRot::None,  827 };
+		const Tile      sentinelTile     = Tile{ TileColor { 9,         3 }, FlipRot::None, 1000 };
+		const Tile *    lastTile         = &sentinelTile;
 
-		// Reset Color- and Alpha-Mod according to the sentinel Tile
+		// Reset SDL_Color- and Alpha-Mod according to the sentinel Tile
 		SDL_SetTextureColorMod( _tileSet.texture, 255, 255, 255 );
 		SDL_SetTextureAlphaMod( _tileSet.texture, SDL_ALPHA_OPAQUE );
 
@@ -391,19 +391,19 @@ namespace JanSordid::SDL_Example
 			SDL_SetTextureBlendMode( _tileSet.texture, tileMap.blendMode );
 			SDL_SetTextureScaleMode( _tileSet.texture, tileMap.scaleMode );
 
-			//const Point  viewSize     = { 640, 480 };
-			//const Point  startIndex   = toI( _viewOffset / tileMap.tileDist );
+			//const SDL_Point  viewSize     = { 640, 480 };
+			//const SDL_Point  startIndex   = toI( _viewOffset / tileMap.tileDist );
 
-			const FPoint size        = toF( tileMap.tileSet->tileSize ) *  tileMap.sizeScale;
-			const FPoint distScale   = tileMap.tileDist * tileMap.sizeScale;
-			const FRect  sizedOffset = toFRect( _viewOffset * tileMap.scrollScale, size );
+			const SDL_FPoint size        = toF( tileMap.tileSet->tileSize ) *  tileMap.sizeScale;
+			const SDL_FPoint distScale   = tileMap.tileDist * tileMap.sizeScale;
+			const SDL_FRect  sizedOffset = toFRect( _viewOffset * tileMap.scrollScale, size );
 			for( int y = 0; y < tileMap.size.y; ++y )
 			{
 				for( int x = 0; x < tileMap.size.x; ++x )
 				{
-					const FPoint pos      = FPoint{ (f32)x, (f32)y } * distScale;
-					const FRect  dst      = toXY( pos ) + sizedOffset;
-//					const FRect  dst      = toXY( pt, 1 ) * toXYWH( toF( tileMap.tileSet->tileSize ) * viewScale ) + toF( viewOffset );
+					const SDL_FPoint pos      = SDL_FPoint{ (f32)x, (f32)y } * distScale;
+					const SDL_FRect  dst      = toXY( pos ) + sizedOffset;
+//					const SDL_FRect  dst      = toXY( pt, 1 ) * toXYWH( toF( tileMap.tileSet->tileSize ) * viewScale ) + toF( viewOffset );
 
 					// TODO: It would be better to have the start and end indexes of the x and y loops do the culling already
 					if( dst.x + dst.w < 0
@@ -426,7 +426,7 @@ namespace JanSordid::SDL_Example
 
 		//IfDebug print( "drawtile calls: {}\n", drawTileCalls );
 
-		const FPoint paletteTileSize = toF( _tileSet.tileSize ) * _paletteScale;
+		const SDL_FPoint paletteTileSize = toF( _tileSet.tileSize ) * _paletteScale;
 
 		// Draw selected colored Tile with all possible Modifiers (Flip, Rotate)
 		{
@@ -436,17 +436,17 @@ namespace JanSordid::SDL_Example
 			SDL_SetTextureColorMod( _tileSet.texture, 255, 255, 255 );
 			SDL_SetTextureAlphaMod( _tileSet.texture, SDL_ALPHA_OPAQUE );
 
-			const f32    spacing   = 2.f;
-			const FPoint modOffset = { (f32)(windowSize.x - 512 + 16), 16 };
+			const f32        spacing   = 2.f;
+			const SDL_FPoint modOffset = { (f32)(windowSize.x - 512 + 16), 16 };
 
 			if( _selectedIndex != 0 )
 			{
-				const Color color    = HSNR64::Palette( _selectedColor );
-				//const bool  isBright = color.r > 160 || color.g > 140 || color.b > 180;
-				//if(!isBright)
+				const SDL_Color color    = HSNR64::Palette( _selectedColor );
+			//	const bool      isBright = color.r > 160 || color.g > 140 || color.b > 180;
+			//	if(!isBright)
 				{
-					const Color compColor = { (u8)(color.r ^ 0x80), (u8)(color.g ^ 0x80), (u8)(color.b ^ 0x80), SDL_ALPHA_OPAQUE };
-					const FRect dst       = toXY( modOffset ) + FRect { -16, -16, 512, 128 };
+					const SDL_Color compColor = { (u8)(color.r ^ 0x80), (u8)(color.g ^ 0x80), (u8)(color.b ^ 0x80), SDL_ALPHA_OPAQUE };
+					const SDL_FRect dst       = toXY( modOffset ) + SDL_FRect { -16, -16, 512, 128 };
 					SDL_SetRenderDrawColor( renderer(), compColor.r, compColor.g, compColor.b, compColor.a );
 					//SDL_SetRenderDrawColor( renderer(), 180, 180, 180, SDL_ALPHA_OPAQUE );
 					SDL_RenderFillRect( renderer(), &dst );
@@ -456,15 +456,15 @@ namespace JanSordid::SDL_Example
 				{
 					for( int x = 0; x <= 7; ++x )
 					{
-						const FPoint  sel       = { (f32)x, (f32)y };
-						const FPoint  selScaled = sel * paletteTileSize * spacing;
-						const FRect   dst      = toFRect( selScaled + modOffset, paletteTileSize );
-						const FlipRot flipRot  = FlipRot::None
+						const SDL_FPoint  sel       = { (f32)x, (f32)y };
+						const SDL_FPoint  selScaled = sel * paletteTileSize * spacing;
+						const SDL_FRect   dst       = toFRect( selScaled + modOffset, paletteTileSize );
+						const FlipRot     flipRot   = FlipRot::None
 						                       | (((x & 1) != 0) ? HSNR64::FlipRot::HorizontalFlip : HSNR64::FlipRot::None)
 						                       | (((x & 2) != 0) ? HSNR64::FlipRot::VerticalFlip   : HSNR64::FlipRot::None)
 						                       | (((x & 4) != 0) ? HSNR64::FlipRot::Rotate90       : HSNR64::FlipRot::None)
 						                       | ((y != 0)       ? HSNR64::FlipRot::Rotate45       : HSNR64::FlipRot::None);
-						const Tile    currTile = Tile { TileColor{ (u8)_selectedColor, 3 }, flipRot, (u16)_selectedIndex };
+						const Tile currTile = Tile { TileColor{ (u8)_selectedColor, 3 }, flipRot, (u16)_selectedIndex };
 						// Draw Cursor
 						DrawTile( renderer(), _tileSet.texture, currTile, sentinelTile, dst, paletteTileSize * 0.5f );
 					}
@@ -473,10 +473,10 @@ namespace JanSordid::SDL_Example
 
 			_tileMaps[1].center = toF( _tileMaps[1].tileSet->tileSize ) * _tileMaps[1].sizeScale * _tileMaps[1].halfSize;
 
-			_selectedMod         = _selectedFlip | _selectedRotation << 2;
-			constexpr int stride = 8;
-			const Point   sel    = { _selectedMod % stride, _selectedMod / stride };
-			const FRect   dst    = toXY( toF( sel * _tileSet.tileSize ) * _paletteScale * spacing + modOffset ) + selectorOverhang;
+			_selectedMod           = _selectedFlip | _selectedRotation << 2;
+			constexpr int   stride = 8;
+			const SDL_Point sel    = { _selectedMod % stride, _selectedMod / stride };
+			const SDL_FRect dst    = toXY( toF( sel * _tileSet.tileSize ) * _paletteScale * spacing + modOffset ) + selectorOverhang;
 
 			// Draw Mod Cursor
 			DrawTile( renderer(), _tileSet.texture, selectorTile, sentinelTile, dst, {} );
@@ -487,21 +487,21 @@ namespace JanSordid::SDL_Example
 			SDL_SetTextureColorMod( _tileSet.texture, 255, 255, 255 );
 			SDL_SetTextureAlphaMod( _tileSet.texture, SDL_ALPHA_OPAQUE );
 
-			const Rect  clipRect = { windowSize.x - 512, 128, 512, windowSize.y };
+			const SDL_Rect  clipRect = { windowSize.x - 512, 128, 512, windowSize.y };
 			SDL_SetRenderClipRect( renderer(), &clipRect );
 
-			const FRect palSrc = { 0, 0, (f32)_tileSet.textureSize.x, (f32)_tileSet.textureSize.y };
-			const FRect palDst = toFRect( _paletteOffset, toF( _tileSet.textureSize ) * _paletteScale );
+			const SDL_FRect palSrc = { 0, 0, (f32)_tileSet.textureSize.x, (f32)_tileSet.textureSize.y };
+			const SDL_FRect palDst = toFRect( _paletteOffset, toF( _tileSet.textureSize ) * _paletteScale );
 
 			// Draw the Palette (the whole TileSet)
 			SDL_RenderTexture( renderer(), _tileSet.texture, &palSrc, &palDst );
 
-			const int   stride   = _tileSet.tileCount.x;
-			const Point sel      = { _selectedIndex % stride, _selectedIndex / stride };
-			//const FRect overhang = FRect{ -8, -8, 32, 32 } * toXYWH( _paletteScale );
-			const FRect dst      = toXY( toF( sel ) * paletteTileSize + _paletteOffset ) + selectorOverhang;
+			const int       stride   = _tileSet.tileCount.x;
+			const SDL_Point sel      = { _selectedIndex % stride, _selectedIndex / stride };
+		//	const SDL_FRect overhang = SDL_FRect{ -8, -8, 32, 32 } * toXYWH( _paletteScale );
+			const SDL_FRect dst      = toXY( toF( sel ) * paletteTileSize + _paletteOffset ) + selectorOverhang;
 
-			const Rect clipRect2 = {
+			const SDL_Rect clipRect2 = {
 				(windowSize.x - 512) + (int)selectorOverhang.x,
 				128 + (int)selectorOverhang.y,
 				512 - (int)selectorOverhang.x,
@@ -517,7 +517,7 @@ namespace JanSordid::SDL_Example
 
 		if(false)
 		{
-			const FRect
+			const SDL_FRect
 				src = { 16 * 16, 39 * 16, 3 * 16, 3 * 16 },
 				dst = { 100, 100, 400, 400 };
 			SDL_RenderTexture9Grid( renderer(), _tileSet.texture, &src, 16, 16, 16, 16, 4, &dst );
@@ -604,7 +604,7 @@ namespace JanSordid::SDL_Example
 			//ImU32 rcol = std::bit_cast<ImU32>( HSNR64::Palette( randColor ) );
 			ImU32 pcol = std::bit_cast<ImU32>( HSNR64::Palette( i ) );
 			ImU32 bcol = std::bit_cast<ImU32>( HSNR64::Palette( _selectedColor == i ? randColor : i ) );
-			//Color color = hsnr64::Palette[i];
+			//SDL_Color color = hsnr64::Palette[i];
 			ImGui::PushStyleColor( ImGuiCol_Button,       pcol );
 			ImGui::PushStyleColor( ImGuiCol_Border,       bcol );
 			ImGui::PushStyleColor( ImGuiCol_BorderShadow, bcol );
@@ -653,8 +653,8 @@ namespace JanSordid::SDL_Example
 				JSON row = JSON::array();
 				for( int x = 0; x < tileMap.size.x; ++x )
 				{
-					constexpr u32 mask = (sizeof(Tile) == 3) ? 0x00ffffff : 0xffffffff;
-					const u32 tileData = mask & *reinterpret_cast<const u32 *>( &tileMap.tiles[x + y * tileMap.stride] );
+					constexpr u32 mask     = (sizeof(Tile) == 3) ? 0x00ffffff : 0xffffffff;
+					const     u32 tileData = mask & *reinterpret_cast<const u32 *>( &tileMap.tiles[x + y * tileMap.stride] );
 					row.push_back( tileData );
 				}
 				rows.push_back( row );
@@ -666,5 +666,4 @@ namespace JanSordid::SDL_Example
 
 		file << j.dump( 1, '\t' );
 	}
-
 }

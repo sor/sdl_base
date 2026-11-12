@@ -12,10 +12,10 @@ namespace JanSordid::SDL_Example
 		_font = TTF_OpenFont( BasePath "asset/font/MonkeyIsland-1991-refined.ttf", _game.scalingFactor() * 16 );
 		TTF_SetFontHinting( _font, TTF_HINTING_NONE );
 
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
-		const Point resolution = windowSize / Scale;
+		const SDL_Point resolution = windowSize / Scale;
 		_plasmaSrf = SDL_CreateSurface( resolution.x, resolution.y, SDL_PIXELFORMAT_RGBA32 );
 
 		_plasmaTex = SDL_CreateTexture( renderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, resolution.x, resolution.y );
@@ -33,7 +33,7 @@ namespace JanSordid::SDL_Example
 		Base::Destroy();
 	}
 
-	bool PlasmaState::Input( const Event & event )
+	bool PlasmaState::Input( const SDL_Event & event )
 	{
 		switch( event.type )
 		{
@@ -103,16 +103,16 @@ namespace JanSordid::SDL_Example
 		// Draw the plasma
 		{
 			SDL_UpdateTexture( _plasmaTex, EntireRect, _plasmaSrf->pixels, _plasmaSrf->pitch );
-			const FRect dst_rect = { 0, 0, (f32)_plasmaSrf->w * Scale, (f32)_plasmaSrf->h * Scale };
+			const SDL_FRect dst_rect = { 0, 0, (f32)_plasmaSrf->w * Scale, (f32)_plasmaSrf->h * Scale };
 			SDL_RenderTexture( renderer(), _plasmaTex, EntireFRect, &dst_rect );
 		}
 
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
 		const f32 offsetFromLeft = (30 * _game.scalingFactor());
 
-		// Prepare the text as Texture
+		// Prepare the text as SDL_Texture
 		if( _blendedText == nullptr )
 		{
 			constexpr const char * text =
@@ -123,7 +123,7 @@ namespace JanSordid::SDL_Example
 			if( _blendedText != nullptr )
 				SDL_DestroyTexture( _blendedText );
 
-			Owned<Surface> surf = TTF_RenderText_Blended_Wrapped( _font, text, 0, White, windowSize.x - 2 * (int)offsetFromLeft );
+			Owned<SDL_Surface> surf = TTF_RenderText_Blended_Wrapped( _font, text, 0, White, windowSize.x - 2 * (int)offsetFromLeft );
 			_blendedText = SDL_CreateTextureFromSurface( renderer(), surf );
 
 			SDL_GetTextureSize( _blendedText, &_blendedTextSize.x, &_blendedTextSize.y );
@@ -131,7 +131,7 @@ namespace JanSordid::SDL_Example
 
 		// Draw the text on top of the plasma effect
 		{
-			const FPoint p = {
+			const SDL_FPoint p = {
 				offsetFromLeft,
 				(f32)windowSize.y - (100 * _game.scalingFactor())
 			};
@@ -141,10 +141,10 @@ namespace JanSordid::SDL_Example
 
 			// Draw the shadow
 			SDL_SetTextureColorMod( _blendedText, 0, 0, 0 );
-			const FRect dstRect = toFRect( p, _blendedTextSize );
-			for( const FPoint & offset : HSNR64::ShadowOffset::Rhombus )
+			const SDL_FRect dstRect = toFRect( p, _blendedTextSize );
+			for( const SDL_FPoint & offset : HSNR64::ShadowOffset::Rhombus )
 			{
-				const FRect dstOff = dstRect + toXY( offset * shadowOffsetFactor );
+				const SDL_FRect dstOff = dstRect + toXY( offset * shadowOffsetFactor );
 				SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dstOff );
 			}
 

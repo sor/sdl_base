@@ -41,7 +41,7 @@ namespace JanSordid::SDL_Example
 		Base::Destroy();
 	}
 
-	bool TGUIState::Input( const Event & event )
+	bool TGUIState::Input( const SDL_Event & event )
 	{
 		return _gui.handleEvent( event );
 	}
@@ -51,13 +51,13 @@ namespace JanSordid::SDL_Example
 	void TGUIState::Render( const u64 framesSinceStart, const Duration timeSinceStart, const f32 deltaTNeeded )
 	{
 		SDL_SetRenderDrawColor( renderer(), 255, 0, 0, 255 );
-		FRect rect = { (f32)(framesSinceStart % 500), 270, 100, 100 };
+		SDL_FRect rect = { (f32)(framesSinceStart % 500), 270, 100, 100 };
 		SDL_RenderFillRect( renderer(), &rect );
 
 		_gui.draw();
 
 		SDL_SetRenderDrawColor( renderer(), 0, 255, 0, 191 );
-		FRect rect2 = { (f32)(framesSinceStart % 500)+50, 290, 100, 100 };
+		SDL_FRect rect2 = { (f32)(framesSinceStart % 500)+50, 290, 100, 100 };
 		SDL_RenderFillRect( renderer(), &rect2 );
 	}
 }

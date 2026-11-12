@@ -12,9 +12,9 @@ int main()
 	SDL_Init( SDL_INIT_EVERYTHING );
 	NFD::Guard g;
 
-	//Shared<Surface> surf = IMG_Load( "" ); // will not load anything, but makes sure SDL_image is linked
-	Owned<Window>   w = SDL_CreateWindow( "", 400, 400, 0 );
-	Owned<Renderer> r = SDL_CreateRenderer( w, nullptr );
+//	Shared<SDL_Surface> surf = IMG_Load( "" ); // will not load anything, but makes sure SDL_image is linked
+	Owned<SDL_Window>   w    = SDL_CreateWindow( "", 400, 400, 0 );
+	Owned<SDL_Renderer> r    = SDL_CreateRenderer( w, nullptr );
 
 	SDL_ShowOpenFileDialog( Callback, nullptr, w, nullptr, 0, nullptr, false );
 
@@ -28,7 +28,7 @@ int main()
 	while( SDL_GetTicksNS() < 5'000'000'000 )
 	{
 		SDL_PumpEvents();
-		Color clear = { (u8)rand(), (u8)rand(), (u8)rand(), (u8)rand() };
+		SDL_Color clear = { (u8)rand(), (u8)rand(), (u8)rand(), (u8)rand() };
 		SDL_SetRenderDrawColor( r, clear.r, clear.g, clear.b, clear.a );
 		SDL_RenderClear( r );
 		SDL_RenderPresent( r );

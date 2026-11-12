@@ -23,14 +23,16 @@ namespace JanSordid::SDL
 {
 	using namespace JanSordid::Core;
 
+	// SDL3 removed the official SDL_INIT_EVERYTHING, so we define it ourselves
 	constexpr SDL_InitFlags SDL_INIT_EVERYTHING
 		= SDL_INIT_AUDIO
 		| SDL_INIT_VIDEO
 		| SDL_INIT_HAPTIC
 		| SDL_INIT_GAMEPAD
-		| SDL_INIT_CAMERA;
-
-	/// Aliases of std::, SDL_, TTF_, Mix_ for easy usage
+		| SDL_INIT_CAMERA
+		| SDL_INIT_JOYSTICK
+		| SDL_INIT_SENSOR
+		| SDL_INIT_EVENTS;
 
 	constexpr const SDL_Rect  * EntireRect  = nullptr;
 	constexpr const SDL_FRect * EntireFRect = nullptr;
@@ -44,37 +46,11 @@ namespace JanSordid::SDL
 		[[nodiscard]] static TimePoint now() { return NanoSec{ SDL_GetTicksNS() }; }
 	};
 
-	// Types which need memory management
-	using Window      = SDL_Window;
-	using Texture     = SDL_Texture;
-	using Renderer    = SDL_Renderer;
-	using Surface     = SDL_Surface;
-	using Font        = TTF_Font;
-	using Text        = TTF_Text;
-	using TextEngine  = TTF_TextEngine;
-	using Mixer       = MIX_Mixer;
-	using Audio       = MIX_Audio;
-	using Track       = MIX_Track;
-
-	// Usually not user controlled, do NOT use with smart pointers in the default case
-	using PixelFormat = SDL_PixelFormat;
-	using Palette     = SDL_Palette;
-
-	// Value types
-	using Color       = SDL_Color;
-	using Event       = SDL_Event;
-	using Point       = SDL_Point;
-	using FPoint      = SDL_FPoint;
-	using Vec         = SDL_FPoint;
-	using Keymod      = SDL_Keymod;
-	using Rect        = SDL_Rect;
-	using FRect       = SDL_FRect;
-
 	template<typename T, typename TDel = std::default_delete<T>> using Owned     = Core::AutocastUnique<T,TDel>;
 	template<typename T>                                         using Shared    = Core::AutocastShared<T>;
 	template<typename T>                                         using WeakShare = Core::AutocastWeakShare<T>;
 
-	constexpr Core::u32 ToU32( const Color & c )
+	constexpr Core::u32 ToU32( const SDL_Color & c )
 	{
 		return (c.r << 0)
 		     | (c.g << 8)
@@ -82,12 +58,12 @@ namespace JanSordid::SDL
 		     | (c.a << 24);
 	}
 
-	consteval Color ToColor( const Core::u32 & c )
+	consteval SDL_Color ToColor( const Core::u32 & c )
 	{
 		// If consteval is not available, change to constexpr and comment in the following lines
 		//if (!std::is_constant_evaluated())
 		//	assert( false );
-		return Color {
+		return SDL_Color {
 			(Core::u8)(c>>0 & 0xFF),
 			(Core::u8)(c>>8 & 0xFF),
 			(Core::u8)(c>>16 & 0xFF),
@@ -95,7 +71,7 @@ namespace JanSordid::SDL
 		};
 	}
 
-	inline bool SDL_SetRenderDrawColor( Renderer * renderer, const Color color )
+	inline bool SDL_SetRenderDrawColor( SDL_Renderer * renderer, const SDL_Color color )
 	{
 		return SDL_SetRenderDrawColor( renderer, color.r, color.g, color.b, color.a );
 	}

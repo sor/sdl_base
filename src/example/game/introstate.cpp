@@ -86,7 +86,7 @@ namespace JanSordid::SDL_Example
 		Base::Destroy();
 	}
 
-	bool IntroState::Input( const Event & event )
+	bool IntroState::Input( const SDL_Event & event )
 	{
 		switch( event.type )
 		{
@@ -152,11 +152,11 @@ namespace JanSordid::SDL_Example
 
 	void IntroState::Render( const u64 framesSinceStart, const Duration timeSinceStart, const f32 deltaTNeeded )
 	{
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
 		{
-			const FRect dst_rect = toWH( toF( windowSize ) );
+			const SDL_FRect dst_rect = toWH( toF( windowSize ) );
 			SDL_RenderTexture( renderer(), _image, EntireFRect, &dst_rect /* same result as EntireRect */ );
 		}
 
@@ -188,13 +188,13 @@ namespace JanSordid::SDL_Example
 				"\naàáâãäåæcçeèéêëiìíîïdðnñoòóôõö÷oøuùúûüyýþyÿ"
 				"\ninjektion! enjoy major Heij project Stobject farbe kd aes real tw";
 
-			const Color outlineColor = _isDarkOutline
+			const SDL_Color outlineColor = _isDarkOutline
 				? Black
 				: White;
 
 			// Draw the text on top
 			// _textmode == 0 is True Type (currently cached)
-			// _textmode == 1 is Bitmap Font (currently uncached)
+			// _textmode == 1 is Bitmap TTF_Font (currently uncached)
 			if( _textmode == 0 )
 			{
 				// Comment out to disable the cache. Uses 5ms without / 20 ms with harfbuzz
@@ -203,7 +203,7 @@ namespace JanSordid::SDL_Example
 					if( _blendedText != nullptr )
 						SDL_DestroyTexture( _blendedText );
 
-					Owned<Surface> surf = TTF_RenderText_Blended_Wrapped( _font, text, 0, White, windowSize.x - 2 * _textStartPoint.x );
+					Owned<SDL_Surface> surf = TTF_RenderText_Blended_Wrapped( _font, text, 0, White, windowSize.x - 2 * _textStartPoint.x );
 					_blendedText = SDL_CreateTextureFromSurface( renderer(), surf );
 
 					SDL_GetTextureSize( _blendedText, &_blendedTextSize.x, &_blendedTextSize.y );
@@ -211,20 +211,20 @@ namespace JanSordid::SDL_Example
 
 				SDL_SetTextureColorMod( _blendedText, outlineColor.r, outlineColor.g, outlineColor.b );
 
-				const FRect dst_rect = toFRect( _textStartPoint, _blendedTextSize );
-				for( const FPoint & offset : HSNR64::ShadowOffset::Rhombus )
+				const SDL_FRect dst_rect = toFRect( _textStartPoint, _blendedTextSize );
+				for( const SDL_FPoint & offset : HSNR64::ShadowOffset::Rhombus )
 				{
-					const FRect dst_off = dst_rect + toXY( offset );
+					const SDL_FRect dst_off = dst_rect + toXY( offset );
 					SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dst_off );
 				}
 
-				const Color & color = HSNR64::Palette( _colorIndex );
+				const SDL_Color & color = HSNR64::Palette( _colorIndex );
 				SDL_SetTextureColorMod( _blendedText, color.r, color.g, color.b );
 				SDL_RenderTexture( renderer(), _blendedText, EntireFRect, &dst_rect );
 			}
 			else
 			{
-				FRect dimension { round( _textStartPoint.x ), round( _textStartPoint.y ), windowSize.x - (32 + _textStartPoint.x), 9999 };
+				SDL_FRect dimension { round( _textStartPoint.x ), round( _textStartPoint.y ), windowSize.x - (32 + _textStartPoint.x), 9999 };
 				_tf.Render( text, dimension, HSNR64::Palette( _colorIndex ), outlineColor );
 			}
 		}
@@ -242,7 +242,7 @@ namespace JanSordid::SDL_Example
 			ImGui::ShowDemoWindow( &show_demo_window );
 		}
 
-		Point windowSize;
+		SDL_Point windowSize;
 		SDL_GetWindowSize( window(), &windowSize.x, &windowSize.y );
 
 		static bool autoUpdate = false;
@@ -294,7 +294,7 @@ namespace JanSordid::SDL_Example
 			const SDL_Color & color = HSNR64::Palette( i );
 			const ImU32 pcol = ToU32( color );
 			//const ImU32 pcol = std::bit_cast<ImU32>( hsnr64::Palette[i] );
-			//Color color = hsnr64::Palette[i];
+			//SDL_Color color = hsnr64::Palette[i];
 			ImGui::PushStyleColor( ImGuiCol_Button, pcol );
 			ImGui::PushStyleColor( ImGuiCol_Text, pcol ^ 0x00808080 );
 			if( ImGui::Button( format( "{}{:02}", prefix, i ).c_str() ) )
@@ -368,7 +368,7 @@ namespace JanSordid::SDL_Example
 				print( "Success! Path is {0}\n", path.get() );
 		}
 
-		ImGui::Checkbox( "Show Example Window", &_showExampleWindow );
+		ImGui::Checkbox( "Show Example SDL_Window", &_showExampleWindow );
 
 		ImGui::End();
 	}

@@ -25,14 +25,14 @@ namespace JanSordid::SDL_Example
 			_level = j["map"]["data"]; // Add the following if it does not just work: .get<decltype( _level )>();
 		}
 
-		Owned<Surface> surf = IMG_Load( BasePathGraphic "hsnr64.png" );
+		Owned<SDL_Surface> surf = IMG_Load( BasePathGraphic "hsnr64.png" );
 		SDL_SetSurfaceColorKey( surf, true, 0 );
 		_tileset = SDL_CreateTextureFromSurface( renderer(), surf );
 		SDL_SetTextureScaleMode( _tileset, SDL_ScaleMode::SDL_SCALEMODE_NEAREST );
 
 		const f32    dstSize = 16 * _game.scalingFactor(); // TODO: Remove that scaling for actual gameplay
-		const FPoint halfDst = FPoint{ dstSize, dstSize } / 2;
-		Point        dst     = { 0, 0 };
+		const SDL_FPoint halfDst = SDL_FPoint{ dstSize, dstSize } / 2;
+		SDL_Point        dst     = { 0, 0 };
 		for( const auto & row : _level ) {
 			for( const auto & cell : row ) {
 				if( cell >= '0' && cell <= '9' ) {
@@ -54,7 +54,7 @@ namespace JanSordid::SDL_Example
 		IGameState::Destroy();
 	}
 
-	bool RoflState::Input( const Event & event )
+	bool RoflState::Input( const SDL_Event & event )
 	{
 		return event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_F1 && (_isPathRendered = !_isPathRendered);
 		//return false;
@@ -77,8 +77,8 @@ namespace JanSordid::SDL_Example
 		{
 			for( auto & minion : _minions[faction] )
 			{
-				const FPoint & nextPos   = _paths[faction][minion.nextPath];
-				const FPoint   diffPos   = nextPos - minion.position;
+				const SDL_FPoint & nextPos   = _paths[faction][minion.nextPath];
+				const SDL_FPoint   diffPos   = nextPos - minion.position;
 				const f32      length    = calcLength( diffPos );
 				const f32      distance  = Speed * deltaT;
 				const bool     isReached = distance >= length;
@@ -94,7 +94,7 @@ namespace JanSordid::SDL_Example
 				}
 				else
 				{
-					const FPoint normalizedDiff = diffPos / length * distance;
+					const SDL_FPoint normalizedDiff = diffPos / length * distance;
 					minion.position += normalizedDiff;
 					if( diffPos.x != 0 )
 					{
@@ -127,7 +127,7 @@ namespace JanSordid::SDL_Example
 						MeleeDist   = 15,
 						MeleeDistSq = MeleeDist * MeleeDist;
 
-					const FPoint diffPos  = oppoMinion.position - minion.position;
+					const SDL_FPoint diffPos  = oppoMinion.position - minion.position;
 					const f32    lengthSq = calcLengthSq( diffPos );
 					if( lengthSq < MeleeDistSq )
 					{
@@ -154,14 +154,14 @@ namespace JanSordid::SDL_Example
 		//SDL_SetRenderDrawBlendMode( renderer(), SDL_BLENDMODE_BLEND);
 		constexpr int srcSize = 16;
 		const int     dstSize = 16 * _game.scalingFactor();
-		const FPoint  halfDst = FPoint{ (f32)dstSize, (f32)dstSize } / 2;
-		Point         dst     = { 0, 0 };
+		const SDL_FPoint  halfDst = SDL_FPoint{ (f32)dstSize, (f32)dstSize } / 2;
+		SDL_Point         dst     = { 0, 0 };
 		for( const auto & row : _level ) {
 			for( const auto & cell : row ) {
 				const TileInfo & info    = tileInfos[cell];
-				const Color    & color   = info.color;
-				const FRect      srcRect = toF( toXY( info.index * srcSize, srcSize ) );
-				const FRect      dstRect = toF( toXY( dst * dstSize, dstSize ) );
+				const SDL_Color    & color   = info.color;
+				const SDL_FRect      srcRect = toF( toXY( info.index * srcSize, srcSize ) );
+				const SDL_FRect      dstRect = toF( toXY( dst * dstSize, dstSize ) );
 				SDL_SetTextureColorMod( _tileset, color.r, color.g, color.b );
 				SDL_RenderTextureRotated(
 					renderer(),
@@ -185,7 +185,7 @@ namespace JanSordid::SDL_Example
 
 		for( int faction = 0; faction <= 1; ++faction )
 		{
-			const Color & color = factionColors[faction];
+			const SDL_Color & color = factionColors[faction];
 			SDL_SetTextureColorMod( _tileset, color.r, color.g, color.b );
 
 			for( auto & minion : _minions[faction] )
@@ -196,8 +196,8 @@ namespace JanSordid::SDL_Example
 					continue;
 				}
 
-				const FRect srcRect = toXY( FPoint{ 19 + (f32)(changeThreeTimesASecond % 2), 33 } * srcSize, srcSize );
-				const FRect dstRect = toXY( minion.position - halfDst, dstSize );
+				const SDL_FRect srcRect = toXY( SDL_FPoint{ 19 + (f32)(changeThreeTimesASecond % 2), 33 } * srcSize, srcSize );
+				const SDL_FRect dstRect = toXY( minion.position - halfDst, dstSize );
 				SDL_RenderTextureRotated(
 					renderer(),
 					_tileset,
@@ -215,8 +215,8 @@ namespace JanSordid::SDL_Example
 		{
 			SDL_SetTextureColorMod( _tileset, 255, 127, 127 );
 
-			const FRect srcRect = toXY( FPoint{ 27 , 37 } * srcSize, srcSize );
-			const FRect dstRect = toXY( _explosionPosition - halfDst, dstSize );
+			const SDL_FRect srcRect = toXY( SDL_FPoint{ 27 , 37 } * srcSize, srcSize );
+			const SDL_FRect dstRect = toXY( _explosionPosition - halfDst, dstSize );
 			SDL_RenderTextureRotated(
 				renderer(),
 				_tileset,

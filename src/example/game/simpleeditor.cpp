@@ -11,7 +11,7 @@ namespace JanSordid::SDL_Example
 
 		if( !_tileSet )
 		{
-			Owned<Surface> surf = IMG_Load( BasePathGraphic "bd.png" );
+			Owned<SDL_Surface> surf = IMG_Load( BasePathGraphic "bd.png" );
 			_tileSet     = SDL_CreateTextureFromSurface( renderer(), surf );
 			_tileSetSize = { surf->w, surf->h };
 			_tileCount   = { 9, 11 };
@@ -36,7 +36,7 @@ namespace JanSordid::SDL_Example
 			(*_currState->rbegin()).fill( HardWall );
 		}
 
-		_camera       = FPoint{ 100, 100 };
+		_camera       = SDL_FPoint{ 100, 100 };
 		_paletteScale = (i32)_game.scalingFactor();
 	}
 
@@ -45,7 +45,7 @@ namespace JanSordid::SDL_Example
 		// for example, do not unload, just keep it loaded
 	}
 
-	bool EditorState::Input( const Event & evt )
+	bool EditorState::Input( const SDL_Event & evt )
 	{
 		switch( evt.type )
 		{
@@ -95,18 +95,18 @@ namespace JanSordid::SDL_Example
 				const SDL_MouseButtonEvent & me = evt.button;
 				if( me.button == SDL_BUTTON_LEFT )
 				{
-					const FPoint mousePos = { me.x, me.y };
+					const SDL_FPoint mousePos = { me.x, me.y };
 					if( mousePos.x < _tileSetSize.x * _paletteScale
 					 && mousePos.y < _tileSetSize.y * _paletteScale )
 					{
 						// Pick
-						const Point p = toI( mousePos ) / (_tileSize * _paletteScale);
+						const SDL_Point p = toI( mousePos ) / (_tileSize * _paletteScale);
 						_pickedIdx = p;
 					}
 					else
 					{
 						// Paint
-						const Point p = toI( mousePos - _camera ) / (_tileSize * _mapScale);
+						const SDL_Point p = toI( mousePos - _camera ) / (_tileSize * _mapScale);
 						//level[p.x][p.y] = pickedIdx;
 						if( 0 <= p.y && (uint)p.y < (*_currState).size()
 						 && 0 <= p.x && (uint)p.x < (*_currState)[0].size() )
@@ -142,8 +142,8 @@ namespace JanSordid::SDL_Example
 				const SDL_MouseMotionEvent & me = evt.motion;
 				if( _isPainting )
 				{
-					const FPoint mousePos = { me.x, me.y };
-					const Point  p = toI( mousePos - _camera ) / _tileSize / _mapScale;
+					const SDL_FPoint mousePos = { me.x, me.y };
+					const SDL_Point  p = toI( mousePos - _camera ) / _tileSize / _mapScale;
 					//level[p.x][p.y] = pickedIdx;
 					if( 0 <= p.y && (uint)p.y < (*_currState).size()
 					 && 0 <= p.x && (uint)p.x < (*_currState)[0].size() )
@@ -153,7 +153,7 @@ namespace JanSordid::SDL_Example
 				}
 				else if( _isPanning )
 				{
-					_camera += FPoint{ me.xrel, me.yrel };
+					_camera += SDL_FPoint{ me.xrel, me.yrel };
 				}
 				break;
 			}
@@ -175,7 +175,7 @@ namespace JanSordid::SDL_Example
 			for( uint x = 0; x < curr[y].size(); ++x )
 			{
 				const int index = curr[y][x];
-				Point tileIndex = { index % _tileCount.x, index / _tileCount.x };
+				SDL_Point tileIndex = { index % _tileCount.x, index / _tileCount.x };
 
 				if( (tileIndex.y >= 1 && tileIndex.y <= 5) || tileIndex.y == 8 || tileIndex.y == 10 )
 				{
@@ -200,8 +200,8 @@ namespace JanSordid::SDL_Example
 	{
 		const WorldState & curr = *_currState;
 
-		const FPoint mapTileSize = toF( _tileSize * _mapScale );
-		const FPoint levelSize   = { (f32)curr[0].size(), (f32)curr.size() };
+		const SDL_FPoint mapTileSize = toF( _tileSize * _mapScale );
+		const SDL_FPoint levelSize   = { (f32)curr[0].size(), (f32)curr.size() };
 
 
 		/// Draw level
@@ -209,17 +209,17 @@ namespace JanSordid::SDL_Example
 		{
 			for( uint x = 0; x < curr[y].size(); ++x )
 			{
-				const int    index     = curr[y][x];
-				const Point  tileIndex = { index % _tileCount.x, index / _tileCount.x };
-				const FPoint pos       = FPoint{ (f32)x, (f32)y } * mapTileSize + _camera;
-				const FRect  srcRect   = toFRect( toF( tileIndex * _tileSize ), toF( _tileSize ) );
-				const FRect  dstRect   = toFRect( pos, mapTileSize );
+				const int        index     = curr[y][x];
+				const SDL_Point  tileIndex = { index % _tileCount.x, index / _tileCount.x };
+				const SDL_FPoint pos       = SDL_FPoint{ (f32)x, (f32)y } * mapTileSize + _camera;
+				const SDL_FRect  srcRect   = toFRect( toF( tileIndex * _tileSize ), toF( _tileSize ) );
+				const SDL_FRect  dstRect   = toFRect( pos, mapTileSize );
 				SDL_RenderTexture( renderer(), _tileSet, &srcRect, &dstRect );
 			}
 		}
 
 		SDL_SetRenderDrawColor( renderer(), 255, 0, 0, SDL_ALPHA_OPAQUE );
-		const FRect borderRect = toFRect( _camera, levelSize * mapTileSize );
+		const SDL_FRect borderRect = toFRect( _camera, levelSize * mapTileSize );
 		SDL_RenderRect( renderer(), &borderRect );
 
 
@@ -234,8 +234,8 @@ namespace JanSordid::SDL_Example
 			{
 				for( uint x = 0; x < curr[y].size(); ++x )
 				{
-					const FPoint gridPos  = FPoint{ (f32)x, (f32)y } * mapTileSize + _camera;
-					const FRect  gridRect = toFRect( gridPos, mapTileSize );
+					const SDL_FPoint gridPos  = SDL_FPoint{ (f32)x, (f32)y } * mapTileSize + _camera;
+					const SDL_FRect  gridRect = toFRect( gridPos, mapTileSize );
 					SDL_RenderRect( renderer(), &gridRect );
 				}
 			}
@@ -244,10 +244,10 @@ namespace JanSordid::SDL_Example
 
 		/// Draw Palette (top left of screen)
 		{
-			const Point paletteTileSize = _tileSize * _paletteScale;
-			const FRect paletteRect     = toWH( toF( paletteTileSize * _tileCount ) );
-			const Point pickerPosition  = paletteTileSize * _pickedIdx;
-			const FRect pickerRect      = toFRect( toF( pickerPosition ), toF( paletteTileSize ) );
+			const SDL_Point paletteTileSize = _tileSize * _paletteScale;
+			const SDL_FRect paletteRect     = toWH( toF( paletteTileSize * _tileCount ) );
+			const SDL_Point pickerPosition  = paletteTileSize * _pickedIdx;
+			const SDL_FRect pickerRect      = toFRect( toF( pickerPosition ), toF( paletteTileSize ) );
 
 			SDL_SetRenderDrawColor( renderer(), 0, 0, 0, 255 );
 			SDL_RenderFillRect( renderer(), &paletteRect );
@@ -256,7 +256,7 @@ namespace JanSordid::SDL_Example
 
 			//auto blink = (msSinceStart & 0x300) >> 8;
 			const usize blink = (framesSinceStart & 0x3f) >> 3;
-			const Color & c = BaseColors[blink];
+			const SDL_Color & c = BaseColors[blink];
 			SDL_SetRenderDrawColor( renderer(), c.r, c.g, c.b, c.a );
 			SDL_RenderRect( renderer(), &pickerRect );
 		}
@@ -280,21 +280,21 @@ namespace JanSordid::SDL_Example
 			    << deltaTNeeded * 1000.0f
 			    << "ms";
 			{
-				constexpr Color c = { 255, 255, 255, 255 };
+				constexpr SDL_Color c = { 255, 255, 255, 255 };
 				//SDL::C::TTF_SetFontHinting(font, ((t & 0x600) >> 9));
 				//SDL::C::TTF_SetFontOutline(font, 1);
-				Owned<Surface> surf = TTF_RenderText_Blended_Wrapped( _font, oss.str().c_str(), 0, c, 400 * _game.scalingFactor() );
-				Owned<Texture> t2   = SDL_CreateTextureFromSurface( renderer(), surf );
+				Owned<SDL_Surface> surf = TTF_RenderText_Blended_Wrapped( _font, oss.str().c_str(), 0, c, 400 * _game.scalingFactor() );
+				Owned<SDL_Texture> t2   = SDL_CreateTextureFromSurface( renderer(), surf );
 				SDL_SetTextureColorMod( t2, 0, 0, 0 );
 				//SDL_SetTextureBlendMode( t2, SDL_BLENDMODE_BLEND );
-				const FPoint p = { (f32)_tileSetSize.x * _paletteScale + 30, 20 };
-				for( const FPoint & offset : HSNR64::ShadowOffset::Cross )
+				const SDL_FPoint p = { (f32)_tileSetSize.x * _paletteScale + 30, 20 };
+				for( const SDL_FPoint & offset : HSNR64::ShadowOffset::Cross )
 				{
-					const FRect dstRect = toFRect( p + offset, FPoint{ (f32)surf->w, (f32)surf->h } );
+					const SDL_FRect dstRect = toFRect( p + offset, SDL_FPoint{ (f32)surf->w, (f32)surf->h } );
 					SDL_RenderTexture( renderer(), t2, EntireFRect, &dstRect );
 				}
 				SDL_SetTextureColorMod( t2, 255, 255, 255 );
-				const FRect dstRect = toFRect( p, FPoint{ (f32)surf->w, (f32)surf->h } );
+				const SDL_FRect dstRect = toFRect( p, SDL_FPoint{ (f32)surf->w, (f32)surf->h } );
 				SDL_RenderTexture( renderer(), t2, EntireFRect, &dstRect );
 			}
 		}

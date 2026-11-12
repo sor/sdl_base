@@ -42,7 +42,7 @@ namespace JanSordid::SDL
 	}
 
 
-	/// Point <-> Point => Point
+	/// SDL_Point <-> SDL_Point => SDL_Point
 	constexpr SDL_Point    operator+ ( const SDL_Point lhs, const SDL_Point rhs ) { return { lhs.x + rhs.x, lhs.y + rhs.y }; }
 	constexpr SDL_Point    operator- ( const SDL_Point lhs, const SDL_Point rhs ) { return { lhs.x - rhs.x, lhs.y - rhs.y }; }
 	constexpr SDL_Point    operator* ( const SDL_Point lhs, const SDL_Point rhs ) { return { lhs.x * rhs.x, lhs.y * rhs.y }; }
@@ -52,13 +52,13 @@ namespace JanSordid::SDL
 	constexpr SDL_Point &  operator*=( SDL_Point & lhs, const SDL_Point rhs ) { lhs = lhs * rhs; return lhs; }
 	constexpr SDL_Point &  operator/=( SDL_Point & lhs, const SDL_Point rhs ) { lhs = lhs / rhs; return lhs; }
 
-	/// Point <-> Scalar => Point
+	/// SDL_Point <-> int => SDL_Point
 	constexpr SDL_Point    operator* ( const SDL_Point lhs, const int rhs ) { return { lhs.x * rhs, lhs.y * rhs }; }
 	constexpr SDL_Point    operator/ ( const SDL_Point lhs, const int rhs ) { return { lhs.x / rhs, lhs.y / rhs }; }
 	constexpr SDL_Point &  operator*=( SDL_Point & lhs, const int rhs ) { lhs = lhs * rhs; return lhs; }
 	constexpr SDL_Point &  operator/=( SDL_Point & lhs, const int rhs ) { lhs = lhs / rhs; return lhs; }
 
-	/// FPoint <-> FPoint => FPoint
+	/// SDL_FPoint <-> SDL_FPoint => SDL_FPoint
 	constexpr SDL_FPoint   operator+ ( const SDL_FPoint lhs, const SDL_FPoint rhs) { return { lhs.x + rhs.x, lhs.y + rhs.y }; }
 	constexpr SDL_FPoint   operator- ( const SDL_FPoint lhs, const SDL_FPoint rhs) { return { lhs.x - rhs.x, lhs.y - rhs.y }; }
 	constexpr SDL_FPoint   operator* ( const SDL_FPoint lhs, const SDL_FPoint rhs) { return { lhs.x * rhs.x, lhs.y * rhs.y }; }
@@ -68,13 +68,13 @@ namespace JanSordid::SDL
 	constexpr SDL_FPoint & operator*=( SDL_FPoint & lhs, const SDL_FPoint rhs) { lhs = lhs * rhs; return lhs; }
 	constexpr SDL_FPoint & operator/=( SDL_FPoint & lhs, const SDL_FPoint rhs) { lhs = lhs / rhs; return lhs; }
 
-	/// FPoint <-> FScalar => FPoint
+	/// SDL_FPoint <-> float => SDL_FPoint
 	constexpr SDL_FPoint   operator* ( const SDL_FPoint lhs, const float rhs) { return { lhs.x * rhs, lhs.y * rhs }; }
 	constexpr SDL_FPoint   operator/ ( const SDL_FPoint lhs, const float rhs) { return { lhs.x / rhs, lhs.y / rhs }; }
 	constexpr SDL_FPoint & operator*=( SDL_FPoint & lhs, const float rhs) { lhs = lhs * rhs; return lhs; }
 	constexpr SDL_FPoint & operator/=( SDL_FPoint & lhs, const float rhs) { lhs = lhs / rhs; return lhs; }
 
-	/// FRect <-> FRect => FRect
+	/// SDL_FRect <-> SDL_FRect => SDL_FRect
 	constexpr SDL_FRect    operator+ ( const SDL_FRect lhs, const SDL_FRect rhs ) { return { lhs.x + rhs.x, lhs.y + rhs.y, lhs.w + rhs.w, lhs.h + rhs.h }; }
 	constexpr SDL_FRect    operator* ( const SDL_FRect lhs, const SDL_FRect rhs ) { return { lhs.x * rhs.x, lhs.y * rhs.y, lhs.w * rhs.w, lhs.h * rhs.h }; }
 
@@ -102,7 +102,7 @@ namespace JanSordid::SDL
 
 	inline /*constexpr*/ int        calcLengthSq( const SDL_Point  n ) { return n.x * n.x + n.y * n.y; }
 	inline /*constexpr*/ f32        calcLength(   const SDL_Point  n ) { return sqrtf( (f32)calcLengthSq( n ) ); }  // Care: Returns f32 as sqrt(int) will very likely not return an int
-	inline /*constexpr*/ SDL_FPoint normalize(    const SDL_Point  n ) { return toF( n ) / calcLength( n ); } // Care: Returns FPoint
+	inline /*constexpr*/ SDL_FPoint normalize(    const SDL_Point  n ) { return toF( n ) / calcLength( n ); } // Care: Returns SDL_FPoint
 
 	inline /*constexpr*/ f32        calcLengthSq( const SDL_FPoint n ) { return n.x * n.x + n.y * n.y; }
 	inline /*constexpr*/ f32        calcLength(   const SDL_FPoint n ) { return sqrtf( calcLengthSq( n ) ); }
