@@ -176,6 +176,8 @@ if( GCC OR CLANG )
 		-Wswitch-enum                            # Switch on enum missing cases
 		$<$<CONFIG:RELEASE>:-Werror=switch-enum> # Switch on enum missing cases
 
+		$<$<CXX_COMPILER_ID:Clang>:-Werror=dangling>                              # Possibly dangling reference to a temporary
+		$<$<CXX_COMPILER_ID:GNU>:-Werror=dangling-reference>                      # Possibly dangling reference to a temporary
 		$<$<CXX_COMPILER_ID:GNU>:-Werror=div-by-zero>                             # Compile-time division by zero
 		$<$<CXX_COMPILER_ID:Clang>:-Werror=division-by-zero>                      # Compile-time division by zero
 		$<$<CXX_COMPILER_ID:Clang>:-Werror=missing-braces>                        # Missing braces in initializers
