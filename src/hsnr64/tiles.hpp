@@ -119,25 +119,25 @@ namespace JanSordid::HSNR64
 		static constexpr f32    halfSize  = 0.5f;
 		static constexpr SDL_FPoint halfPoint = { 0.5f, 0.5f };
 
-		DynArray<Tile>  tiles;
-		TileSet *       tileSet;
-		SDL_FPoint      tileDist    = { 16.0f, 16.0f };     // This should usually be the same as tileSet.tileSize, but for an overlapping TileSet this can for example be lower
-		SDL_FPoint      tileOffset  = {  0.0f,  0.0f };     // Offset from the zero coordinate
-		SDL_FPoint      sizeScale   = {  1.0f,  1.0f };     // Output size scaling
-		SDL_FPoint      scrollScale = {  1.0f,  1.0f };     // Parallax scroll scaling
-		SDL_FPoint      center;  // = toF( tileSet->tileSize ) * sizeScale * halfSize;
-		SDL_Point       size;
-		int             stride; // Same as size.x?
-		SDL_BlendMode   blendMode   = SDL_BLENDMODE_BLEND;  // SDL_SetTextureBlendMode
-		SDL_ScaleMode   scaleMode   = SDL_ScaleMode::SDL_SCALEMODE_NEAREST; // SDL_SetTextureScaleMode -OR- SDL_HINT_RENDER_SCALE_QUALITY 0, 1, 2
-	//	DrawingOrder    order       = DrawingOrder::DontCare;
-	//	bool            enabled     = true;
+		std::vector<Tile> tiles;
+		TileSet *         tileSet;
+		SDL_FPoint        tileDist    = { 16.0f, 16.0f };     // This should usually be the same as tileSet.tileSize, but for an overlapping TileSet this can for example be lower
+		SDL_FPoint        tileOffset  = {  0.0f,  0.0f };     // Offset from the zero coordinate
+		SDL_FPoint        sizeScale   = {  1.0f,  1.0f };     // Output size scaling
+		SDL_FPoint        scrollScale = {  1.0f,  1.0f };     // Parallax scroll scaling
+		SDL_FPoint        center;  // = toF( tileSet->tileSize ) * sizeScale * halfSize;
+		SDL_Point         size;
+		int               stride; // Same as size.x?
+		SDL_BlendMode     blendMode   = SDL_BLENDMODE_BLEND;  // SDL_SetTextureBlendMode
+		SDL_ScaleMode     scaleMode   = SDL_ScaleMode::SDL_SCALEMODE_NEAREST; // SDL_SetTextureScaleMode -OR- SDL_HINT_RENDER_SCALE_QUALITY 0, 1, 2
+	//	DrawingOrder      order       = DrawingOrder::DontCare;
+	//	bool              enabled     = true;
 	};
 
 	struct MultiTileMap // MultiLayer
 	{
-		DynArray<TileMap> layers;
-		DynArray<bool>    enabledLayers;
+		std::vector<TileMap> layers;
+		std::vector<bool>    enabledLayers;
 	};
 
 
@@ -148,7 +148,7 @@ namespace JanSordid::HSNR64
 	{
 	//	static_assert( isPowerOfTwo( S ) );
 		static_assert( S * S * sizeof( T ) <= 4096 );
-		DynArray<Array<T, S * S>> sectors;
+		std::vector<std::array<T, S * S>> sectors;
 
 		// method to grow x direction -> just append on the end
 		// method to grow y direction -> insert at 1..n * stride

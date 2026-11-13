@@ -7,7 +7,7 @@
 
 namespace JanSordid::HSNR64
 {
-	/*static*/ const Array<const CharMetric,256> TileFont::CharMetrics = {
+	/*static*/ const std::array<const CharMetric,256> TileFont::CharMetrics = {
 		CharMetric{ 99 },   // NUL
 		CharMetric{ 99 },
 		CharMetric{ 99 },
@@ -278,7 +278,7 @@ namespace JanSordid::HSNR64
 		CharMetric{ 11, -2,  2, { 0, 1, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 0, 1 }, 10, 0b0000'0001'0001'0001, 0b0001'0010'0000'0000 }, // y"
 	};
 
-	/*static*/ const HashMap<u64, const i8> TileFont::SpecialPairs = {
+	/*static*/ const std::unordered_map<u64, const i8> TileFont::SpecialPairs = {
 		// lig
 		//{ combineChars( U'f', U'a' ), -4 },
 		//{ combineChars( U'c', U't' ), -3 },
@@ -350,19 +350,19 @@ namespace JanSordid::HSNR64
 	}
 
 	void TileFont::RenderSingle(
-		const String     & text,
-		const SDL_FRect  & dimension,
-		const u8           ligatureLevel,
-		const u8           spacing,
-		const SDL_FPoint & tilesize,
-		RenderFunc         renderFunc )
+		const std::string & text,
+		const SDL_FRect   & dimension,
+		const u8            ligatureLevel,
+		const u8            spacing,
+		const SDL_FPoint  & tilesize,
+		RenderFunc          renderFunc )
 	{
 		//DebugOnly(
-		String    skipChar; // UTF-8 char build over time, therefore a string
-		SDL_FRect dst     = toFRect( fromXY( dimension ), tilesize );
-		int       skip    = 0;
-		u32       prefix  = 0;
-		u32       last_uc = '\n';
+		std::string skipChar; // UTF-8 char build over time, therefore a string
+		SDL_FRect   dst     = toFRect( fromXY( dimension ), tilesize );
+		int         skip    = 0;
+		u32         prefix  = 0;
+		u32         last_uc = '\n';
 		for( const char c : text )
 		{
 			// ++ skip a lot of Unicode for now
@@ -529,10 +529,10 @@ namespace JanSordid::HSNR64
 	}
 
 	void TileFont::Render(
-		const String    & text,
-		const SDL_FRect & dimension,
-		const SDL_Color & color,
-		const SDL_Color & outlineColor )
+		const std::string & text,
+		const SDL_FRect   & dimension,
+		const SDL_Color   & color,
+		const SDL_Color   & outlineColor )
 	{
 		constexpr u8         ligatureLevel = 25; // 0 off, 9 only ffi, 25 acst, 130 a lot
 		constexpr u8         spacing       = 2;

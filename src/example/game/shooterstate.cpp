@@ -256,9 +256,9 @@ namespace JanSordid::SDL_Example
 		CameraState::Update( framesSinceStart, timeSinceStart, deltaT );
 	}
 
-	DynArray<SDL_FPoint> PixelizeCircle( SDL_FPoint center, int radius )
+	std::vector<SDL_FPoint> PixelizeCircle( SDL_FPoint center, int radius )
 	{
-		DynArray<SDL_FPoint> points;
+		std::vector<SDL_FPoint> points;
 		const int arrSize = RoundUpMultiple<8>( radius * 8 * 35 / 49 ); // 35 / 49 is a slightly biased approximation of 1/sqrt(2)
 		points.reserve( arrSize );
 
@@ -300,14 +300,14 @@ namespace JanSordid::SDL_Example
 		return points; // NRVO will make this good, fingers crossed
 	}
 
-	void DrawCircle( SDL_Renderer * renderer, const DynArray<SDL_FPoint> & points )
+	void DrawCircle( SDL_Renderer * renderer, const std::vector<SDL_FPoint> & points )
 	{
 		SDL_RenderPoints( renderer, points.data(), points.size() );
 	}
 
 	void DrawCircle( SDL_Renderer * renderer, SDL_FPoint center, int radius )
 	{
-		const DynArray<SDL_FPoint> points = PixelizeCircle( center, radius );
+		const std::vector<SDL_FPoint> points = PixelizeCircle( center, radius );
 		DrawCircle( renderer, points );
 	}
 
@@ -393,7 +393,7 @@ namespace JanSordid::SDL_Example
 			RenderLayer( windowSize, fluxCam, i );
 	}
 
-	bool ShooterState::IsProjectileAlive( const DynArray<SDL_FPoint>::iterator & it ) const
+	bool ShooterState::IsProjectileAlive( const std::vector<SDL_FPoint>::iterator & it ) const
 	{
 		return std::isfinite( it->x );
 	}
@@ -470,14 +470,14 @@ namespace JanSordid::SDL_Example
 		}
 	}
 
-	void ShooterState::RetireProjectile( const DynArray<SDL_FPoint>::iterator & it )
+	void ShooterState::RetireProjectile( const std::vector<SDL_FPoint>::iterator & it )
 	{
 		it->x = INFINITY;
 		_enemyProjReuse = it;
 		++_numDeadEnemyProj;
 	}
 
-	void ShooterState::RetireMyProjectile( const DynArray<SDL_FPoint>::iterator & it )
+	void ShooterState::RetireMyProjectile( const std::vector<SDL_FPoint>::iterator & it )
 	{
 		it->x = -INFINITY;
 		_myProjReuse = it;

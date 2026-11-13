@@ -38,10 +38,10 @@ namespace JanSordid::SDL
 		[[nodiscard]] virtual      SDL_Color clearColor()      const noexcept { return SDL_Color { 0, 0, 0, SDL_ALPHA_OPAQUE }; } // With what color shall the screen be cleared
 
 		/// Methods: non-virtual first, followed by (pure) virtual/override
-		virtual void Init()                     {} // Called before Enter()ing, can be called multiple times
-		virtual void Enter( bool isStacking )   {} // Call when activating the state, either replacing the top state or stacking on top
-		virtual void Exit( bool isStackedUpon ) {} // Call when deactivating the state, either being stacked upon or being completely removed from the stack
-		virtual void Destroy()                  {} // Could be called after Exit()ing
+		virtual void Init()                      {} // Called before Enter()ing, can be called multiple times
+		virtual void Enter( bool isStacking  )   {} // Call when activating the state, either replacing the top state or stacking on top
+		virtual void Exit(  bool isStackedUpon ) {} // Call when deactivating the state, either being stacked upon or being completely removed from the stack
+		virtual void Destroy()                   {} // Could be called after Exit()ing
 
 		// This is mostly being replaced by HandleEvent, only use for stateful inputs, is already pumped.
 		// Do only `return true` in overloads if ALL inputs are handled,
@@ -86,7 +86,7 @@ namespace JanSordid::SDL
 
 	protected:
 		/// Members / Fields
-		DynArray<Owned<GameState>> _allStates;
+		std::vector<Owned<GameState>> _allStates;
 
 		Owned<SDL_Window>   _window;
 		Owned<SDL_Renderer> _renderer;
@@ -95,9 +95,9 @@ namespace JanSordid::SDL
 		Duration            _timeSinceStart   = Duration::zero();
 
 		// TODO: This needs to become a queue to work with multiple changes in one frame
-		DynArray<u8> _stateStack;      // Not a std::stack since it's necessary to look inside without de-stacking
-		u8           _stateNextVal;
-		NextStateOp  _stateNextOp = NextStateOp::None;
+		std::vector<u8> _stateStack;      // Not a std::stack since it's necessary to look inside without de-stacking
+		u8              _stateNextVal;
+		NextStateOp     _stateNextOp = NextStateOp::None;
 
 		f32  _scalingFactor;
 		bool _isRunning = true;
@@ -151,7 +151,7 @@ namespace JanSordid::SDL
 		template<typename T, typename... TS>
 		constexpr void AddStates()
 		{
-			_allStates.emplace_back( make_unique<T>( *this ) );
+			_allStates.emplace_back( std::make_unique<T>( *this ) );
 			AddStates<TS...>();
 		}
 

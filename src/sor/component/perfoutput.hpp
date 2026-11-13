@@ -21,13 +21,13 @@ namespace JanSordid::SDL
 		void SetMode( DrawMode mode ) noexcept { _mode = mode; }
 
 		// Call once per frame, e.g. at the top of the game loop
-		void Output( SDL_Window * window, u64 framesSinceStart, TimePoint current, Duration needed );
+		void Output( SDL_Window * window, u64 framesSinceStart, Duration timeSinceStart, Duration needed );
 
 	private:
 		[[nodiscard]] float AverageMSecPerFrame( u64 framesSinceStart ) const;
-		void                Reset( u64 framesSinceStart, TimePoint current );
+		void                Reset( u64 framesSinceStart, Duration timeSinceStart );
 
-		TimePoint _lastInfoTime      = Clock::now();
+		Duration  _lastInfoTime      = now();
 		Duration  _accumulatedNeeded = Duration::zero();
 		u64       _lastInfoFrame     = 0;
 		DrawMode  _mode              = DrawMode::None;

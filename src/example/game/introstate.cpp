@@ -224,7 +224,7 @@ namespace JanSordid::SDL_Example
 			}
 			else
 			{
-				SDL_FRect dimension { round( _textStartPoint.x ), round( _textStartPoint.y ), windowSize.x - (32 + _textStartPoint.x), 9999 };
+				SDL_FRect dimension { std::round( _textStartPoint.x ), std::round( _textStartPoint.y ), windowSize.x - (32 + _textStartPoint.x), 9999 };
 				_tf.Render( text, dimension, HSNR64::Palette( _colorIndex ), outlineColor );
 			}
 		}
@@ -284,7 +284,7 @@ namespace JanSordid::SDL_Example
 		// CARE: ImU32 as color is 0xAABBGGRR - opposite of what might be expected
 		ImGui::PushStyleColor( ImGuiCol_Border, 0xAAFFFFFF );
 
-		using namespace StringViewLiterals;
+		using namespace std::string_view_literals;
 		const std::string_view prefix = drawColorNumber
 			? ""sv      // draws number                             "23"
 			: "  ##"sv; // draws spaces, names internally by number "  ##23"

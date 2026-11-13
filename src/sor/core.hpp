@@ -94,13 +94,6 @@ namespace JanSordid::Core//::inline V1
 {
 	/// Aliases of a lot of std:: for easy usage
 
-//	namespace ComplexLiterals    { using namespace std::complex_literals;     }
-	namespace Chrono             { using namespace std::chrono;               }
-	namespace ChronoLiterals     { using namespace std::chrono_literals;      }
-	namespace Numbers            { using namespace std::numbers;              }
-	namespace StringLiterals     { using namespace std::string_literals;      }
-	namespace StringViewLiterals { using namespace std::string_view_literals; }
-
 	// Usage of `int` and `uint` conveys:
 	//  I don't mind about the size, avoid for preserved data (structs, classes, globals)
 	using uint  = unsigned int;
@@ -143,43 +136,24 @@ namespace JanSordid::Core//::inline V1
 	constexpr std::size_t operator""_TiB(unsigned long long n) { return n * 1024_GiB; }
 	constexpr std::size_t operator""_PiB(unsigned long long n) { return n * 1024_TiB; }
 
-	// Classes / Structs
-	using String        = std::string;
-	using StringView    = std::string_view;
-
-	using NanoSec       = Chrono::nanoseconds;                     // Nanoseconds
-	using MilliSec      = Chrono::milliseconds;                    // Milliseconds
-	using Sec           = Chrono::seconds;                         // Seconds
-	using FNanoSec      = Chrono::duration<f32, NanoSec::period>;  // Nanoseconds as float
-	using FMilliSec     = Chrono::duration<f32, MilliSec::period>; // Milliseconds as float
-	using FSec          = Chrono::duration<f32, Sec::period>;      // Seconds as float
-	// SDL provides the timestamps (nanoseconds since its epoch, see Clock in sdl_core.hpp), chrono the durations
-	// A TimePoint is therefore just a Duration relative to SDL's epoch
-	using TimePoint     = NanoSec;
+	using NanoSec       = std::chrono::nanoseconds;                     // Nanoseconds
+	using MilliSec      = std::chrono::milliseconds;                    // Milliseconds
+	using Sec           = std::chrono::seconds;                         // Seconds
+	using FNanoSec      = std::chrono::duration<f32, NanoSec::period>;  // Nanoseconds as float
+	using FMilliSec     = std::chrono::duration<f32, MilliSec::period>; // Milliseconds as float
+	using FSec          = std::chrono::duration<f32, Sec::period>;      // Seconds as float
+	// SDL provides the timestamps (nanoseconds since its epoch, see now() in sdl_core.hpp)
 	using Duration      = NanoSec;
 
-	using File          = std::FILE;
-
-	// Math Functions
-	using std::min, std::max;
-	using std::abs, std::sin, std::cos;
-	using std::floor, std::ceil, std::round, std::lround, std::llround;
-
-	// TODO: Move to adapt_chrono, as not everything needs this
 	// Chrono Functions
-	using Chrono::duration_cast;
-	using ChronoLiterals::operator ""ns,
-	      ChronoLiterals::operator ""ms,
-	      ChronoLiterals::operator ""s;
+	using std::chrono_literals::operator ""ns,
+	      std::chrono_literals::operator ""ms,
+	      std::chrono_literals::operator ""s;
 
 	constexpr f32 toFSec(      const Duration d ) { return duration_cast<FSec     >( d ).count(); }
 	constexpr f32 toFMilliSec( const Duration d ) { return duration_cast<FMilliSec>( d ).count(); }
 	constexpr i64 toNanoSec(   const Duration d ) { return duration_cast<NanoSec  >( d ).count(); }
 	constexpr i64 toMilliSec(  const Duration d ) { return duration_cast<MilliSec >( d ).count(); }
-
-	// Functions
-	using std::move, std::forward; // Clang does not like this, decide for yourself
-	using std::make_unique, std::make_shared;
 
 	// Only scoped enums (enum class) are allowed, e.g.: IsSet( flipRot, FlipRot::Rotate90 )
 	// A strict std::is_scoped_enum_v is C++23 only, this is the C++20 equivalent
@@ -192,23 +166,11 @@ namespace JanSordid::Core//::inline V1
 		return ( to_underlying( value ) & to_underlying( mask ) ) != 0;
 	}
 
-	// Templates
-	template<typename T, usize Size>            using Array     = std::array<T, Size>;
-	template<typename T>                        using DynArray  = std::vector<T>;
-//	template<typename T>                        using Vector    = std::vector<T>;
-	template<typename T>                        using HashSet   = std::unordered_set<T>;
-	template<typename TKey, typename TValue>    using HashMap   = std::unordered_map<TKey,TValue>;
-
-	template<typename T>                                           using RawPtr    = T*;
-	template<typename T, typename TDel = std::default_delete<T>>   using UniquePtr = std::unique_ptr<T,TDel>;
-	template<typename T>                                           using SharedPtr = std::shared_ptr<T>;
-	template<typename T>                                           using WeakPtr   = std::weak_ptr<T>;
-
 	template <typename... T>
 	void print_once( format_string<T...> fmt, T && ... args )
 	{
-		static HashSet<String> all;
-		const String msg = format( fmt, forward<T>( args )... );
+		static std::unordered_set<std::string> all;
+		const std::string msg = format( fmt, std::forward<T>( args )... );
 		if( all.find( msg ) == all.end() )
 		{
 			all.insert( msg );

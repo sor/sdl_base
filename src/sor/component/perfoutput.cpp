@@ -2,20 +2,20 @@
 
 namespace JanSordid::SDL
 {
-	void PerformanceOutputComponent::Output( SDL_Window * const window, const u64 framesSinceStart, const TimePoint current, const Duration needed )
+	void PerformanceOutputComponent::Output( SDL_Window * const window, const u64 framesSinceStart, const Duration timeSinceStart, const Duration needed )
 	{
 		_accumulatedNeeded += needed;
 
-		const Duration passedTime = current - _lastInfoTime;
+		const Duration passedTime = timeSinceStart - _lastInfoTime;
 
 		switch( _mode )
 		{
 			case DrawMode::Title:
 				if( passedTime > 250ms )
 				{
-					const String avgms = format( "{}ms", AverageMSecPerFrame( framesSinceStart ) );
+					const std::string avgms = format( "{}ms", AverageMSecPerFrame( framesSinceStart ) );
 					SDL_SetWindowTitle( window, avgms.c_str() );
-					Reset( framesSinceStart, current );
+					Reset( framesSinceStart, timeSinceStart );
 				}
 				break;
 
@@ -23,7 +23,7 @@ namespace JanSordid::SDL
 				if( passedTime > 1000ms )
 				{
 					print( "{}ms", AverageMSecPerFrame( framesSinceStart ) );
-					Reset( framesSinceStart, current );
+					Reset( framesSinceStart, timeSinceStart );
 				}
 				break;
 
@@ -39,10 +39,10 @@ namespace JanSordid::SDL
 		return toFMilliSec( _accumulatedNeeded / passedFrames );
 	}
 
-	void PerformanceOutputComponent::Reset( const u64 framesSinceStart, const TimePoint current )
+	void PerformanceOutputComponent::Reset( const u64 framesSinceStart, const Duration timeSinceStart )
 	{
-		_lastInfoFrame    = framesSinceStart;
-		_lastInfoTime     = current;
+		_lastInfoFrame     = framesSinceStart;
+		_lastInfoTime      = timeSinceStart;
 		_accumulatedNeeded = Duration::zero();
 	}
 }

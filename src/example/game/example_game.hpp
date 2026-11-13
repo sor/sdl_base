@@ -161,7 +161,7 @@ namespace JanSordid::SDL_Example
 		struct Ball { f32 x, y, z, w; };
 
 		Owned<SDL_Texture> _image;
-		DynArray<Ball> _balls;
+		std::vector<Ball> _balls;
 
 		bool _isOrdered     = false;
 		bool _isTransparent = false;
@@ -184,28 +184,28 @@ namespace JanSordid::SDL_Example
 		using Base = MyGameState;
 
 	protected:
-		static constexpr Array<SDL_FPoint,4> BackgroundStartOffset = {{
+		static constexpr std::array<SDL_FPoint,4> BackgroundStartOffset = {{
 			{ 0,    -330 },
 			{ -350, -330 },
 			{ -450, -900 },
 			{ -800, -1500 },
 		}};
-		static constexpr Array<SDL_FPoint,4> BackgroundFactor = {{
+		static constexpr std::array<SDL_FPoint,4> BackgroundFactor = {{
 			{ 0.2f, 0.3f },
 			{ 0.4f, 0.45f },
 			{ 0.8f, 0.8f },
 			{ 1.2f, 1.2f },
 		}};
 
-		Array<Owned<SDL_Texture>,4> _background;
-		Array<SDL_FPoint,4>         _backgroundSize; // Is initialized in Init()
+		std::array<Owned<SDL_Texture>,4> _background;
+		std::array<SDL_FPoint,4>         _backgroundSize; // Is initialized in Init()
 
 		SDL_FPoint _mouseOffset      = { 0, 0 };
 		SDL_FPoint _mouseOffsetEased = { 0, 0 };
 		SDL_FPoint _direction        = { 0, 0 };
 		SDL_FPoint _camera           = { 0, 0 };
 
-		Array<bool,4> _isBackgroundVisible = {
+		std::array<bool,4> _isBackgroundVisible = {
 			true,
 			true,
 			true,
@@ -238,29 +238,29 @@ namespace JanSordid::SDL_Example
 	protected:
 		static constexpr int SatRadius = 25;
 
-		Owned<MIX_Audio>               _sound;
-		Array<Owned<MIX_Track>,8>      _tracksSound;
-		Array<Owned<SDL_Texture>,4>    _projectile;
+		Owned<MIX_Audio>                  _sound;
+		std::array<Owned<MIX_Track>,8>    _tracksSound;
+		std::array<Owned<SDL_Texture>,4>  _projectile;
 		//ReuseFPoints rvProjectiles;
 
-		usize                          _currTrack = 0;
+		usize                             _currTrack = 0;
 
-		DynArray<SDL_FPoint>           _enemyProjectiles;
-		DynArray<SDL_FPoint>::iterator _enemyProjReuse;
-		int                            _numDeadEnemyProj = 0;
+		std::vector<SDL_FPoint>           _enemyProjectiles;
+		std::vector<SDL_FPoint>::iterator _enemyProjReuse;
+		int                               _numDeadEnemyProj = 0;
 
-		DynArray<SDL_FPoint>           _myProjectiles;
-		DynArray<SDL_FPoint>::iterator _myProjReuse;
-		int                            _numDeadMyProj = 0;
+		std::vector<SDL_FPoint>           _myProjectiles;
+		std::vector<SDL_FPoint>::iterator _myProjReuse;
+		int                               _numDeadMyProj = 0;
 
-		DynArray<SDL_FRect> _enemies = {
+		std::vector<SDL_FRect> _enemies = {
 			{ 1100, 280, 160, 160 },
 			{ 1200, 500,  80,  80 },
 			{ 1100, 680,  80,  80 },
 		};
 
-		SDL_FRect           _player     = { 200, 530, 200, 100 };
-		Array<SDL_FPoint,5> _satellites = { { { 0, 0 } } };
+		SDL_FRect                _player     = { 200, 530, 200, 100 };
+		std::array<SDL_FPoint,5> _satellites = { { { 0, 0 } } };
 
 		f32      _progress      = 0;
 		Duration _shootCooldown = {};
@@ -282,10 +282,10 @@ namespace JanSordid::SDL_Example
 		//bool isFPSLimited() const noexcept override { return false; }
 
 		[[nodiscard]]
-		bool IsProjectileAlive(    const DynArray<SDL_FPoint>::iterator & it ) const;
+		bool IsProjectileAlive(    const std::vector<SDL_FPoint>::iterator & it ) const;
 		void SpawnEnemyProjectile( SDL_FPoint pos );
 		void SpawnMyProjectile(    SDL_FPoint pos );
-		void RetireProjectile(     const DynArray<SDL_FPoint>::iterator & it );
-		void RetireMyProjectile(   const DynArray<SDL_FPoint>::iterator & it );
+		void RetireProjectile(     const std::vector<SDL_FPoint>::iterator & it );
+		void RetireMyProjectile(   const std::vector<SDL_FPoint>::iterator & it );
 	};
 }

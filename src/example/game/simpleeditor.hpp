@@ -8,7 +8,7 @@ namespace JanSordid::SDL_Example
 	{
 		using Base = MyGameState;
 
-		constexpr static Array<SDL_Color,8> BaseColors = {
+		constexpr static std::array<SDL_Color,8> BaseColors = {
 			SDL_Color{ 0,   0,   0,   255 },
 			SDL_Color{ 255, 0,   0,   255 },
 			SDL_Color{ 0,   255, 0,   255 },
@@ -22,7 +22,7 @@ namespace JanSordid::SDL_Example
 		Owned<TTF_Font>    _font;
 		Owned<SDL_Texture> _tileSet;
 
-		using WorldState = Array<Array<int, 40>, 20>; // TODO: These sizes here also need to be manually configured, expose dynamic sizing via ImGUI
+		using WorldState = std::array<std::array<int, 40>, 20>; // TODO: These sizes here also need to be manually configured, expose dynamic sizing via ImGUI
 
 		const bool _doGenerateEmptyMap = true; // Set this to false if you already load a map
 		WorldState _worldState1;

@@ -127,7 +127,8 @@ namespace JanSordid::SDL_Example
 			//if( -thresh < diff.x && diff.x < thresh ) { mouseOffsetEased.x = mouseOffset.x; diff.x = 0; }
 			//if( -thresh < diff.y && diff.y < thresh ) { mouseOffsetEased.y = mouseOffset.y; diff.y = 0; }
 
-			_mouseOffsetEased += diff * max( 0.1f, min( 0.4f, deltaT * 10.0f ) );
+			_mouseOffsetEased += diff * std::clamp( deltaT * 10.0f, 0.1f, 0.4f );
+			//_mouseOffsetEased += diff * std::max( 0.1f, std::min( 0.4f, deltaT * 10.0f ) );
 		}
 		else
 		{
@@ -140,10 +141,10 @@ namespace JanSordid::SDL_Example
 		const f32    timeInMS = toFMilliSec( timeSinceStart );
 		const SDL_FPoint flux     = _isFlux
 			? SDL_FPoint {
-				.x = sin( timeInMS / 650.0f  ) *  5.0f,
-				.y = sin( timeInMS / 500.0f  ) * 10.0f
-				   + sin( timeInMS / 850.0f  ) *  5.0f
-				   + cos( timeInMS / 1333.0f ) *  5.0f }
+				.x = std::sin( timeInMS / 650.0f  ) *  5.0f,
+				.y = std::sin( timeInMS / 500.0f  ) * 10.0f
+				   + std::sin( timeInMS / 850.0f  ) *  5.0f
+				   + std::cos( timeInMS / 1333.0f ) *  5.0f }
 			: SDL_FPoint { 0, 0 };
 		const SDL_FPoint fluxCam = _camera + flux + _mouseOffsetEased;
 		return fluxCam;

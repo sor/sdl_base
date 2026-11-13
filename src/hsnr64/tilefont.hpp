@@ -62,8 +62,8 @@ namespace JanSordid::HSNR64
 		 * https://www.utf8-chartable.de/
 		 ***/
 
-		static const Array<const CharMetric, 256> CharMetrics;
-		static const HashMap<u64, const i8>       SpecialPairs; // TODO: To differentiate between ligatures and just fixing the look, add a second map
+		static const std::array<const CharMetric, 256> CharMetrics;
+		static const std::unordered_map<u64, const i8> SpecialPairs; // TODO: To differentiate between ligatures and just fixing the look, add a second map
 
 		static constexpr u64 combineChars( char32_t last, char32_t curr )
 		{
@@ -86,10 +86,10 @@ namespace JanSordid::HSNR64
 		TileFont( SDL_Renderer * renderer );
 
 		void Render(
-			const String    & text,
-			const SDL_FRect & dimension,
-			const SDL_Color & color,
-			const SDL_Color & outlineColor = { 0, 0, 0, SDL_ALPHA_OPAQUE } );
+			const std::string & text,
+			const SDL_FRect   & dimension,
+			const SDL_Color   & color,
+			const SDL_Color   & outlineColor = { 0, 0, 0, SDL_ALPHA_OPAQUE } );
 
 	private:
 		using RenderFunc = void ( SDL_Renderer * renderer, SDL_Texture * texture, const SDL_FRect & src, const SDL_FRect & dst );
@@ -99,12 +99,12 @@ namespace JanSordid::HSNR64
 		static RenderFunc RenderCenter;
 
 		void RenderSingle(
-			const String     & text,
-			const SDL_FRect  & dimension,
-			const u8           ligatureLevel,
-			const u8           spacing,
-			const SDL_FPoint & tilesize,
-			RenderFunc         renderFunc );
+			const std::string & text,
+			const SDL_FRect   & dimension,
+			const u8            ligatureLevel,
+			const u8            spacing,
+			const SDL_FPoint  & tilesize,
+			RenderFunc          renderFunc );
 	};
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace JanSordid
+namespace JanSordid::SDL
 {
 	// Types which need memory management
 	using Window      = SDL_Window;

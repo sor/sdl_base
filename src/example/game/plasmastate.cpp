@@ -90,8 +90,8 @@ namespace JanSordid::SDL_Example
 			{
 				const f32 v      = plasma( (x - w / 2) * xy_scale, (y - h / 2) * xy_scale, xy_frame );
 				const int offset = x * 4 + y * pitch;
-				px[offset + 0] = std::max<int>( 0, std::min<int>( 255, 4 * _brightness * (.5f + .5f * sin( Numbers::pi_v<f32> * v )) + _brightness - 64 ) );
-				px[offset + 1] = std::max<int>( 0, std::min<int>( 255, 4 * _brightness * (.5f + .5f * cos( Numbers::pi_v<f32> * v )) + _brightness - 64 ) );
+				px[offset + 0] = std::max<int>( 0, std::min<int>( 255, 4 * _brightness * (.5f + .5f * sin( std::numbers::pi_v<f32> * v )) + _brightness - 64 ) );
+				px[offset + 1] = std::max<int>( 0, std::min<int>( 255, 4 * _brightness * (.5f + .5f * cos( std::numbers::pi_v<f32> * v )) + _brightness - 64 ) );
 				px[offset + 2] = std::max<int>( 0, std::min<int>( 255, 4 * _brightness - 255 ) );
 				px[offset + 3] = 255;
 			}

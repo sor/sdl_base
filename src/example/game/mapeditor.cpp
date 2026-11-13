@@ -594,7 +594,7 @@ namespace JanSordid::SDL_Example
 		// CARE: ImU32 as color is 0XAABBGGRR - opposite of what might be expected
 		ImGui::PushStyleColor( ImGuiCol_Border, 0xAAFFFFFF );
 
-		using namespace StringViewLiterals;
+		using namespace std::string_view_literals;
 		const std::string_view prefix = drawColorNumber
 			? ""sv      // draws number                             "23"
 			: "  ##"sv; // draws spaces, names internally by number "  ##23"

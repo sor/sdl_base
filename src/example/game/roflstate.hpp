@@ -28,7 +28,7 @@ namespace JanSordid::SDL_Example
 			i8        faction           = -1; // -1 neutral, 0 top-left, 1 bot-right
 		};
 
-		static inline HashMap<char, const TileInfo> tileInfos = {
+		static inline std::unordered_map<char, const TileInfo> tileInfos = {
 			{ '\0', { { 0,  26 }, { 0,   0,   0,   255 }, false, false, 0, -1 } },
 			{ ' ',  { { 0,  26 }, { 0,   0,   0,   255 }, false, false, 0, -1 } },
 			{ '0',  { { 0,  26 }, { 0,   0,   0,   255 }, false, false, 0, -1 } },
@@ -63,20 +63,20 @@ namespace JanSordid::SDL_Example
 			{ 'b',  { { 8,  27 }, { 0,   0,   127, 255 }, false, false, 0, -1 } }, // River
 		};
 
-		static constexpr Array<SDL_Color, 2> factionColors = {{
+		static constexpr std::array<SDL_Color, 2> factionColors = {{
 			{ 255, 136, 0,   255 },
 			{ 137, 207, 240, 255 },
 		}};
 
-		Owned<SDL_Texture>              _tileset;
-		Array<Array<SDL_FPoint, 10>, 2> _paths; // forward for faction 0, backward for faction 1
-		Array<DynArray<Entity>, 2>      _minions;
-		Duration                        _respawnCD         = {};
-		Duration                        _explosionDeadline = {};
-		SDL_FPoint                      _explosionPosition;
-		bool                            _isPathRendered    = false;
+		Owned<SDL_Texture>                        _tileset;
+		std::array<std::array<SDL_FPoint, 10>, 2> _paths; // forward for faction 0, backward for faction 1
+		std::array<std::vector<Entity>, 2>        _minions;
+		Duration                                  _respawnCD         = {};
+		Duration                                  _explosionDeadline = {};
+		SDL_FPoint                                _explosionPosition;
+		bool                                      _isPathRendered    = false;
 		// Minions follow path from 0 to 9 or the opposite way around
-		DynArray<String> _level = {
+		std::vector<std::string> _level = {
 			"uUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUr",
 			"L        |      GGG   b                R",
 			"L  f0    |     AA     b  aa AA         R",

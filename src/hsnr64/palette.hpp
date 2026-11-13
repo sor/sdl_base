@@ -52,7 +52,7 @@ namespace JanSordid::HSNR64
 
 	// SDL_Color[64]
 	// Idea for Myll, typed indexer: var SDL_Color[NamedColor, 64]
-	constexpr static inline Core::Array<SDL_Color, 64> palette = {
+	constexpr static inline std::array<SDL_Color, 64> palette = {
 		SDL_Color{  255,  0,    255, SDL_ALPHA_OPAQUE /*SDL_ALPHA_TRANSPARENT*/ },   // this is the don't-draw-pink
 	//	SDL_Color{  0,    255,  255, SDL_ALPHA_TRANSPARENT },   // this is the don't-draw-cyan
 		SDL_Color{  1,    7,    10,  SDL_ALPHA_OPAQUE },    // Black

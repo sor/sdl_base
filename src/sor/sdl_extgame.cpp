@@ -347,8 +347,14 @@ namespace JanSordid::SDL
 
 		while( isRunning() )
 		{
-			const TimePoint start = Clock::now();
+			_timeSinceStart = now();
 
+			// The difference to last frame is usually
+			//  33'333'333ns at 30Hz,
+			//  16'666'666ns at 60Hz,
+			//  10'000'000ns at 100Hz,
+			//   8'333'333ns at 120Hz,
+			//   6'944'444ns at 144Hz...
 			      f32 deltaT       = toFSec( deltaTDur       );
 			const f32 deltaTNeeded = toFSec( deltaTDurNeeded );
 
@@ -365,18 +371,10 @@ namespace JanSordid::SDL
 				deltaT = deltaTLimit;
 			}
 
-			_perfOutput.Output( _window.get(), _framesSinceStart, start, deltaTDurNeeded );
+			_perfOutput.Output( _window.get(), _framesSinceStart, _timeSinceStart, deltaTDurNeeded );
 
 			ChangeState();
 			//SDL_assert( currentStateIndex() >= 0 );
-
-			// The difference to last frame is usually
-			//  33'333'333ns at 30Hz,
-			//  16'666'666ns at 60Hz,
-			//  10'000'000ns at 100Hz,
-			//   8'333'333ns at 120Hz,
-			//   6'944'444ns at 144Hz...
-			_timeSinceStart = Clock::now();
 
 			// Main loop trinity
 			{
@@ -405,7 +403,7 @@ namespace JanSordid::SDL
 				RenderPresent();
 			}
 
-			deltaTDurNeeded = Clock::now() - start;
+			deltaTDurNeeded = now() - _timeSinceStart;
 
 			// With VSync this should not be needed and only Delay( 0 );
 			if( currentState().isFPSLimited() )
@@ -420,7 +418,7 @@ namespace JanSordid::SDL
 					// TODO: Change towards SDL_DelayPrecise if precision is paramount
 					SDL_DelayNS( ns );
 				}
-				deltaTDur = Clock::now() - start;
+				deltaTDur = now() - _timeSinceStart;
 			}
 			else
 			{

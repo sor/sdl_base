@@ -112,7 +112,7 @@ namespace JanSordid::SDL
 		Duration            _timeSinceStart   = Duration::zero();
 
 		// TODO: This needs to become a queue to work with multiple changes in one frame
-		DynArray<u8>    _stateStack;      // Not a std::stack since it's necessary to look inside without de-stacking
+		std::vector<u8> _stateStack;      // Not a std::stack since it's necessary to look inside without de-stacking
 		u8              _stateNextVal;
 		NextStateOp     _stateNextOp      = NextStateOp::None;
 
@@ -197,7 +197,7 @@ namespace JanSordid::SDL
 	{
 	protected:
 		/// Members / Fields
-		DynArray<Owned<TGameState>> _allStates;
+		std::vector<Owned<TGameState>> _allStates;
 
 	public:
 		/// Ctors & Dtor
@@ -218,7 +218,7 @@ namespace JanSordid::SDL
 		{
 			//_allStates.emplace_back( make_unique<T>( (typename T::Game*)*this ) );
 			//AddStates<TS...>( static_cast<typename T::Game*>(*this) );
-			_allStates.emplace_back( make_unique<T>( game ) );
+			_allStates.emplace_back( std::make_unique<T>( game ) );
 			AddStates<TS...>( game );
 		}
 

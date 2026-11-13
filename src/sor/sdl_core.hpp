@@ -41,10 +41,7 @@ namespace JanSordid::SDL
 	constexpr const bool PreDecode = true;
 
 	// SDL provides the timestamps, chrono the durations
-	struct Clock
-	{
-		[[nodiscard]] static TimePoint now() { return NanoSec{ SDL_GetTicksNS() }; }
-	};
+	[[nodiscard]] static inline Duration now()  { return NanoSec{ SDL_GetTicksNS() }; }
 
 	template<typename T, typename TDel = std::default_delete<T>> using Owned     = Core::AutocastUnique<T,TDel>;
 	template<typename T>                                         using Shared    = Core::AutocastShared<T>;
